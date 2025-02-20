@@ -82,7 +82,7 @@ cursor: pointer;
 
 .content {
     padding: 20px;
-    text-align: center;
+    text-align: left;
 }
 /* 設定視窗 */
 .settings-modal {
@@ -118,46 +118,58 @@ cursor: pointer;
 }
 
 .section {
-    background-color: #fcfcfc;  /* 淺色背景 */
-    padding: 20px;               /* 內邊距 */
-    margin: 15px ;              /* 每個區塊上下間距 */
-    border-radius: 10px;         /* 圓角邊框 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 輕微陰影 */
+    background-color: #fcfcfc;
+    padding: 20px;
+    margin: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;  /* 區塊內文字左對齊 */
 }
-
 .section h3 {
     font-size: 22px;
-    color: #B3811C;  /* 標題顏色 */
+    color: #B3811C;
     margin-bottom: 10px;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;
-    padding-left: 40px;
-    line-height: 1.4;
+    padding: 0 20px;  /* 左右內距 */
 }
 
 .section p {
     font-size: 16px;
-    color: #4b4b4b;  /* 文字顏色 */
+    color: #4b4b4b;
     margin-bottom: 10px;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;
-    padding-left: 130px;
-    line-height: 1.4;
+    padding: 0 20px;  /* 與標題對齊 */
 }
 
-div.footer{
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1; /* 讓內容區自動撐開 */
+}
+
+div.footer {
     height: 120px;
-    line-height: 60px; /*行高*/ /*和height一樣就是致中，也可以再調 e.g.40px的話就會偏高*/
-    text-align: center; /*水平置中*/
-    letter-spacing: 2px; /*字母和字母之間的空間*/
+    line-height: 60px;
+    text-align: center;
+    letter-spacing: 2px;
     background-color: #F9C765;
-    color:#B3811C;
+    color: #B3811C;
     font-weight: bold;
 }
 .footer br {
     margin-bottom: 5px;  /* 讓 <br> 標籤間的間距更小 */
+}
+
+h3, p {
+    margin: 0;
+    padding: 0;
+  }
+
+.container {
+    text-align: left;
 }
 
 
