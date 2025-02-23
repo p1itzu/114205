@@ -6,12 +6,12 @@ body {
 }
 
 .left-section {
-    width: 40%;
+    width: 33%;
     background-color: #f6c25f;
 }
 
 .right-section {
-    width: 60%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
