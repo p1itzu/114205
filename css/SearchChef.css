@@ -92,7 +92,7 @@ body {
 
 /* 設定滾動條的顏色 */
 .main-content::-webkit-scrollbar-thumb {
-    background-color: #F9C765; /* 黃色 */
+    background-color: #f9e4ba; 
     border-radius: 10px; /* 滾動條圓角 */
 }
 
@@ -144,4 +144,73 @@ body {
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 5px;
+}
+
+/* 廚師列表區域設定 */
+.chef-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.chef-card {
+    width: 260px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chef-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.chef-img {
+    /*width: 150%;*/
+    height: 85px;
+    object-fit: cover;
+}
+
+.chef-info {
+    padding: 15px;
+    font-family: "Noto Sans HK", sans-serif;
+}
+
+.chef-info h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.chef-info p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.order-btn {
+    width: 87%;
+    padding: 10px;
+    background-color: #F9C765;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    margin: 10px;
+}
+
+.order-btn:hover {
+    background-color: #F9C765;
+}
+
+.chef-img {
+    vertical-align: top;   /* 上對齊 */
+    padding-top: 6px;     /* 往下移動 */
+    padding-left: 7px;    /* 往右移動 (可自行調整數值) */
 }
