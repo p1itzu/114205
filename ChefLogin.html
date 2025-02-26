@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>註冊</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .left-section {
+            width: 35%;
+            background-color: #F9C765;
+        }
+
+        .right-section {
+            width: 75%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fdf7ec;
+        }
+
+        .form-container {
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 106%;
+            padding: 10px;
+            margin-top: 7px;
+            background-color: #F9C765;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .google-signup {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="left-section"></div>
+    <div class="right-section">
+        <div class="form-container">
+            <h2>Welcome to [系統名稱]！</h2>
+            <input type="text" placeholder="Name" required>
+            <input type="email" placeholder="Email" required>
+            <input type="password" placeholder="密碼 (8位數字+字母)" required>
+            <button>註冊</button>
+            <p class="google-signup">or create account with <img
+                    src="https://developers.google.com/identity/images/g-logo.png" width="20"></p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>廚師基本資料填寫</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .left-section {
+            width: 35%;
+            background-color: #F9C765;
+        }
+
+        .right-section {
+            width: 75%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fdf7ec;
+
+        }
+
+        .form-container {
+            width: 80%;
+            max-width: 400px;
+            text-align: left;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #F9C765;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            width: 420px;
+        }
+
+
+        /* 讓 checkbox 兩欄排列 */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        /* 讓 checkbox 和 label 保持在同一行 */
+        .checkbox-group div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .main {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="left-section"></div>
+    <div class="right-section">
+        <div class="form-container">
+            <h2>請輸入基本資料</h2>
+
+            <!-- 服務地區 多選 Checkbox 兩排排列 -->
+            <label class="main">服務地區</label>
+            <div class="checkbox-group">
+                <div><input type="checkbox" id="taipei" value="台北市"> <label for="taipei">台北市</label></div>
+                <div><input type="checkbox" id="newtaipei" value="新北市"> <label for="newtaipei">新北市</label></div>
+                <div><input type="checkbox" id="taoyuan" value="桃園市"> <label for="taoyuan">桃園市</label></div>
+                <div><input type="checkbox" id="taichung" value="台中市"> <label for="taichung">台中市</label></div>
+                <div><input type="checkbox" id="tainan" value="台南市"> <label for="tainan">台南市</label></div>
+                <div><input type="checkbox" id="kaohsiung" value="高雄市"> <label for="kaohsiung">高雄市</label></div>
+            </div>
+
+            <!-- 廚師證照登記 上傳檔案 -->
+            <label class="main" for="certificate">廚師證照登記</label>
+            <input type="file" id="certificate" accept="image/*, .pdf">
+
+            <!-- 擅長領域 多選 Checkbox -->
+            <label class="main">擅長領域</label>
+            <div class="checkbox-group">
+                <div><input type="checkbox" id="chinese" value="中式料理"> <label for="chinese">中式料理</label></div>
+                <div><input type="checkbox" id="western" value="西式料理"> <label for="western">西式料理</label></div>
+            </div>
+
+            <!-- 廚房地址 -->
+            <label class="main" for="kitchen-address">廚房地址</label>
+            <input type="text" id="kitchen-address" placeholder="請輸入廚房地址" required>
+
+            <button>繼續</button>
+        </div>
+    </div>
+</body>
+
+</html>
