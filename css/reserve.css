@@ -311,7 +311,7 @@ input[type="text"]{
     background-color: #e3ab3b;
 }
 
-.save-button{
+.save-button {
     width: 80px;
     height: 40px;
     padding: 10px;
@@ -321,14 +321,17 @@ input[type="text"]{
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s ease; /* 過渡效果 */
     margin: 10px;
-    float: right; /*靠右*/
+    float: right; /* 靠右 */
 }
 
 .save-button:hover {
     background-color: #638253;
+    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
 }
+
 
 .progress-bar {
     display: flex;
