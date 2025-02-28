@@ -365,3 +365,35 @@ input[type="text"]{
     background-color: #e2a93b;
     color: white;
 }
+
+.custom-number-input {
+    display: flex;
+    align-items: center; /* 確保垂直對齊 */
+    gap: 5px; /* 設定 `input` 和文字之間的距離 */
+}
+
+input[type="number"] {
+    width: 50px;
+    padding: 5px;
+    font-size: 16px;
+    text-align: center;
+    border: 3px solid #ccc;
+    border-radius: 8px;
+}
+
+.custom-number-input label {
+    display: block;  
+    margin-bottom: 1px !important; /* 加上 !important 確保作用 */
+}
+
+.custom-number-input input {
+    margin-top: 2px;
+}
+
+#special {
+    width: 370px;  /* 設定寬度 */
+    height: 50px;  /* 設定高度 */
+    font-size: 16px; /* 讓文字也變大 */
+    padding: 10px; /* 增加內邊距，讓輸入框更舒適 */
+}
+

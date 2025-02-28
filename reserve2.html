@@ -33,32 +33,34 @@
         <div class="section">
             <div class="section2">
                 <h3>Step2 - 菜單填寫</h3>
-                <br>
+                <br>    
             </div>
-            <form class="order-form">
-                <label for="date">日期 (需提早三天以上)</label>
-                <input type="date" id="date" required>
+            <div>
+                <label for="food1">第一道餐點</label>
                 <br>
-                <br>
+                <input type="text" id="food1" placeholder="請填寫餐點名稱">
+            </div>
 
-                <label for="time">時間</label>
-                <input type="time" id="time" required>
-                <br>
-                <br>
+            <br>
 
-                <label>取餐方式</label>
-                <div>
-                    <button class="button" type="button" id="pickup" onclick="selectDelivery('pickup')">自取</button>
-                    <button class="button" type="button" id="delivery" onclick="selectDelivery('delivery')">外送</button>
-                </div>
+            <div class="custom-number-input">
+                <label for="food1">分量：</label>
+                <input type="number" id="custom-number" min="1" max="100" step="1">
+                <span>人份</span>
+            </div>
 
-                <div>
-                    <label for="address">地址</label>
-                    <input type="text" id="address" placeholder="請填寫完整外送地址">
-                </div>
+            <br>
+
+            <div>
+                <label for="food1">特製作法</label>
                 <br>
+                <input type="text" id="special" placeholder="請提供您需要的特製作法給廚師">
+            </div>
+            
 
-                <button class="save-button" type="submit" onclick="location.href='reserve2.html'">儲存！</button>
+            <br>
+
+            <button class="save-button" type="submit" onclick="location.href='reserve2.html'">儲存！</button>
             </form>
         </div>
     </div>
@@ -118,6 +120,11 @@
                 document.getElementById('delivery').classList.add('active');
             }
         }
+
+        function setNumber(value) {
+            document.getElementById("custom-number").value = value;
+        }
+
     </script>
 </body>
 
