@@ -58,7 +58,8 @@ body {
 .user-info .settings-icon {
     width: 20px;
     height: 20px;
-    background-image: url('../imgs/settings.png'); /* 確保圖片路徑正確 */
+    background-image: url('../imgs/settings.png');
+    /* 確保圖片路徑正確 */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -87,18 +88,21 @@ body {
 
 /* 設定滾動條的樣式 */
 .main-content::-webkit-scrollbar {
-    width: 8px; /* 設定滾動條寬度 */
+    width: 8px;
+    /* 設定滾動條寬度 */
 }
 
 /* 設定滾動條的顏色 */
 .main-content::-webkit-scrollbar-thumb {
-    background-color: #f9e4ba; 
-    border-radius: 10px; /* 滾動條圓角 */
+    background-color: #f9e4ba;
+    border-radius: 10px;
+    /* 滾動條圓角 */
 }
 
 /* 設定滾動條的背景 */
 .main-content::-webkit-scrollbar-track {
-    background-color: #f1f1f1; /* 輕微灰色背景 */
+    background-color: #f1f1f1;
+    /* 輕微灰色背景 */
     border-radius: 10px;
 }
 
@@ -210,7 +214,10 @@ body {
 }
 
 .chef-img {
-    vertical-align: top;   /* 上對齊 */
-    padding-top: 6px;     /* 往下移動 */
-    padding-left: 7px;    /* 往右移動 (可自行調整數值) */
+    vertical-align: top;
+    /* 上對齊 */
+    padding-top: 6px;
+    /* 往下移動 */
+    padding-left: 7px;
+    /* 往右移動 (可自行調整數值) */
 }
