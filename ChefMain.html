@@ -7,7 +7,7 @@
     <title>訂單管理系統</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Noto Sans', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #FFE7B7;
@@ -31,7 +31,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
+            width: 103%;
             box-sizing: border-box;
         }
 
@@ -134,9 +134,9 @@
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 10px;
             text-align: center;
-            margin-top: 10px;
+            margin-top: 20px;
             width: 100%;
             font-size: 16px;
         }
@@ -156,11 +156,17 @@
             padding: 0;
             list-style-type: disc;
             margin-top: 40px;
-            margin-left: 20px;
+            margin-left: 30px;
         }
 
         .notifications li {
             margin-bottom: 10px;
+        }
+
+        .notifications a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: bold;
         }
 
         .notification-icon {
@@ -171,25 +177,33 @@
         }
 
         .orders {
-            background-color: #F9C765;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: left;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            margin-top: 15px;
+            background: rgba(255, 252, 230, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
             width: 300px;
-            margin-top: 20px;
-            /* 讓訂單和日曆間隔固定 */
         }
 
         .order-item {
             background-color: #FFFCE6;
             margin-bottom: 10px;
             border-radius: 5px;
-            box-sizing: border-box;
-            width: 100%;
             padding: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+
+        .order-item:hover {
+            background-color: #F9C765;
+            transform: scale(1.05);
+        }
+
+        .order-item a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: bold;
         }
     </style>
     <script>
@@ -236,9 +250,9 @@
             <div class="box square-box notifications">
                 <div class="notification-icon">🔔</div>
                 <ul>
-                    <li>重要事項一</li>
-                    <li>重要事項二</li>
-                    <li>重要事項三</li>
+                    <li><a href="#">重要事項一</a></li>
+                    <li><a href="#">重要事項二</a></li>
+                    <li><a href="#">重要事項三</a></li>
                 </ul>
             </div>
 
@@ -248,14 +262,9 @@
                     <div id="calendar" class="calendar"></div>
                 </div>
                 <div class="orders">
-                    <div class="order-item">訂單編號 #1001</div>
-                    <div class="order-item">訂單編號 #1002</div>
-                    <div class="order-item">訂單編號 #1003</div>
-                    <div class="order-item">訂單編號 #1003</div>
-                    <div class="order-item">訂單編號 #1003</div>
-                    <div class="order-item">訂單編號 #1003</div>
-                    <div class="order-item">訂單編號 #1003</div>
-
+                    <div class="order-item"><a href="#">訂單編號 #1001</a></div>
+                    <div class="order-item"><a href="#">訂單編號 #1002</a></div>
+                    <div class="order-item"><a href="#">訂單編號 #1003</a></div>
                 </div>
             </div>
         </div>
