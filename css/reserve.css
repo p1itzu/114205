@@ -126,33 +126,53 @@ body {
 }
 
 .content {
-    padding: 20px;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
 }
-
 .section {
-    height: 500px;
-    width: 600px;
-    background-color: #fcfcfc;
+    background-color: white;
     padding: 20px;
-    margin: 15px auto;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: left;  /* 區塊內文字左對齊 */
+    width: 400px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
-
-.section h3 {
-    font-size: 22px;
-    color: #B3811C;
-    margin-bottom: 10px;
-    padding: 0 20px;  /* 左右內距 */
+.section2 h3 {
+    background-color: #A67C00;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    border-radius: 10px;
 }
-
-.section p {
+.order-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #F4B400;
+    color: white;
+    cursor: pointer;
+    width: 100px;
     font-size: 16px;
-    color: #4b4b4b;
-    margin-bottom: 10px;
-    padding: 0 20px;  /* 與標題對齊 */
+}
+.hidden {
+    display: none;
 }
 
 html, body {
@@ -252,3 +272,54 @@ h3, p {
 .login-modal .role-button:hover {
     background-color: #f9e4ba;
 }
+
+/* 美化日期選擇框 */
+input[type="date"] {
+    font-family: 'Noto Sans HK', sans-serif; /* 設定字體 */
+    font-size: 16px; /* 調整字型大小 */
+    padding: 10px; /* 調整內邊距 */
+    border: 1px solid #ccc; /* 邊框顏色 */
+    border-radius: 8px; /* 圓角邊框 */
+    background-color: #f9f9f9; /* 背景色 */
+    transition: border-color 0.3s; /* 邊框顏色過渡效果 */
+}
+
+input[type="date"]:focus {
+    border-color: #5b9bd5; /* 當元素獲得焦點時，變更邊框顏色 */
+    outline: none; /* 去除瀏覽器默認的藍色輪廓 */
+}
+
+/* 美化時間選擇框 */
+input[type="time"] {
+    font-family: 'Noto Sans HK', sans-serif;
+    font-size: 16px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s;
+}
+
+input[type="time"]:focus {
+    border-color: #5b9bd5;
+    outline: none;
+}
+
+.button {
+    width: 80px;
+    height: 40px;
+    padding: 10px;
+    background-color: #F9C765;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    margin: 10px;
+}
+
+.button:hover {
+    background-color: #f0d090;
+}
+

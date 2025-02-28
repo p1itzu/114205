@@ -1,18 +1,83 @@
 <!DOCTYPE html>
 <html lang="zh">
-
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@100..900&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="css/reserve.css" rel="stylesheet" />
     <title>代做菜媒合平台</title>
+    <style>
+        body {
+            font-family: 'Noto Sans HK', sans-serif;
+            background-color: #FFE4B5;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #F4B400;
+            padding: 15px 30px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: brown;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+        }
+        .section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .section2 h3 {
+            background-color: #A67C00;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            border-radius: 10px;
+        }
+        .order-form label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #F4B400;
+            color: white;
+            cursor: pointer;
+            width: 100px;
+            font-size: 16px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
-
 <body>
     <div class="navbar">
         <div class="site-name">[網站名稱]</div>
@@ -22,10 +87,6 @@
             <a href="SearchChef.html">發送訂單</a>
             <a href="#">我的訂單</a>
             <a href="#">通知中心</a>
-        </div>
-        <div class="user-info">
-            <div class="username">11336012@ntub.edu.tw</div>
-            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
         </div>
     </div>
 
@@ -57,52 +118,23 @@
         </div>
     </div>
 
-
-    <!-- 設定小視窗 -->
-    <div class="settings-modal" id="settings-modal">
-        <div class="modal-content">
-            <h2>設定</h2>
-            <p>帳號</p>
-            <p>其他</p>
-            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
-        </div>
-    </div>
-
     <script>
-        function toggleSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
-        }
-
         function selectDelivery(type) {
             const pickupBtn = document.getElementById('pickup');
             const deliveryBtn = document.getElementById('delivery');
             const addressField = document.getElementById('address-field');
 
+            pickupBtn.classList.remove('active');
+            deliveryBtn.classList.remove('active');
+
             if (type === 'pickup') {
                 pickupBtn.classList.add('active');
-                deliveryBtn.classList.remove('active');
-                addressField.classList.add('hidden');
+                addressField.style.display = 'none';
             } else {
                 deliveryBtn.classList.add('active');
-                pickupBtn.classList.remove('active');
-                addressField.classList.remove('hidden');
-            }
-        }
-
-        function selectDelivery(type) {
-            // 移除所有按鈕的 active 類別
-            document.getElementById('pickup').classList.remove('active');
-            document.getElementById('delivery').classList.remove('active');
-
-            // 根據選擇的類型為相應按鈕添加 active 類別
-            if (type === 'pickup') {
-                document.getElementById('pickup').classList.add('active');
-            } else if (type === 'delivery') {
-                document.getElementById('delivery').classList.add('active');
+                addressField.style.display = 'block';
             }
         }
     </script>
 </body>
-
 </html>
