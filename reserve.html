@@ -33,26 +33,32 @@
         <div class="section">
             <div class="section2">
                 <h3>Step1 - 預訂菜單</h3>
+                <br>
             </div>
             <form class="order-form">
                 <label for="date">日期 (需提早三天以上)</label>
                 <input type="date" id="date" required>
-                
+                <br>
+                <br>
+
                 <label for="time">時間</label>
                 <input type="time" id="time" required>
-                
+                <br>
+                <br>
+
                 <label>取餐方式</label>
-                <div class="button-container">
-                    <button type="button" id="pickup" onclick="selectDelivery('pickup')">自取</button>
-                    <button type="button" id="delivery" onclick="selectDelivery('delivery')">外送</button>
+                <div>
+                    <button class = "button" type="button" id="pickup" onclick="selectDelivery('pickup')">自取</button>
+                    <button class = "button"type="button" id="delivery" onclick="selectDelivery('delivery')">外送</button>
                 </div>
-                
-                <div id="address-field" class="hidden">
+
+                <div>
                     <label for="address">地址</label>
                     <input type="text" id="address" placeholder="請填寫完整外送地址">
                 </div>
-                
-                <button type="submit">儲存！</button>
+                <br>
+
+                <button class = "save-button" type="submit">儲存！</button>
             </form>
         </div>
     </div>
