@@ -9,7 +9,7 @@
         rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="css/reserve2.css" rel="stylesheet" />
+    <link href="css/reserve3.css" rel="stylesheet" />
     <title>代做菜媒合平台</title>
 </head>
 
@@ -32,99 +32,73 @@
     <div class="content">
         <div class="section">
             <div class="section2">
-                <h3>Step2 - 菜單填寫</h3>
+                <h3>Step3 - 總菜單確認</h3>
                 <br>
             </div>
 
             <table>
                 <tr>
-                    <td>
-                        <div>
-                            <label for="food1" class="bold-text">第一道餐點</label>
-                            <br>
-                            <input type="text" id="dish-name" placeholder="請填寫餐點名稱">
-                        </div>
-
-                        <br>
-
-                        <div class="custom-number-input">
-                            <label for="food1" class="bold-text">分量：</label>
-                            <input type="number" id="custom-number" min="1" max="100" step="1">
-                            <span>人份</span>
-                        </div>
-
-                        <br>
-
-                       
-                        <div>
-                            <label for="food1" class="bold-text">需要的食材</label>
-                            <br>
-                            <input type="text" id="ingredients" placeholder="請填寫需要的食材">
-                        </div>
-
-                        <br>
-
-                        <div>
-                            <label for="food1" class="bold-text">特製作法</label>
-                            <br>
-                            <input type="text" id="special" placeholder="請提供您需要的特製作法給廚師">
-                        </div>
-
-                    </td>
-
-                    <td>
-                        <div>
-                            <label for="food1" class="bold-text">調味</label>
-                        </div>
-                        
-
-                        <div class="salinity-container">
-                            <label for="food1">鹹度：</label>
-                            <button class="salinity-button" type="submit"
-                                onclick="location.href='reserve2.html'">極淡</button>
-                            <button class="salinity-button" type="submit"
-                                onclick="location.href='reserve2.html'">清淡</button>
-                            <button class="salinity-button" type="submit"
-                                onclick="location.href='reserve2.html'">標準</button>
-                            <button class="salinity-button" type="submit"
-                                onclick="location.href='reserve2.html'">濃郁</button>  
-                        </div>
-
-                        <div class="spiciness-container">
-                            <label for="food1">辣度：</label>
-                            <button class="spiciness-button" type="submit"
-                                onclick="location.href='reserve2.html'">不辣</button>
-                            <button class="spiciness-button" type="submit"
-                                onclick="location.href='reserve2.html'">小辣</button>
-                            <button class="spiciness-button" type="submit"
-                                onclick="location.href='reserve2.html'">中辣</button>
-                            <button class="spiciness-button" type="submit"
-                                onclick="location.href='reserve2.html'">大辣</button>  
-                        </div>
-
-                        <div class="oillevel-container">
-                            <label for="food1">油度：</label>
-                            <button class="oillevel-button" type="submit"
-                                onclick="location.href='reserve2.html'">低油</button>
-                            <button class="oillevel-button" type="submit"
-                                onclick="location.href='reserve2.html'">少油</button>
-                            <button class="oillevel-button" type="submit"   
-                                onclick="location.href='reserve2.html'">標準</button>
-                        </div>
-
-                        <br>
-
-                        <div>
-                            <label for="food1" class="bold-text">客製備註</label>
-                            <br>
-                            <input type="text" id="customized" placeholder="請填寫需要的備註事項">
-                        </div>
-
+                    <div class="meal-container">
+                        <ul class="meal-list">
+                            <li>
+                                香煎奶油鱸魚
+                                <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
+                                <button class="delete-btn">刪除</button>
+                            </li>
+                            <li>
+                                蒜香白酒蛤蜊義大利麵
+                                <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
+                                <button class="delete-btn">刪除</button>
+                            </li>
+                            <li>
+                                泰式打拋豬飯
+                                <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
+                                <button class="delete-btn">刪除</button>
+                            </li>
+                            <li>
+                                麻辣鴨血臭豆腐
+                                <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
+                                <button class="delete-btn">刪除</button>
+                            </li>
+                            <li>
+                                韓式部隊鍋
+                                <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
+                                <button class="delete-btn">刪除</button>
+                            </li>
+                            <li>
+                                照燒雞腿丼飯
+                                <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
+                                <button class="delete-btn">刪除</button>
+                            </li>
+                            <li>
+                                酥炸金沙豆腐
+                                <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
+                                <button class="delete-btn">刪除</button>
+                            </li>
+                            <li>
+                                香草奶油燉飯
+                                <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
+                                <button class="delete-btn">刪除</button>
+                            </li>
+                            <li>
+                                蒙古烤肉拼盤
+                                <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
+                                <button class="delete-btn">刪除</button>
+                            </li>
+                            <li>
+                                起司瀑布漢堡
+                                <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
+                                <button class="delete-btn">刪除</button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                      
+                      
                         <br>
 
                         <button class="save-button" type="submit" onclick="location.href='reserve2.html'">菜單確認</button>
-                        <button class="next-button" type="submit" onclick="location.href='reserve2.html'">新增下一道</button>
-                        <button class="delete-button" type="submit" onclick="location.href='reserve2.html'">刪除</button>
+                        <button class="next-button" type="submit" onclick="location.href='reserve2.html'">上一步</button>
                     </td>
                 </tr>
             </table>
@@ -135,13 +109,13 @@
     <div class="progress-bar">
         <div class="step">第1步</div>
         <div class="line"></div>
-        <div class="step active">第2步</div>
+        <div class="step">第2步</div>
         <div class="line"></div>
-        <div class="step">第3步</div>
+        <div class="step active">第3步</div>
         <div class="line"></div>
         <div class="step">第4步</div>
     </div>
-
+    
 
     <!-- 設定小視窗 -->
     <div class="settings-modal" id="settings-modal">
