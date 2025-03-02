@@ -150,7 +150,8 @@ body {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
-    width: 400px;
+    width: 800px;
+    height: 500px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -311,6 +312,99 @@ input[type="text"]{
     background-color: #e3ab3b;
 }
 
+/*鹹度*/
+.salinity-button {
+    display: flex;
+    justify-content: center; /* 水平置中 */
+    align-items: center; /* 垂直置中 */
+    width: 50px;
+    height: 30px;
+    background-color: #e3ab3b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin: 10px;
+    float: right;
+}
+
+.salinity-container {
+    display: flex;
+    align-items: center; /* 讓按鈕和文字垂直對齊 */
+    gap: 0.1px; /* 控制按鈕間距 */
+}
+
+.salinity-button:hover {
+    background-color: rgb(127, 91, 14);
+    transform: translateY(-1px); /* 滑鼠移入時上升 3px */
+}
+
+/*辣度*/
+.spiciness-button {
+    display: flex;
+    justify-content: center; /* 水平置中 */
+    align-items: center; /* 垂直置中 */
+    width: 50px;
+    height: 30px;
+    background-color: #e3ab3b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin: 10px;
+    float: right;
+}
+
+.spiciness-container {
+    display: flex;
+    align-items: center; /* 讓按鈕和文字垂直對齊 */
+    gap: 0.1px; /* 控制按鈕間距 */
+}
+
+.spiciness-button:hover {
+    background-color: rgb(127, 91, 14);
+    transform: translateY(-1px); /* 滑鼠移入時上升 3px */
+}
+
+/*油度*/
+.oillevel-button {
+    display: flex;
+    justify-content: center; /* 水平置中 */
+    align-items: center; /* 垂直置中 */
+    width: 50px;
+    height: 30px;
+    background-color: #e3ab3b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin: 10px;
+    float: right;
+}
+
+.oillevel-container {
+    display: flex;
+    align-items: center; /* 讓按鈕和文字垂直對齊 */
+    gap: 0.1px; /* 控制按鈕間距 */
+}
+
+.oillevel-button:hover {
+    background-color: rgb(127, 91, 14);
+    transform: translateY(-1px); /* 滑鼠移入時上升 3px */
+}
+
+.bold-text {
+    font-weight: bold;
+}
+
+
+/*儲存按鈕*/
 .save-button {
     width: 80px;
     height: 40px;
@@ -328,6 +422,49 @@ input[type="text"]{
 
 .save-button:hover {
     background-color: #638253;
+    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
+}
+
+
+.next-button {
+    width: 100px;
+    height: 40px;
+    padding: 10px;
+    background-color: #949494;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease; /* 過渡效果 */
+    margin: 10px;
+    float: right; /* 靠右 */
+}
+
+.next-button:hover {
+    background-color: #727272;
+    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
+}
+
+.delete-button {
+    width: 80px;
+    height: 40px;
+    padding: 10px;
+    background-color: #a56666;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease; /* 過渡效果 */
+    margin: 10px;
+    float: right; /* 靠右 */
+}
+
+.delete-button:hover {
+    background-color: #844343;
     transform: translateY(-3px); /* 滑鼠移入時上升 3px */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
 }
@@ -390,9 +527,23 @@ input[type="number"] {
     margin-top: 2px;
 }
 
-#special {
-    width: 370px;  /* 設定寬度 */
+#ingredients {
+    width: 350px;  /* 設定寬度 */
     height: 50px;  /* 設定高度 */
+    font-size: 16px; /* 讓文字也變大 */
+    padding: 10px; /* 增加內邊距，讓輸入框更舒適 */
+}
+
+#special {
+    width: 350px;  /* 設定寬度 */
+    height: 120px;  /* 設定高度 */
+    font-size: 16px; /* 讓文字也變大 */
+    padding: 10px; /* 增加內邊距，讓輸入框更舒適 */
+}
+
+#customized {
+    width: 370px;  /* 設定寬度 */
+    height: 120px;  /* 設定高度 */
     font-size: 16px; /* 讓文字也變大 */
     padding: 10px; /* 增加內邊距，讓輸入框更舒適 */
 }
