@@ -94,3 +94,40 @@ cursor: pointer;
     cursor: pointer;
     border-radius: 5px;
 }
+
+.section {
+    background-color: #fcfcfc;
+    padding: 20px;
+    margin: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;  /* 區塊內文字左對齊 */
+}
+
+.section h3 {
+    font-size: 22px;
+    color: #B3811C;
+    margin-bottom: 10px;
+    padding: 0 20px;  /* 左右內距 */
+}
+
+.section p {
+    font-size: 16px;
+    color: #4b4b4b;
+    margin-bottom: 10px;
+    padding: 0 20px;  /* 與標題對齊 */
+}
+
+div.footer {
+    height: 120px;
+    line-height: 60px;
+    text-align: center;
+    letter-spacing: 2px;
+    background-color: #F9C765;
+    color: #B3811C;
+    font-weight: bold;
+}
+
+.footer br {
+    margin-bottom: 5px;  /* 讓 <br> 標籤間的間距更小 */
+}
