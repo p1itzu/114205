@@ -296,7 +296,7 @@ input[type="date"]:focus {
 }
 
 .meal-container::-webkit-scrollbar-thumb {
-    background-color: #f9e4ba; /* 滾動條顏色 */
+    background-color: #d1d1d1; /* 滾動條顏色 */
     border-radius: 10px; /* 滾動條圓角 */
 }
 
@@ -414,26 +414,6 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
 }
 
-.delete-button {
-    width: 80px;
-    height: 40px;
-    padding: 10px;
-    background-color: #a56666;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease; /* 過渡效果 */
-    margin: 10px;
-    float: right; /* 靠右 */
-}
-
-.delete-button:hover {
-    background-color: #844343;
-    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
-}
 
 .progress-bar {
     display: flex;
@@ -493,24 +473,4 @@ input[type="number"] {
     margin-top: 2px;
 }
 
-#ingredients {
-    width: 350px;  /* 設定寬度 */
-    height: 50px;  /* 設定高度 */
-    font-size: 16px; /* 讓文字也變大 */
-    padding: 10px; /* 增加內邊距，讓輸入框更舒適 */
-}
-
-#special {
-    width: 350px;  /* 設定寬度 */
-    height: 120px;  /* 設定高度 */
-    font-size: 16px; /* 讓文字也變大 */
-    padding: 10px; /* 增加內邊距，讓輸入框更舒適 */
-}
-
-#customized {
-    width: 370px;  /* 設定寬度 */
-    height: 120px;  /* 設定高度 */
-    font-size: 16px; /* 讓文字也變大 */
-    padding: 10px; /* 增加內邊距，讓輸入框更舒適 */
-}
 
