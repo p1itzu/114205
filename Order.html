@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單確認</title>
+    <style>
+        body {
+            background-color: #F3EBDD;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+
+        }
+
+        /* 導覽列樣式 */
+        .navbar {
+            background-color: #F9C765;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar .site-name {
+            font-size: 25px;
+            font-weight: bold;
+            padding-left: 20px;
+            color: #B3811C;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 15px;
+            margin: 0 auto;
+        }
+
+        .navbar a {
+            color: #B3811C;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .navbar a:hover {
+            background-color: #f9e4ba;
+            border-radius: 5px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-right: 20px;
+        }
+
+        .user-info .username {
+            font-size: 18px;
+            color: #B3811C;
+            font-weight: bold;
+        }
+
+        .user-info .settings-icon {
+            width: 20px;
+            height: 20px;
+            background-image: url('../imgs/settings.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
+        .container {
+            background-color: #F7F2E8;
+            width: 600px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            max-height: 80vh;
+            overflow-y: auto;
+            margin-top: 85px;
+            /* 避免與導覽列重疊 */
+
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .content {
+            background-color: #EDE3D1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .reject {
+            background-color: #888;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .accept {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">網站名稱</div>
+        <div class="nav-links">
+            <a href="#">首頁</a>
+            <a href="#">常見問題</a>
+            <a href="#">我的訂單</a>
+            <a href="ChefUnOrder.html">待接單訂單</a>
+            <a href="#">客服聯絡</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="title">訂單編號 #20250125059</div>
+        <div class="content">
+            <p><strong>預約日期與時間：</strong></p>
+            <p><strong>取餐方式：</strong></p>
+            <p><strong>地址：</strong></p>
+            <p><strong>聯絡人資訊：</strong></p>
+            <hr>
+            <p><strong>菜單列表：</strong></p>
+            <p>1. 番茄炒蛋 3人份</p>
+            <p>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</p>
+            <p><strong>食材：</strong></p>
+            <p><strong>做法：</strong></p>
+        </div>
+        <p style="text-align: center; margin-top: 15px; font-weight: bold;">請確認是否要接單？</p>
+        <div class="buttons">
+            <button class="reject">拒絕</button>
+            <button class="accept">接單</button>
+        </div>
+    </div>
+</body>
+
+</html>
