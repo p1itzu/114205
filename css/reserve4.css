@@ -257,7 +257,7 @@ p {
 /* 限制 meal-list 的最大高度，超出則滾動 */
 .meal-container {
     width: 480px; /* 設定區塊寬度 */
-    max-height: 180px; /* 限制最大高度 */
+    max-height: 160px; /* 限制最大高度 */
     overflow-y: auto; /* 內容超過時出現垂直滾動條 */
     padding: 10px;
     border-radius: 10px;
