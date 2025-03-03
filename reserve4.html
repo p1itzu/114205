@@ -91,12 +91,12 @@
                     </div>
                     <br>
                     <label class="order-time"><strong>系統預估價格:</strong> XXXX</label>
-                      
-                      
-                        <br>
 
-                        <button class="save-button" type="submit" onclick="location.href='reserve4.html'">確認送出</button>
-                        <button class="next-button" type="submit" onclick="location.href='reserve2.html'">上一步</button>
+
+                    <br>
+
+                    <button class="save-button" type="button" onclick="submitOrder()">確認送出</button>
+                    <button class="next-button" type="submit" onclick="location.href='reserve2.html'">上一步</button>
                     </td>
                 </tr>
             </table>
@@ -113,7 +113,7 @@
         <div class="line"></div>
         <div class="step active">第4步</div>
     </div>
-    
+
 
     <!-- 設定小視窗 -->
     <div class="settings-modal" id="settings-modal">
@@ -125,8 +125,10 @@
         </div>
     </div>
 
+    <!-- 引入 SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        
+
         function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
@@ -165,7 +167,19 @@
             document.getElementById("custom-number").value = value;
         }
 
-        
+        function submitOrder() {
+            Swal.fire({
+                title: "訂單送出成功！",
+                icon: "success",
+                confirmButtonText: "立即前往 我的訂單",
+                customClass: {
+                    confirmButton: "swal-custom-button"
+                }
+            }).then(() => {
+                window.location.href = "my-order.html"; // 只有「確認送出」才跳轉
+            });
+        }
+
     </script>
 </body>
 
