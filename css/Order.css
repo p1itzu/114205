@@ -118,6 +118,23 @@ body {
     border-radius: 10px;
 }
 
+.back-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #B3811C;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background-color: #8a6314;
+}
+
 /*.content {
     background-color: #EDE3D1;
     padding: 15px;
