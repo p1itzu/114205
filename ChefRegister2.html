@@ -4,79 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>廚師基本資料填寫1</title>
-    <style>
-        body {
-            display: flex;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        .left-section {
-            width: 35%;
-            background-color: #F9C765;
-        }
-
-        .right-section {
-            width: 75%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #fdf7ec;
-
-        }
-
-        .form-container {
-            width: 80%;
-            max-width: 400px;
-            text-align: left;
-        }
-
-        input[type="text"],
-        input[type="file"],
-        button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #F9C765;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            width: 420px;
-        }
-
-
-        /* 讓 checkbox 兩欄排列 */
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 10px 0;
-        }
-
-        /* 讓 checkbox 和 label 保持在同一行 */
-        .checkbox-group div {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .main {
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        h2 {
-            text-align: center;
-            font-size: 30px;
-        }
-    </style>
+    <title>廚師註冊基本資料填寫</title>
+    <link rel="stylesheet" href="css/ChefRegister2.css">
 </head>
 
 <body>
@@ -94,6 +23,10 @@
                 <div><input type="checkbox" id="taichung" value="台中市"> <label for="taichung">台中市</label></div>
                 <div><input type="checkbox" id="tainan" value="台南市"> <label for="tainan">台南市</label></div>
                 <div><input type="checkbox" id="kaohsiung" value="高雄市"> <label for="kaohsiung">高雄市</label></div>
+                <div><input type="checkbox" id="kaohsiung" value="基隆市"> <label for="kaohsiung">基隆市</label></div>
+                <div><input type="checkbox" id="kaohsiung" value="新竹市"> <label for="kaohsiung">新竹市</label></div>
+                <div><input type="checkbox" id="kaohsiung" value="嘉義市"> <label for="kaohsiung">嘉義市</label></div>
+                <div><input type="checkbox" id="kaohsiung" value="宜蘭縣"> <label for="kaohsiung">宜蘭縣</label></div>
             </div>
 
             <!-- 廚師證照登記 上傳檔案 -->
@@ -105,6 +38,11 @@
             <div class="checkbox-group">
                 <div><input type="checkbox" id="chinese" value="中式料理"> <label for="chinese">中式料理</label></div>
                 <div><input type="checkbox" id="western" value="西式料理"> <label for="western">西式料理</label></div>
+                <div><input type="checkbox" id="western" value="日式料理"> <label for="western">日式料理</label></div>
+                <div><input type="checkbox" id="western" value="韓式料理"> <label for="western">韓式料理</label></div>
+                <div><input type="checkbox" id="western" value="東南亞料理"> <label for="western">東南亞料理</label></div>
+                <div><input type="checkbox" id="western" value="南亞料理"> <label for="western">南亞料理</label></div>
+
             </div>
 
             <!-- 廚房地址 -->

@@ -1,0 +1,163 @@
+body {
+    background-color: #F3EBDD;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+
+}
+
+/* 導覽列樣式 */
+.navbar {
+    background-color: #F9C765;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.navbar .site-name {
+    font-size: 25px;
+    font-weight: bold;
+    padding-left: 20px;
+    color: #B3811C;
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 15px;
+    margin: 0 auto;
+}
+
+.navbar a {
+    color: #B3811C;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    background-color: #f9e4ba;
+    border-radius: 5px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
+}
+
+.user-info .username {
+    font-size: 18px;
+    color: #B3811C;
+    font-weight: bold;
+}
+
+.user-info .settings-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url('../imgs/settings.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.container {
+    background-color: #F7F2E8;
+    width: 600px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin-top: 85px;
+    /* 避免與導覽列重疊 */
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 120px);
+    /* 讓 container 根據螢幕高度變化 */
+    max-height: 80vh;
+    /* 避免過長 */
+}
+
+.content {
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    flex-grow: 1;
+    overflow-y: auto;
+
+    background-color: #fff3e0;
+    /* 背景色 */
+}
+
+/* 自訂滾動條樣式 */
+.content::-webkit-scrollbar {
+    width: 8px;
+    /* 設定滾動條寬度 */
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: #d1d1d1;
+    /* 滾動條顏色 */
+    border-radius: 10px;
+    /* 滾動條圓角 */
+}
+
+.content::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+    /* 滾動條背景 */
+    border-radius: 10px;
+}
+
+/*.content {
+    background-color: #EDE3D1;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    flex-grow: 1;
+     讓 content 佔滿可用空間 
+    overflow-y: auto;
+     內部滾動 
+}*/
+
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
+}
+
+
+
+.buttons {
+    display: flex;
+    justify-content: center;
+
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.reject {
+    background-color: #888;
+    color: white;
+    margin-right: 10px;
+}
+
+.accept {
+    background-color: #4CAF50;
+    color: white;
+}
