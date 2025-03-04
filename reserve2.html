@@ -127,7 +127,7 @@
                         <div class="button-container">
                             <button class="back" type="submit" onclick="goToPreviousDish()">⭠</button>
                             <button class="next" type="submit" onclick="goToNextDish()">⭢</button>
-                            <button class="delete-button" type="submit" onclick="location.href='reserve2.html'">刪除</button>
+                            <button class="delete-button" type="submit" onclick="deleteDish()">刪除</button>
                             <button class="next-button" type="button" onclick="updateDish()">新增下一道</button>
                             <button class="save-button" type="submit" onclick="location.href='reserve3.html'">菜單確認</button>
                             
@@ -219,6 +219,17 @@
             } else {
                 alert("已經是第一道菜");
             }
+        }
+
+        function deleteDish() {
+            Swal.fire({
+                title: "確定刪除?",
+                icon: "warning",
+                confirmButtonText: "確定",
+                customClass: {
+                    confirmButton: "swal-custom-button"
+                }
+            });
         }
     </script>
     

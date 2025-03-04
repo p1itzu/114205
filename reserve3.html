@@ -10,6 +10,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/reserve3.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <title>代做菜媒合平台</title>
 </head>
 
@@ -43,62 +45,62 @@
                             <li>
                                 香煎奶油鱸魚
                                 <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
-                                <button class="delete-btn">刪除</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
                             </li>
                             <li>
                                 蒜香白酒蛤蜊義大利麵
                                 <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
-                                <button class="delete-btn">刪除</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
                             </li>
                             <li>
                                 泰式打拋豬飯
                                 <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
-                                <button class="delete-btn">刪除</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
                             </li>
                             <li>
                                 麻辣鴨血臭豆腐
                                 <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
-                                <button class="delete-btn">刪除</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
                             </li>
                             <li>
                                 韓式部隊鍋
                                 <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
-                                <button class="delete-btn">刪除</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
                             </li>
                             <li>
                                 照燒雞腿丼飯
                                 <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
-                                <button class="delete-btn">刪除</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
                             </li>
                             <li>
                                 酥炸金沙豆腐
                                 <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
-                                <button class="delete-btn">刪除</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
                             </li>
                             <li>
                                 香草奶油燉飯
                                 <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
-                                <button class="delete-btn">刪除</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
                             </li>
                             <li>
                                 蒙古烤肉拼盤
                                 <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
-                                <button class="delete-btn">刪除</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
                             </li>
                             <li>
                                 起司瀑布漢堡
                                 <button class="edit-btn" onclick="location.href='reserve2.html'">修改</button>
-                                <button class="delete-btn">刪除</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
                             </li>
                         </ul>
                     </div>
-                    
-                      
-                      
-                        <br>
 
-                        <button class="save-button" type="submit" onclick="location.href='reserve4.html'">確認</button>
-                        <button class="next-button" type="submit" onclick="location.href='reserve2.html'">上一步</button>
+
+
+                    <br>
+
+                    <button class="save-button" type="submit" onclick="location.href='reserve4.html'">確認</button>
+                    <button class="next-button" type="submit" onclick="location.href='reserve2.html'">上一步</button>
                     </td>
                 </tr>
             </table>
@@ -115,7 +117,7 @@
         <div class="line"></div>
         <div class="step">第4步</div>
     </div>
-    
+
 
     <!-- 設定小視窗 -->
     <div class="settings-modal" id="settings-modal">
@@ -128,7 +130,7 @@
     </div>
 
     <script>
-        
+
         function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
@@ -166,8 +168,23 @@
         function setNumber(value) {
             document.getElementById("custom-number").value = value;
         }
+        function deleteDish() {
+            Swal.fire({
+                title: "確定刪除?",
+                icon: "warning",  // ⚠️ 驚嘆號圖示
+                showCancelButton: true,  // 顯示取消按鈕
+                confirmButtonText: "確定",
+                cancelButtonText: "取消",  // 取消按鈕的文字
+                customClass: {
+                    confirmButton: "swal-custom-button",
+                    cancelButton: "swal-custom-cancel-button"  // 可自訂取消按鈕的樣式
+                }
+            });
+        }
 
-        
+
+
+
     </script>
 </body>
 
