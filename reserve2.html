@@ -129,11 +129,12 @@
                             <button class="next" type="submit" onclick="goToNextDish()">⭢</button>
                             <button class="delete-button" type="submit" onclick="deleteDish()">刪除</button>
                             <button class="next-button" type="button" onclick="updateDish()">新增下一道</button>
-                            <button class="save-button" type="submit" onclick="location.href='reserve3.html'">菜單確認</button>
-                            
+                            <button class="save-button" type="submit"
+                                onclick="location.href='reserve3.html'">菜單確認</button>
+
                         </div>
-                        
-                        
+
+
                     </td>
                 </tr>
             </table>
@@ -166,17 +167,17 @@
         let dishCount = 1; // 當前的菜品數量
         let currentDishIndex = 1; // 目前顯示的菜品
         let dishData = {}; // 存儲每道菜的內容
-    
+
         function updateDish() {
             // 儲存目前輸入的內容
             saveCurrentDishData();
-    
+
             dishCount++; // 增加菜品數量
             currentDishIndex = dishCount; // 切換到最新的菜品
-    
+
             renderDish(); // 更新畫面
         }
-    
+
         function saveCurrentDishData() {
             // 抓取目前的輸入值並存入 dishData
             dishData[currentDishIndex] = {
@@ -187,11 +188,11 @@
                 customized: document.getElementById("customized").value
             };
         }
-    
+
         function renderDish() {
             // 更新標題
             document.querySelector(".bold-text").textContent = `第 ${currentDishIndex} 道餐點`;
-    
+
             // 讀取 dishData，如果沒有該道菜的資料則清空
             const data = dishData[currentDishIndex] || {};
             document.getElementById("dish-name").value = data.name || "";
@@ -200,7 +201,7 @@
             document.getElementById("special").value = data.special || "";
             document.getElementById("customized").value = data.customized || "";
         }
-    
+
         function goToNextDish() {
             if (currentDishIndex < dishCount) {
                 saveCurrentDishData();
@@ -210,7 +211,7 @@
                 alert("已經是最後一道菜");
             }
         }
-    
+
         function goToPreviousDish() {
             if (currentDishIndex > 1) {
                 saveCurrentDishData();
@@ -225,16 +226,20 @@
             Swal.fire({
                 title: "確定刪除?",
                 icon: "warning",
+                showCancelButton: true,  // **加入這行，顯示取消按鈕**
+                cancelButtonText: "取消",
                 confirmButtonText: "確定",
                 customClass: {
-                    confirmButton: "swal-custom-button"
+                    confirmButton: "swal-custom-button",
+                    cancelButton: "swal-custom-cancel-button"
                 }
             });
         }
+
     </script>
-    
-    
-    
+
+
+
 </body>
 
 </html>
