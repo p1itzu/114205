@@ -403,6 +403,15 @@ input[type="text"]{
     font-weight: bold;
 }
 
+.button-container {
+    display: flex;
+    align-items: center; /* 垂直置中 */
+    justify-content: flex-start; /* 按鈕從左開始排列 */
+    gap: .1px; /* 設定按鈕之間的間距 */
+}
+
+
+
 
 /*儲存按鈕*/
 .save-button {
@@ -449,7 +458,7 @@ input[type="text"]{
 }
 
 .delete-button {
-    width: 80px;
+    width: 60px;
     height: 40px;
     padding: 10px;
     background-color: #a56666;
@@ -465,6 +474,48 @@ input[type="text"]{
 
 .delete-button:hover {
     background-color: #844343;
+    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
+}
+
+.back {
+    width: 30px;
+    height: 40px;
+    padding: 10px;
+    background-color: #6692a5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease; /* 過渡效果 */
+    margin: 10px;
+    float: right; /* 靠右 */
+}
+
+.back:hover {
+    background-color: #497080;
+    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
+}
+
+.next {
+    width: 30px;
+    height: 40px;
+    padding: 10px;
+    background-color: #6692a5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease; /* 過渡效果 */
+    margin: 10px;
+    float: right; /* 靠右 */
+}
+
+.next:hover {
+    background-color: #497080;
     transform: translateY(-3px); /* 滑鼠移入時上升 3px */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
 }
