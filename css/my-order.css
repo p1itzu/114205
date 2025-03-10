@@ -3,6 +3,12 @@ body {
     background-color: #FFE7B7;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
+}
+
+/* 隱藏捲軸但保持滾動功能 */
+::-webkit-scrollbar {
+    display: none;
 }
 
 .navbar {
@@ -11,6 +17,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .navbar .site-name {
@@ -82,6 +93,7 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     padding: 20px;
+    margin-top: 180px;
 }
 
 .order-card {
@@ -89,6 +101,11 @@ body {
     padding: 5px 20px 20px 20px;
     border-radius: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
 }
 
 .order-btn {
@@ -100,7 +117,7 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.2s ease;
+    /*transition: background-color 0.2s ease;*/
 
 }
 
@@ -114,4 +131,123 @@ body {
     padding: 10px 40px;
     font-size: 23px;
     font-weight: 700;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background-color: #FFE7B7;
+    z-index: 999;
+}
+
+.filter-buttons {
+    margin: 2px 0;
+    text-align: left;
+    padding-left: 20px;
+    position: fixed;
+    top: 120px;
+    left: 0;
+    right: 0;
+    background-color: #FFE7B7;
+    z-index: 998;
+}
+
+.filter-buttons button {
+    padding: 5px 10px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    background-color: #ffffff;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #B3811C;
+   /* transition: all 0.3s ease-in-out;*/
+}
+
+.filter-buttons button:hover {
+    background-color: #B3811C;
+    color: #ffffff;
+}
+
+.filter-buttons button.active {
+    background-color: #B3811C;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.order {
+    display: none;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+.order.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 設定視窗 */
+.settings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+.settings-modal .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    padding-left: 40px;
+    line-height: 1.4;
+}
+.settings-modal .close-btn {
+    background-color: #F9C765;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.section {
+    background-color: #fcfcfc;
+    padding: 20px;
+    margin: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;  /* 區塊內文字左對齊 */
+}
+
+.section h3 {
+    font-size: 22px;
+    color: #B3811C;
+    margin-bottom: 10px;
+    padding: 0 20px;  /* 左右內距 */
+}
+
+.section p {
+    font-size: 16px;
+    color: #4b4b4b;
+    margin-bottom: 10px;
+    padding: 0 20px;  /* 與標題對齊 */
+}
+
+div.footer {
+    height: 120px;
+    line-height: 60px;
+    text-align: center;
+    letter-spacing: 2px;
+    background-color: #F9C765;
+    color: #B3811C;
+    font-weight: bold;
 }

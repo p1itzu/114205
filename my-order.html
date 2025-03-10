@@ -17,11 +17,12 @@
     <div class="navbar">
         <div class="site-name">[網站名稱]</div>
         <div class="nav-links">
-            <a href="AfterLogin.html">首頁</a>
+            <a href="#">首頁</a>
             <a href="#">料理方式建議</a>
             <a href="SearchChef.html">發送訂單</a>
             <a href="#">我的訂單</a>
             <a href="#">通知中心</a>
+
         </div>
         <div class="user-info">
             <div class="username">11336012@ntub.edu.tw</div>
@@ -30,9 +31,15 @@
     </div>
     <br>
     <div class="maintext">所有訂單</div>
+    <div class="filter-buttons">
+        <button class="filter-btn active" data-status="all">全部</button>
+        <button class="filter-btn" data-status="ongoing">進行中</button>
+        <button class="filter-btn" data-status="completed">已完成</button>
+        <button class="filter-btn" data-status="cancelled">已取消</button>
+    </div>
     <div class="container">
-        <!-- 訂單卡片 -->
-        <div class="order-card">
+        <!-- 全部訂單卡片 -->
+        <div class="order-card" data-status="all">
             <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
             <p>
                 菜單列表：
@@ -47,172 +54,147 @@
             </p>
             <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
+        <!-- 進行中訂單卡片 -->
+        <div class="order-card" data-status="ongoing">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126002</p>
             <p>
                 菜單列表：
                 <br>
-                1.XXXXXX
+                1.紅燒肉
                 <br>
-                2.XXXXXX
+                2.清炒時蔬
                 <br>
-                3.XXXXXX
+                3.糖醋魚
                 <br>
-                4.XXXXXX
+                4.蛋花湯
             </p>
             <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
+        <div class="order-card" data-status="ongoing">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126003</p>
             <p>
                 菜單列表：
                 <br>
-                1.XXXXXX
+                1.麻婆豆腐
                 <br>
-                2.XXXXXX
+                2.蒜蓉炒青菜
                 <br>
-                3.XXXXXX
+                3.宮保雞丁
                 <br>
-                4.XXXXXX
+                4.紫菜蛋花湯
             </p>
             <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
+        <!-- 已完成訂單卡片 -->
+        <div class="order-card" data-status="completed">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126004</p>
             <p>
                 菜單列表：
                 <br>
-                1.XXXXXX
+                1.三杯雞
                 <br>
-                2.XXXXXX
+                2.炒空心菜
                 <br>
-                3.XXXXXX
+                3.清蒸魚
                 <br>
-                4.XXXXXX
+                4.玉米濃湯
             </p>
             <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
+        <div class="order-card" data-status="completed">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126005</p>
             <p>
                 菜單列表：
                 <br>
-                1.XXXXXX
+                1.回鍋肉
                 <br>
-                2.XXXXXX
+                2.炒高麗菜
                 <br>
-                3.XXXXXX
+                3.糖醋排骨
                 <br>
-                4.XXXXXX
+                4.番茄蛋湯
             </p>
             <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
+        <!-- 已取消訂單卡片 -->
+        <div class="order-card" data-status="cancelled">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126006</p>
             <p>
                 菜單列表：
                 <br>
-                1.XXXXXX
+                1.水煮魚
                 <br>
-                2.XXXXXX
+                2.炒豆芽
                 <br>
-                3.XXXXXX
+                3.紅燒茄子
                 <br>
-                4.XXXXXX
+                4.酸辣湯
             </p>
             <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
+        <div class="order-card" data-status="cancelled">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126007</p>
             <p>
                 菜單列表：
                 <br>
-                1.XXXXXX
+                1.蔥爆牛肉
                 <br>
-                2.XXXXXX
+                2.炒青椒
                 <br>
-                3.XXXXXX
+                3.糖醋里肌
                 <br>
-                4.XXXXXX
+                4.海帶湯
             </p>
             <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
-            <p>
-                菜單列表：
-                <br>
-                1.XXXXXX
-                <br>
-                2.XXXXXX
-                <br>
-                3.XXXXXX
-                <br>
-                4.XXXXXX
-            </p>
-            <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
-        </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
-            <p>
-                菜單列表：
-                <br>
-                1.XXXXXX
-                <br>
-                2.XXXXXX
-                <br>
-                3.XXXXXX
-                <br>
-                4.XXXXXX
-            </p>
-            <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
-        </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
-            <p>
-                菜單列表：
-                <br>
-                1.XXXXXX
-                <br>
-                2.XXXXXX
-                <br>
-                3.XXXXXX
-                <br>
-                4.XXXXXX
-            </p>
-            <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
-        </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
-            <p>
-                菜單列表：
-                <br>
-                1.XXXXXX
-                <br>
-                2.XXXXXX
-                <br>
-                3.XXXXXX
-                <br>
-                4.XXXXXX
-            </p>
-            <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
-        </div>
-        <div class="order-card">
-            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
-            <p>
-                菜單列表：
-                <br>
-                1.XXXXXX
-                <br>
-                2.XXXXXX
-                <br>
-                3.XXXXXX
-                <br>
-                4.XXXXXX
-            </p>
-            <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
+        <!-- 設定小視窗 -->
+        <div class="settings-modal" id="settings-modal">
+            <div class="modal-content">
+                <h2>設定</h2>
+                <p>帳號</p>
+                <p>其他</p>
+
+                <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+            </div>
         </div>
     </div>
+    <script>
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+            }
+        }
+
+        // 新增按鈕切換功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const orderCards = document.querySelectorAll('.order-card');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按鈕的 active 類別
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // 為被點擊的按鈕添加 active 類別
+                    this.classList.add('active');
+
+                    // 獲取選中的狀態
+                    const selectedStatus = this.getAttribute('data-status');
+
+                    // 顯示/隱藏對應的卡片
+                    orderCards.forEach(card => {
+                        if (selectedStatus === 'all' || card.getAttribute('data-status') === selectedStatus) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
