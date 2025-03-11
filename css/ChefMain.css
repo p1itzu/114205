@@ -221,3 +221,49 @@ body {
     color: inherit;
     font-weight: bold;
 }
+
+.profile-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    position: relative;
+    margin-left: 20px;
+}
+
+.profile-text {
+    flex: 1;
+    text-align: left;
+    font-size: 18px;
+}
+
+.profile-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.profile-image img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #F9C765;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 250px;
+}
+
+button:hover {
+    background-color: #f9a825;
+}
+
+strong {
+    font-size: 20px;
+}
