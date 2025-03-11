@@ -25,7 +25,15 @@
             }
             document.getElementById("calendar").innerHTML = calendarHTML;
         }
-        window.onload = generateCalendar;
+        function editProfile() {
+            let name = prompt("請輸入您的姓名", document.getElementById("chef-name").innerText);
+            let style = prompt("請輸入您的擅長料理方式", document.getElementById("chef-style").innerText);
+            let specialty = prompt("請輸入您的擅長菜色", document.getElementById("chef-specialty").innerText);
+
+            if (name) document.getElementById("chef-name").innerText = name;
+            if (style) document.getElementById("chef-style").innerText = style;
+            if (specialty) document.getElementById("chef-specialty").innerText = specialty;
+        }
     </script>
 </head>
 
@@ -48,13 +56,26 @@
         </div>
 
         <div class="content">
-            <div class="box profile">我的簡介</div>
+            <div class="box profile">
+                <div class="profile-content">
+                    <div class="profile-text">
+                        <h2 id="chef-name">伍慕君</h2>
+                        <p><strong>擅長料理方式：中式料理</strong> </p>
+                        <p><strong>擅長菜色：</strong> <span id="chef-specialty">紅燒牛肉麵</span></p>
+                        <button onclick="editProfile()">編輯</button>
+                    </div>
+                    <div class="profile-image">
+                        <img id="chef-photo" src="imgs/chef.png" alt="廚師照片">
+                    </div>
+                </div>
+            </div>
+
             <div class="box square-box notifications">
                 <div class="notification-icon">🔔</div>
                 <ul>
-                    <li><a href="#">重要事項一</a></li>
-                    <li><a href="#">重要事項二</a></li>
-                    <li><a href="#">重要事項三</a></li>
+                    <li><a href="#">#20250125066的訂單顧客回覆</a></li>
+                    <li><a href="#">#20250125066的議價失敗</a></li>
+                    <li><a href="#">#20250125066的議價成功</a></li>
                 </ul>
             </div>
 
