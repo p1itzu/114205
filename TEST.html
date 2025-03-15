@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單詳情</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8e1a3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .order-container {
+            background: white;
+            border-radius: 16px;
+            width: 600px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .status-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .status-bar button {
+            flex: 1;
+            background: #eee;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .status-bar .active {
+            background: #d9a441;
+            color: white;
+        }
+        .order-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .order-info p {
+            margin: 5px 0;
+        }
+        .price-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff5db;
+            border-radius: 8px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .button-group button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .accept-btn {
+            background: #4caf50;
+            color: white;
+        }
+        .reject-btn {
+            background: #d9534f;
+            color: white;
+        }
+        .comment-box {
+            margin-top: 10px;
+        }
+        .comment-box textarea {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="order-container">
+        <h2>訂單編號 #20250125059</h2>
+        <div class="status-bar">
+            <button>等待回應</button>
+            <button class="active">議價中</button>
+            <button>已接單</button>
+            <button>製作中</button>
+            <button>製作完成</button>
+            <button>交付完成</button>
+        </div>
+        <div class="order-info">
+            <p><strong>預約時間：</strong></p>
+            <p><strong>取餐方式：</strong></p>
+            <p><strong>聯絡人資訊：</strong></p>
+        </div>
+        <div class="price-box">
+            <p><strong>廚師第1次定價：</strong>500</p>
+            <div class="button-group">
+                <button class="accept-btn">同意</button>
+                <button class="reject-btn">再議價</button>
+            </div>
+            <div class="comment-box">
+                <textarea placeholder="填寫需求或理由，讓廚師知道"></textarea>
+            </div>
+            <button style="width: 100%; background: #f0c14b; padding: 10px; border: none; border-radius: 8px; cursor: pointer;">送出</button>
+        </div>
+    </div>
+</body>
+</html>
