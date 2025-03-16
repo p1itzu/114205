@@ -151,7 +151,7 @@ body {
     padding: 20px;
     border-radius: 10px;
     width: 800px;
-    height: auto;
+    height: 450px;
     min-height: 500px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -456,7 +456,7 @@ input[type="text"]:not(.price-input) {
     box-sizing: border-box;
 }
 
-.extra-left {
+.extra-right {
     flex: 2;
     background-color: #fff;
     border-radius: 10px;
@@ -465,14 +465,19 @@ input[type="text"]:not(.price-input) {
     box-sizing: border-box;
 }
 
-.extra-right {
-    background-color: #FFF9EC;
+.extra-left {
+    background-color: #f1efe9;
     border-radius: 10px;
     padding: 20px;
-    height: auto;
-    width: 300px;  /* 設定固定寬度 */
+    height: 112px;
+    width: 370px;  /* 設定固定寬度 */
     flex-shrink: 0;  /* 避免被縮小 */
+    margin: 0;  /* 去除任何邊距 */
+    position: relative;  /* 使用相對定位 */
+    left: -10px;  /* 向左偏移 */
 }
+
+
 
 
 .price-negotiation h4 {
@@ -723,4 +728,28 @@ input[type="text"]:not(.text-input) {
     font-size: 16px; /* 讓字體適中 */
     padding: 10px 0; /* 增加上下間距 */
     background-color: #B3811C;
+}
+
+.chef-img {
+    width: 100px;  /* 設定寬度為 100px */
+    height: 100px; /* 設定高度為 100px */
+    object-fit: cover; /* 使圖片裁切以適應指定的寬高 */
+}
+
+.chef-container {
+    display: flex;
+    align-items: center; /* 讓圖片和文字垂直居中對齊 */
+    color: #686666;
+    margin-left: 15px;  /* 向右偏移 */
+}
+
+
+.chef-img {
+    width: 100px;  /* 調整圖片的寬度 */
+    height: auto; /* 保持比例 */
+    margin-right: 15px;  /* 圖片與文字之間的間距 */
+}
+
+.chef-info h3, .chef-info p {
+    margin: 0;  /* 去掉默認的上下邊距 */
 }
