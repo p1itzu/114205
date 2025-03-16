@@ -508,10 +508,19 @@ input[type="text"]:not(.price-input) {
     color: white !important;
 }
 
+.btn-agree:hover {
+    background-color: #555555 !important; /* 懸停時顏色變深 */
+}
+
 .btn-negotiate {
     background-color: #84A176 !important;
     color: white !important;
 }
+
+.btn-negotiate:hover {
+    background-color: #6a8d55 !important; /* 懸停時顏色變深 */
+}
+
 
 .communication-area {
     margin-top: 12px;
@@ -616,10 +625,13 @@ input[type="text"]:not(.text-input) {
     margin-top: 8px !important;
     min-width: 50px !important;
     width: auto !important;
+    transition: all 0.3s ease; /* 過渡效果 */
 }
 
 .submit-btn:hover {
-    background-color: #e3ab3b !important;
+    background-color: #e6a117 !important;
+    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
 }
 
 .note {
@@ -627,4 +639,12 @@ input[type="text"]:not(.text-input) {
     color: #999;
     font-size: 12px;
     margin-top: 40px !important;
+}
+
+.extra-left {
+    margin-left: -20px; /* 向左移動，根據需求調整數值 */
+}
+
+.price-negotiation {
+    margin-left: 0; /* 保證內部區域的內容不受影響 */
 }

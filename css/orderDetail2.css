@@ -640,7 +640,7 @@ input[type="text"]:not(.text-input) {
     border-radius: 10px;
     height: 70px;
     background-color: transparent;
-    border: 4px solid #EDE7DA;
+    border: 3px solid #EDE7DA;
     color: #cec3b4;
     font-weight: bold;
     margin-bottom: 20px;
