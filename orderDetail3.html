@@ -10,6 +10,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/orderDetail3.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
     <title>代做菜媒合平台</title>
 </head>
 
@@ -85,10 +87,10 @@
                         </div>
                         <input type="text" placeholder="您的寶貴意見..." class="text-input">
                         <!-- 送出按鈕 -->
-                        <button class="btn-submit">送出</button>
+                        <button class="btn-submit" type="button" onclick="submitOrder()">送出</button>
                     </div>
                 </div>
-                
+
 
                 <div class="extra-right">
                     <p>價錢明細:</p>
@@ -167,6 +169,18 @@
                 } else {
                     star.classList.remove('selected'); // 移除未選中的星星顏色
                 }
+            });
+        }
+
+        function submitOrder() {
+            Swal.fire({
+                title: "您的訂單已結束，感謝您的支持",
+                icon: "success",
+                customClass: {
+                    confirmButton: "swal-custom-button"
+                }
+            }).then(() => {
+                window.location.href = "my-order.html"; // 只有「確認送出」才跳轉
             });
         }
 

@@ -717,3 +717,10 @@ input[type="text"]:not(.text-input) {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
 }
 
+/*彈跳視窗的按鈕*/
+.swal-custom-button {
+    width: 200px !important; /* 設定按鈕寬度 */
+    font-size: 16px; /* 讓字體適中 */
+    padding: 10px 0; /* 增加上下間距 */
+    background-color: #B3811C;
+}
