@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
     <title>訂單確認</title>
     <link rel="stylesheet" href="css/Order.css">
     <style>
@@ -71,12 +73,24 @@
         <p style="text-align: center; margin-top: 15px; font-weight: bold;">請確認是否要接單？</p>
         <div class="buttons">
             <button class="reject">拒絕</button>
-            <button class="accept">接單</button>
+            <button class="accept" type="button" onclick="acceptOrder()">接單</button>
         </div>
     </div>
     <script>
         function goBack() {
             window.history.back();
+        }
+        function acceptOrder() {
+            Swal.fire({
+                title: "接單成功！",
+                icon: "success",
+                confirmButtonText: "立即前往估價",
+                customClass: {
+                    confirmButton: "swal-custom-button"
+                }
+            }).then(() => {
+                window.location.href = "my-order.html"; // 只有「確認送出」才跳轉
+            });
         }
     </script>
 </body>
