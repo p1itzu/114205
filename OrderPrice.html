@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單畫面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f3e9;
+        }
+
+        .container {
+            width: 600px;
+            background: #fdf8eb;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            margin: 50px auto;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        .info-box {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .info-box span:first-child {
+            flex: 0 0 auto;
+            margin-right: 5px;
+        }
+
+        .info-box span:last-child {
+            flex: 1;
+        }
+
+        .order-list {
+            background: #f3ede3;
+            padding: 10px;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .item {
+            margin-bottom: 10px;
+        }
+
+        .price-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .input-box {
+            width: 100px;
+            height: 25px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .confirm-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+
+        .confirm-box {
+            text-align: right;
+        }
+
+        .confirm-box button {
+            background: #f5c16c;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .confirm-box button:hover {
+            background: #e5a85c;
+        }
+
+        .remark-input {
+            width: 200px;
+            height: 80px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .navbar {
+            background-color: #F9C765;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar .site-name {
+            font-size: 25px;
+            font-weight: bold;
+            padding-left: 20px;
+            color: #B3811C;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 15px;
+            margin: 0 auto;
+        }
+
+        .navbar a {
+            color: #B3811C;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .navbar a:hover {
+            background-color: #f9e4ba;
+            border-radius: 5px;
+        }
+
+        /* 使用者資訊區 */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-right: 20px;
+        }
+
+        .user-info .username {
+            font-size: 18px;
+            color: #B3811C;
+            font-weight: bold;
+        }
+
+        .user-info .settings-icon {
+            width: 20px;
+            height: 20px;
+            background-image: url('../imgs/settings.png');
+            /* 確保圖片路徑正確 */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="ChefAfterLogin.html">首頁</a>
+            <a href="ChefMain.html">我的頁面</a>
+            <a href="ChefUnOrder.html">待接單訂單</a>
+            <a href="#">我的訂單</a>
+            <a href="#">客服聯絡</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+    <div class="container">
+
+
+        <h2>訂單編號 #20250125059</h2>
+        <div class="info-box">
+            <span>預約時間：</span> <span>2025/03/18 12:30</span>
+        </div>
+        <div class="info-box">
+            <span>地址：</span> <span>台北市中山區</span>
+        </div>
+        <div class="info-box">
+            <span>取餐方式：</span> <span>外帶</span>
+        </div>
+        <div class="info-box">
+            <span>聯絡人資訊：</span> <span>王小明 0912345678</span>
+        </div>
+
+        <h3>菜單列表：</h3>
+        <div class="order-list">
+            <div class="item">
+                <p>1. 番茄炒蛋 3人份</p>
+                <p>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</p>
+                <div class="price-box">
+                    <span>第一道價格</span>
+                    <input type="text" class="input-box" placeholder="請輸入">
+                </div>
+                <div class="price-box">
+                    <span>系統評估：200</span>
+                </div>
+            </div>
+            <div class="item">
+                <p>2. 番茄炒蛋 3人份</p>
+                <p>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</p>
+                <div class="price-box">
+                    <span>第二道價格</span>
+                    <input type="text" class="input-box" placeholder="請輸入">
+                </div>
+                <div class="price-box">
+                    <span>系統評估：350</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="confirm-section">
+            <div>
+                <span>備註：</span>
+                <textarea class="remark-input" placeholder="特殊料理價格理由或其他特殊原因"></textarea>
+            </div>
+            <div class="confirm-box">
+                <p>系統估價為：2000</p>
+                <p>最高上限價格：1500</p>
+                <input type="text" class="input-box" style="width: 180px; height: 35px;" placeholder="請輸入入帳金額">
+                <button>確定</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
