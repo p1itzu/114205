@@ -246,18 +246,82 @@
     <!-- 設定小視窗 -->
     <div class="settings-modal" id="settings-modal">
         <div class="modal-content">
-            <h2>設定</h2>
-            <p>帳號</p>
-            <p>其他</p>
-            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+            <h2 class="title">設定</h2>
+
+            <!-- 帳號區塊 -->
+            <div class="section">
+                <h3>帳號</h3>
+                <div class="account-info">
+                    <img src="imgs/chef.png" alt="Avatar" class="avatar">
+                    <div class="account-text">
+                        <p class="name">PeiTzu Chang</p>
+                        <p class="sub-text">個人資料</p>
+                    </div>
+                    <button class="arrow-btn" onclick="toggleProfileModal()">➜</button>
+                </div>
+            </div>
+
+            <!-- 其他 -->
+            <div class="section">
+                <h3>其他</h3>
+                <button class="logout-btn">
+                    <span>↩️ 登出</span>
+                </button>
+                <button class="delete-btn">
+                    🗑️ 刪除帳號
+                </button>
+            </div>
         </div>
     </div>
+    <!-- 第二個個人資料視窗 -->
+    <div class="settings-modal" id="profile-modal">
+        <div class="modal-content">
+            <h2 class="title">個人資料</h2>
+            <p>這裡是編輯個人資料的內容...</p>
+            <button class="close-btn" onclick="toggleProfileModal()">返回</button>
+        </div>
+    </div>
+
+
 
     <script>
         function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
-            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+
+            if (modal.classList.contains('show')) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300); // 等動畫結束再隱藏
+            } else {
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+            }
         }
+
+        // 點擊視窗外部關閉
+        window.onclick = function (event) {
+            const modal = document.getElementById('settings-modal');
+            if (event.target === modal) {
+                toggleSettingsModal();
+            }
+        }
+
+        // 切換設定視窗
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.toggle('show');
+        }
+
+        // 切換個人資料視窗
+        function toggleProfileModal() {
+            const profileModal = document.getElementById('profile-modal');
+            profileModal.classList.toggle('show');
+        }
+
+
     </script>
 </body>
 
