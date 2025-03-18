@@ -252,6 +252,17 @@ body {
     align-items: center;
 }
 
+/* 彈跳視窗內容 */
+.profile-content {
+    background-color: #CC9234;
+    width: 400px !important;  /* 固定寬度 */
+    max-width: 800px !important;  /* 設定最大寬度，確保不超過 */
+    padding: 30px;
+    border-radius: 15px;
+    color: white;
+    margin: 0 auto; /* 置中 */
+}
+
 /* 顯示時 */
 .settings-modal.show {
     display: flex;
@@ -275,6 +286,71 @@ body {
     opacity: 1;
 }
 
+/* 排版：左圖 + 右輸入 */
+.profile-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center; /* 置中 */
+}
+
+/* 頭像區塊 */
+.avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.edit-avatar-btn {
+    margin-top: 10px;
+    background: #F7D28C;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: black;
+}
+
+/* 表單區塊 */
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-section label {
+    font-weight: bold;
+    color: white;
+}
+
+.form-section input {
+    width: 250px;
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    background: #FDE7C8;
+}
+
+/* 儲存按鈕 */
+.save-btn {
+    background: #A86D23;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    display: block;
+    margin: 20px auto 0;
+}
 
 
 /* 廚師列表區域設定 */
