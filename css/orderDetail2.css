@@ -508,19 +508,10 @@ input[type="text"]:not(.price-input) {
     color: white !important;
 }
 
-.btn-agree:hover {
-    background-color: #555555 !important; /* 懸停時顏色變深 */
-}
-
 .btn-negotiate {
     background-color: #84A176 !important;
     color: white !important;
 }
-
-.btn-negotiate:hover {
-    background-color: #6a8d55 !important; /* 懸停時顏色變深 */
-}
-
 
 .communication-area {
     margin-top: 12px;
@@ -556,12 +547,19 @@ input[type="text"]:not(.price-input) {
     font-size: 14px;
 }
 
+.previous-element { /* 假設這是 .note 上方的元素 */
+    margin-bottom: 6px; /* 減少底部間距 */
+}
+
 .note {
     clear: both;
     color: #999;
     font-size: 12px;
-    margin-top: 12px;
+    margin-top: 60px; /* 減少間距，讓它往上移 */
+    position: relative;
+    top: -10px; /* 讓它往上移 6px */
 }
+
 
 .price-details h4 {
     font-size: 16px;
@@ -625,13 +623,10 @@ input[type="text"]:not(.text-input) {
     margin-top: 8px !important;
     min-width: 50px !important;
     width: auto !important;
-    transition: all 0.3s ease; /* 過渡效果 */
 }
 
 .submit-btn:hover {
-    background-color: #e6a117 !important;
-    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
+    background-color: #e3ab3b !important;
 }
 
 .note {
@@ -641,10 +636,28 @@ input[type="text"]:not(.text-input) {
     margin-top: 40px !important;
 }
 
-.extra-left {
-    margin-left: -20px; /* 向左移動，根據需求調整數值 */
+.chefnote {
+    border-radius: 10px;
+    height: 70px;
+    background-color: transparent;
+    border: 3px solid #EDE7DA;
+    color: #cec3b4;
+    font-weight: bold;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    text-align: right; /* 讓文字靠右 */
+    padding-left: 50px;  /* 減少左邊距 */
+    padding-right: 20px; /* 增加右邊距，讓文字稍微往右移 */
 }
 
-.price-negotiation {
-    margin-left: 0; /* 保證內部區域的內容不受影響 */
+
+.extra-left {
+    padding-left: 0; /* 取消內距，確保內容貼齊左側 */
+    margin-left: 0; /* 取消外距，避免整個區塊被推開 */
 }
+.price-negotiation, .negotiation-buttons, .chefnote {
+    padding-left: 0;
+    margin-left: 0;
+    text-align: left; /* 確保文字也靠左 */
+}
+

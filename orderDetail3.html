@@ -9,7 +9,9 @@
         rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="css/orderDetail.css" rel="stylesheet" />
+    <link href="css/orderDetail3.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
     <title>代做菜媒合平台</title>
 </head>
 
@@ -35,11 +37,11 @@
                 <h3>訂單編號 : #20250125059</h3>
                 <div class="status-bar">
                     <div class="status">等待回應</div>
-                    <div class="status active">議價中</div>
+                    <div class="status">議價中</div>
                     <div class="status">已接單</div>
                     <div class="status">製作中</div>
                     <div class="status">製作完成</div>
-                    <div class="status">交付完成</div>
+                    <div class="status active">交付完成</div>
                 </div>
             </div>
             <br>
@@ -68,34 +70,49 @@
                                 4.海帶湯
                             </p>
                         </td>
-                        
+
                     </tr>
                 </table>
             </div>
             <div class="extra-section">
                 <div class="extra-left">
-
-                    <div class="price-negotiation">
-                        <h4>廚師第1次定價：NT$500</h4>
-                        <div class="negotiation-buttons">
-                            <button class="btn-agree">同意</button>
-                            <button class="btn-negotiate">再議價</button>
-                            <input type="text" placeholder="請輸入理想金額" class="price-input">
-                        </div>
-                        <input type="text" placeholder="請填寫需求或理由，讓廚師知道" class="text-input">
-                        <button class="submit-btn" type="submit" onclick="location.href='orderDetail2.html'">送出</button>
-                        <p class="note">*注意：僅此一次議價機會</p>
-                    </div>
+                    <tr>
+                        <td class="chef-img">
+                            <div class="chef-container">
+                                <img src="imgs/chef.png" alt="廚師照片" class="chef-img">
+                                <div class="chef-info">
+                                    <h3>廚師 A</h3>
+                                    <p>專長：日式料理</p>
+                                    <p>評價：★★★★★</p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                 </div>
+
+
                 <div class="extra-right">
-                    <p>價錢明細:</p>
-                    <p>1.蔥爆牛肉 NT$ 180</p>
-                    <p>2.炒青椒 NT$ 80 </p>
-                    <p>3.糖醋里肌 NT$ 180 </p>
-                    <p>4.海帶湯 NT$ 60</p>
+                    <div class="price-negotiation">
+                        <h4>給予此廚師評價！</h4>
+                        <input type="text" placeholder="您的寶貴意見..." class="text-input">
+                        <div class="star-rating">
+                            <span class="star" data-value="1">&#9733;</span>
+                            <span class="star" data-value="2">&#9733;</span>
+                            <span class="star" data-value="3">&#9733;</span>
+                            <span class="star" data-value="4">&#9733;</span>
+                            <span class="star" data-value="5">&#9733;</span> &nbsp
+                            <button class="btn-submit" type="button" onclick="submitOrder()">送出</button>
+                        </div>
+                       
+                
+                        <!-- 送出按鈕 -->
+                      
+                    </div>
+                    
+                    
                 </div>
             </div>
-            
+
         </div>
     </div>
 
@@ -147,6 +164,37 @@
             }
         }
 
+        const stars = document.querySelectorAll('.star');
+        let selectedRating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener('click', function () {
+                selectedRating = this.getAttribute('data-value'); // 取得選中的星星數
+                updateStars();
+            });
+        });
+
+        function updateStars() {
+            stars.forEach(star => {
+                if (star.getAttribute('data-value') <= selectedRating) {
+                    star.classList.add('selected'); // 顯示已選中的星星
+                } else {
+                    star.classList.remove('selected'); // 移除未選中的星星顏色
+                }
+            });
+        }
+
+        function submitOrder() {
+            Swal.fire({
+                title: "您的訂單已結束，感謝您的支持",
+                icon: "success",
+                customClass: {
+                    confirmButton: "swal-custom-button"
+                }
+            }).then(() => {
+                window.location.href = "my-order.html"; // 只有「確認送出」才跳轉
+            });
+        }
 
     </script>
 </body>
