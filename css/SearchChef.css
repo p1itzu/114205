@@ -352,6 +352,31 @@ body {
     margin: 20px auto 0;
 }
 
+/* 返回按鈕 */
+.close-btn {
+    position: absolute;
+    bottom: 30px;  /* 距離底部 15px */
+    left: 30px;  /* 距離左側 15px */
+    background: #ba8a38;
+    border: none;
+    padding: 6px 12px;  /* 縮小內距 */
+    cursor: pointer;
+    border-radius: 5px;
+    color: white;
+    font-size: 14px;  /* 縮小字體 */
+    display: inline-block;
+}
+
+
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: white;
+    object-fit: cover; /* 確保圖片填滿框 */
+    cursor: pointer;
+}
 
 /* 廚師列表區域設定 */
 .chef-list {
