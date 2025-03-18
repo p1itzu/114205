@@ -230,6 +230,8 @@ body {
     text-align: center;
     width: 100%;
     padding: 20px;
+    position: relative;
+    /* 讓編輯按鈕能夠絕對定位 */
 }
 
 .profile-image {
@@ -251,15 +253,18 @@ body {
     width: 100%;
 }
 
-button {
-    margin-top: 10px;
-    padding: 5px 10px;
+.edit-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
     background-color: #F9C765;
     border: none;
     cursor: pointer;
     border-radius: 5px;
+    padding: 5px 10px;
+    margin-right: 20px;
 }
 
-button:hover {
+.edit-button:hover {
     background-color: #f9a825;
 }
