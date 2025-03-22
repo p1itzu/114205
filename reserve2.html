@@ -23,7 +23,7 @@
             <a href="#">料理方式建議</a>
             <a href="SearchChef.html">發送訂單</a>
             <a href="#">我的訂單</a>
-            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+            <a href="#">通知中心</a>
         </div>
         <div class="user-info">
             <div class="username">11336012@ntub.edu.tw</div>
@@ -150,17 +150,6 @@
             <p>其他</p>
             <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
         </div>
-    </div>
-
-    <!-- 通知中心視窗 -->
-    <div class="notification-center" id="notificationCenter">
-        <div class="notification-header">
-            <span>通知中心</span>
-            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
-        </div>
-        <ul class="notification-list" id="notificationList">
-            <!-- 通知項目會動態添加在這裡 -->
-        </ul>
     </div>
 
     <script>
@@ -311,125 +300,23 @@
             });
         }
 
-        // 為調味按鈕添加點擊事件
-        document.querySelectorAll('.salinity-button, .spiciness-button, .oillevel-button').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault(); // 防止頁面重新加載
-                
-                // 移除同類按鈕的active狀態
-                const buttonType = this.className.split('-')[0];
-                document.querySelectorAll(`.${buttonType}-button`).forEach(btn => {
-                    btn.classList.remove('active');
+        // 為所有調味按鈕添加點擊事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 為所有調味按鈕添加點擊事件
+            document.querySelectorAll('.salinity-button, .spiciness-button, .oillevel-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除同類按鈕的 active 狀態
+                    const buttonType = this.className.split('-')[0]; // 獲取按鈕類型（salinity/spiciness/oillevel）
+                    document.querySelectorAll(`.${buttonType}-button`).forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // 為當前按鈕添加 active 狀態
+                    this.classList.add('active');
+                    
+                    // 保存當前選擇
+                    saveCurrentDishData();
                 });
-                
-                // 為當前按鈕添加active狀態
-                this.classList.add('active');
-                
-                // 保存當前狀態
-                saveCurrentDishData();
-            });
-        });
-
-        // 通知中心相關功能
-        let notifications = [
-            {
-                type: 'accept',
-                content: 'XXX廚師接受您的訂單！',
-                time: '5分鐘前',
-                unread: true
-            },
-            {
-                type: 'reject',
-                content: 'OOO廚師拒絕您的訂單！',
-                time: '10分鐘前',
-                unread: true
-            },
-            {
-                type: 'update',
-                content: '20250322訂單狀態更新：已完成',
-                time: '30分鐘前',
-                unread: false
-            },
-            {
-                type: 'create',
-                content: '20250322訂單已成立',
-                time: '1小時前',
-                unread: false
-            }
-        ];
-
-        function toggleNotification() {
-            const notificationCenter = document.getElementById('notificationCenter');
-            notificationCenter.style.display = notificationCenter.style.display === 'none' ? 'block' : 'none';
-            updateNotifications();
-        }
-
-        function updateNotifications() {
-            const notificationList = document.getElementById('notificationList');
-            const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
-            
-            // 檢查是否有未讀通知
-            const hasUnread = notifications.some(notification => notification.unread);
-            if (hasUnread) {
-                notificationLink.classList.add('has-unread');
-            } else {
-                notificationLink.classList.remove('has-unread');
-            }
-            
-            // 清空現有通知列表
-            notificationList.innerHTML = '';
-            
-            // 添加所有通知
-            notifications.forEach((notification, index) => {
-                const li = document.createElement('li');
-                li.className = `notification-item ${notification.unread ? 'unread' : ''}`;
-                
-                // 根據通知類型設置圖標
-                const typeIcon = {
-                    'accept': '✓',
-                    'reject': '✕',
-                    'update': '↻',
-                    'create': '+'
-                };
-                
-                li.innerHTML = `
-                    <div class="notification-type type-${notification.type}">
-                        ${typeIcon[notification.type]}
-                    </div>
-                    <div class="notification-content">
-                        ${notification.content}
-                        <div class="notification-time">${notification.time}</div>
-                    </div>
-                `;
-                
-                // 點擊通知時標記為已讀
-                li.addEventListener('click', () => {
-                    notifications[index].unread = false;
-                    updateNotifications();
-                });
-                
-                notificationList.appendChild(li);
-            });
-        }
-
-        function clearAllNotifications() {
-            notifications = [];
-            updateNotifications();
-            document.getElementById('notificationCenter').style.display = 'none';
-        }
-
-        // 初始化通知
-        document.addEventListener('DOMContentLoaded', () => {
-            updateNotifications();
-            
-            // 點擊其他地方關閉通知中心
-            document.addEventListener('click', (e) => {
-                const notificationCenter = document.getElementById('notificationCenter');
-                const notificationIcon = document.querySelector('.notification-icon');
-                
-                if (!notificationCenter.contains(e.target) && !notificationIcon.contains(e.target)) {
-                    notificationCenter.style.display = 'none';
-                }
             });
         });
     </script>

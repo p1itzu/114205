@@ -341,6 +341,12 @@ input[type="text"]{
     transform: translateY(-1px); /* 滑鼠移入時上升 3px */
 }
 
+/* 鹹度按鈕選中狀態 */
+.salinity-button.active {
+    background-color: rgb(127, 91, 14);
+    transform: translateY(-1px);
+}
+
 /*辣度*/
 .spiciness-button {
     display: flex;
@@ -370,6 +376,12 @@ input[type="text"]{
     transform: translateY(-1px); /* 滑鼠移入時上升 3px */
 }
 
+/* 辣度按鈕選中狀態 */
+.spiciness-button.active {
+    background-color: rgb(127, 91, 14);
+    transform: translateY(-1px);
+}
+
 /*油度*/
 .oillevel-button {
     display: flex;
@@ -397,6 +409,12 @@ input[type="text"]{
 .oillevel-button:hover {
     background-color: rgb(127, 91, 14);
     transform: translateY(-1px); /* 滑鼠移入時上升 3px */
+}
+
+/* 油度按鈕選中狀態 */
+.oillevel-button.active {
+    background-color: rgb(127, 91, 14);
+    transform: translateY(-1px);
 }
 
 .bold-text {
@@ -597,138 +615,5 @@ input[type="number"] {
     height: 120px;  /* 設定高度 */
     font-size: 16px; /* 讓文字也變大 */
     padding: 10px; /* 增加內邊距，讓輸入框更舒適 */
-}
-
-/* 通知中心樣式 */
-.notification-center {
-    display: none;
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    width: 350px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.notification-header {
-    padding: 15px;
-    background-color: #F9C765;
-    color: #B3811C;
-    border-radius: 10px 10px 0 0;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.notification-list {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-}
-
-.notification-item {
-    padding: 15px;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    align-items: flex-start;
-    transition: background-color 0.3s;
-}
-
-.notification-item:hover {
-    background-color: #fff9ec;
-}
-
-.notification-item:last-child {
-    border-bottom: none;
-}
-
-.notification-content {
-    flex: 1;
-    color: #333;
-}
-
-.notification-time {
-    font-size: 12px;
-    color: #999;
-    margin-top: 5px;
-}
-
-/* 未讀通知的樣式 */
-.notification-item.unread {
-    background-color: #fff9ec;
-}
-
-.notification-item.unread:hover {
-    background-color: #fff5e0;
-}
-
-/* 通知類型的圖標樣式 */
-.notification-type {
-    width: 24px;
-    height: 24px;
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.type-accept {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.type-reject {
-    background-color: #ff4d4d;
-    color: white;
-}
-
-.type-update {
-    background-color: #2196F3;
-    color: white;
-}
-
-.type-create {
-    background-color: #F9C765;
-    color: white;
-}
-
-/* 清空按鈕樣式 */
-.clear-all {
-    padding: 5px 10px;
-    background-color: transparent;
-    border: 1px solid #B3811C;
-    color: #B3811C;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: all 0.3s;
-}
-
-.clear-all:hover {
-    background-color: #B3811C;
-    color: white;
-}
-
-/* 通知中心連結的樣式 */
-.nav-links a[onclick*="toggleNotification"] {
-    position: relative;
-}
-
-/* 未讀通知點的樣式 */
-.nav-links a[onclick*="toggleNotification"].has-unread:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 5px;
-    width: 8px;
-    height: 8px;
-    background-color: #ff4d4d;
-    border-radius: 50%;
 }
 
