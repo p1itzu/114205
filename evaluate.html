@@ -10,6 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/evaluate.css" rel="stylesheet" />
+    <link href="css/notification.css" rel="stylesheet" />
     <title>廚師評價</title>
 </head>
 
@@ -21,12 +22,22 @@
             <a href="#">料理方式建議</a>
             <a href="SearchChef.html">發送訂單</a>
             <a href="#">我的訂單</a>
-            <a href="#">通知中心</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
         </div>
         <div class="user-info">
             <div class="username">11336012@ntub.edu.tw</div>
             <div class="settings-icon" onclick="toggleSettingsModal()"></div>
         </div>
+    </div>
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
     </div>
 
     <!-- 主要內容區塊 -->
@@ -272,12 +283,12 @@
         });
 
         // 添加評價篩選功能
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const ratingBtns = document.querySelectorAll('.rating-btn');
             const cards = document.querySelectorAll('.chef-card');
 
             ratingBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     // 移除所有按鈕的active狀態
                     ratingBtns.forEach(b => b.classList.remove('active'));
                     // 為當前按鈕添加active狀態
@@ -297,6 +308,7 @@
             });
         });
     </script>
+    <script src="js/notification.js"></script>
 </body>
 
 </html>
