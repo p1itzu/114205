@@ -32,9 +32,12 @@
 
     <!-- 搜尋欄 -->
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="搜尋餐點..." oninput="filterRecipes()">
-        <button class="search-button">
+        <input type="text" id="searchInput" placeholder="搜尋餐點...">
+        <button class="search-button" onclick="filterRecipes()">
             <img src="imgs/search.png" alt="搜尋">
+        </button>
+        <button class="return-button" id="returnButton" onclick="showAllRecipes()" style="display: none;">
+            <span>返回全部</span>
         </button>
     </div>
 
@@ -84,7 +87,7 @@
                     <div class="copy-section">
                         <div id="ingredientsList"></div>
                         <button onclick="copyText('ingredientsList')" class="copy-button">
-                            <img src="imgs/copy.png" alt="複製">
+                            <img src="imgs/clone.png" alt="複製">
                         </button>
                     </div>
                 </div>
@@ -93,7 +96,7 @@
                     <div class="copy-section">
                         <div id="stepsList"></div>
                         <button onclick="copyText('stepsList')" class="copy-button">
-                            <img src="imgs/copy.png" alt="複製">
+                            <img src="imgs/clone.png" alt="複製">
                         </button>
                     </div>
                 </div>
@@ -167,6 +170,14 @@
             <!-- 儲存按鈕 -->
             <button class="save-btn">儲存變更</button>
             <button class="close-btn" onclick="toggleProfileModal()">返回</button>
+        </div>
+    </div>
+
+    <!-- 複製成功提示視窗 -->
+    <div class="copy-toast" id="copyToast">
+        <div class="toast-content">
+            <!--<img src="imgs/check.png" alt="成功">-->
+            <span>複製成功！</span>
         </div>
     </div>
 
@@ -381,7 +392,16 @@
         function copyText(elementId) {
             const text = document.getElementById(elementId).innerText;
             navigator.clipboard.writeText(text).then(() => {
-                // 顯示複製成功提示
+                // 顯示複製成功提示視窗
+                const toast = document.getElementById('copyToast');
+                toast.classList.add('show');
+                
+                // 2秒後自動隱藏提示視窗
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+                
+                // 更改按鈕圖示
                 const button = event.currentTarget;
                 const originalImg = button.innerHTML;
                 button.innerHTML = '✓';
@@ -395,6 +415,8 @@
         function filterRecipes() {
             const searchText = document.getElementById('searchInput').value.toLowerCase();
             const recipes = document.getElementsByClassName('recipe-card');
+            const returnButton = document.getElementById('returnButton');
+            let hasHiddenRecipes = false;
             
             Array.from(recipes).forEach(recipe => {
                 const title = recipe.getElementsByTagName('h3')[0].textContent.toLowerCase();
@@ -402,9 +424,38 @@
                     recipe.style.display = '';
                 } else {
                     recipe.style.display = 'none';
+                    hasHiddenRecipes = true;
                 }
             });
+
+            // 只有在有搜尋結果且有被隱藏的菜色時才顯示返回按鈕
+            returnButton.style.display = hasHiddenRecipes ? 'inline-block' : 'none';
         }
+
+        // 顯示所有菜色
+        function showAllRecipes() {
+            const recipes = document.getElementsByClassName('recipe-card');
+            const returnButton = document.getElementById('returnButton');
+            const searchInput = document.getElementById('searchInput');
+            
+            // 清空搜尋欄
+            searchInput.value = '';
+            
+            // 顯示所有菜色
+            Array.from(recipes).forEach(recipe => {
+                recipe.style.display = '';
+            });
+            
+            // 隱藏返回按鈕
+            returnButton.style.display = 'none';
+        }
+
+        // 添加按Enter鍵也能搜尋的功能
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filterRecipes();
+            }
+        });
 
         // 點擊視窗外關閉視窗
         window.onclick = function(event) {

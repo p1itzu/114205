@@ -526,4 +526,66 @@ body {
     border-radius: 5px;
     color: white;
     font-size: 14px;
+}
+
+/* 複製成功提示視窗 */
+.copy-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background-color: #3a8234;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.copy-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast-content img {
+    width: 20px;
+    height: 20px;
+}
+
+.toast-content span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* 返回按鈕樣式 */
+.return-button {
+    margin-left: 10px;
+    padding: 8px 15px;
+    background-color: #FFE7B7;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #B3811C;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: none;
+}
+
+.return-button:hover {
+    background-color: #FFD280;
+}
+
+.return-button span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 } 
