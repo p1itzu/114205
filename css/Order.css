@@ -152,8 +152,6 @@ body {
     color: #666;
 }
 
-
-
 .buttons {
     display: flex;
     justify-content: center;
@@ -177,4 +175,16 @@ button {
 .accept {
     background-color: #4CAF50;
     color: white;
+}
+
+.swal-custom-button {
+    background-color: #e67241 !important;
+    /* 變灰色 */
+    color: white !important;
+}
+
+.swal-custom-cancel {
+    background-color: #888 !important;
+    /* 變綠色 */
+    color: white !important;
 }

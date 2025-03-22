@@ -89,9 +89,57 @@
                     confirmButton: "swal-custom-button"
                 }
             }).then(() => {
-                window.location.href = "my-order.html"; // 只有「確認送出」才跳轉
+                window.location.href = "OrderPrice.html"; // 只有「確認送出」才跳轉
             });
         }
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector(".reject").addEventListener("click", function () {
+                Swal.fire({
+                    title: "確定拒絕此單",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "否",  // 這裡交換位置
+                    cancelButtonText: "是",
+                    reverseButtons: true, // 這行讓按鈕左右對調
+                    customClass: {
+                        confirmButton: "swal-custom-cancel",
+                        cancelButton: "swal-custom-button"
+                    }
+                }).then((result) => {
+                    if (!result.isConfirmed) { // 按下「是」進入下一步
+                        Swal.fire({
+                            title: "拒絕原因",
+                            icon: "question",
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            html: `
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                            <button class="swal2-confirm reason-button" data-reason="菜單">菜單</button>
+                            <button class="swal2-confirm reason-button" data-reason="時間">時間</button>
+                            <button class="swal2-confirm reason-button" data-reason="地區">地區</button>
+                            <button class="swal2-confirm reason-button" data-reason="其他">其他</button>
+                        </div>
+                    `,
+                            didOpen: () => {
+                                document.querySelectorAll(".reason-button").forEach(button => {
+                                    button.addEventListener("click", function () {
+                                        let reason = this.getAttribute("data-reason");
+                                        Swal.fire({
+                                            title: `訂單已拒絕`,
+                                            text: `原因：${reason}`,
+                                            icon: "success",
+                                            confirmButtonText: "確認"
+                                        }).then(() => {
+                                            window.location.href = "ChefUnOrder.html"; // 按下確認後跳轉
+                                        });
+                                    });
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
     </script>
 </body>
 
