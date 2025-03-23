@@ -63,8 +63,31 @@
                 <br>
                 4.蛋花湯
             </p>
-            <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            </div>
         </div>
+
+        <!-- 留言板彈出視窗 -->
+        <div class="message-modal">
+            <div class="message-modal-content">
+                <div class="message-modal-header">
+                    <h3>訂單留言</h3>
+                    <button class="close-message-btn" onclick="closeMessageBoard(this)">&times;</button>
+                </div>
+                <div class="message-board">
+                    <div class="message-list">
+                        <!-- 留言會動態添加在這裡 -->
+                    </div>
+                    <div class="message-input">
+                        <textarea placeholder="輸入留言..."></textarea>
+                        <button class="send-btn">發送</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 進行中訂單卡片 -->
         <div class="order-card" data-status="ongoing">
             <span class="status-tag-waiting">等待回應中</span>
@@ -80,7 +103,10 @@
                 <br>
                 4.蛋花湯
             </p>
-            <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            </div>
         </div>
         <div class="order-card" data-status="ongoing">
             <span class="status-tag-negotiating">議價中</span>
@@ -96,7 +122,10 @@
                 <br>
                 4.紫菜蛋花湯
             </p>
-            <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            </div>
         </div>
         <!-- 已完成訂單卡片 -->
         <div class="order-card" data-status="completed">
@@ -112,7 +141,10 @@
                 <br>
                 4.玉米濃湯
             </p>
-            <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            </div>
         </div>
         <div class="order-card" data-status="completed">
             <p class="order-num"><strong>訂單編號</strong><br>#20250126005</p>
@@ -127,7 +159,10 @@
                 <br>
                 4.番茄蛋湯
             </p>
-            <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            </div>
         </div>
         <!-- 已取消訂單卡片 -->
         <div class="order-card" data-status="cancelled">
@@ -143,7 +178,10 @@
                 <br>
                 4.酸辣湯
             </p>
-            <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            </div>
         </div>
         <div class="order-card" data-status="cancelled">
             <p class="order-num"><strong>訂單編號</strong><br>#20250126007</p>
@@ -158,7 +196,10 @@
                 <br>
                 4.海帶湯
             </p>
-            <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+            </div>
         </div>
         <!-- 設定小視窗 -->
         <div class="settings-modal" id="settings-modal">
@@ -178,6 +219,115 @@
             } else {
                 modal.style.display = 'flex';
             }
+        }
+
+        // 定義 MessageBoard 類
+        class MessageBoard {
+            constructor(messageModal) {
+                this.messageModal = messageModal;
+                this.orderId = messageModal.getAttribute('data-order-id');
+                this.messageList = messageModal.querySelector('.message-list');
+                this.textarea = messageModal.querySelector('.message-input textarea');
+                this.sendBtn = messageModal.querySelector('.message-input .send-btn');
+                
+                this.messages = this.loadMessages();
+                this.initializeEventListeners();
+                this.renderMessages();
+            }
+
+            loadMessages() {
+                const stored = localStorage.getItem(`messages_${this.orderId}`);
+                return stored ? JSON.parse(stored) : [];
+            }
+
+            saveMessages() {
+                localStorage.setItem(`messages_${this.orderId}`, JSON.stringify(this.messages));
+            }
+
+            addMessage(content, sender, isCustomer) {
+                const message = {
+                    content,
+                    sender,
+                    isCustomer,
+                    time: new Date().toISOString(),
+                };
+                this.messages.push(message);
+                this.saveMessages();
+                this.renderMessage(message);
+            }
+
+            renderMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${message.isCustomer ? 'customer' : 'chef'}`;
+                
+                const time = new Date(message.time).toLocaleTimeString('zh-TW', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+
+                messageDiv.innerHTML = `
+                    <div class="sender">${message.sender}</div>
+                    <div class="content">${message.content}</div>
+                    <div class="time">${time}</div>
+                `;
+
+                this.messageList.appendChild(messageDiv);
+                this.messageList.scrollTop = this.messageList.scrollHeight;
+            }
+
+            renderMessages() {
+                this.messageList.innerHTML = '';
+                this.messages.forEach(message => this.renderMessage(message));
+            }
+
+            initializeEventListeners() {
+                // 移除舊的事件監聽器
+                const newSendBtn = this.sendBtn.cloneNode(true);
+                this.sendBtn.parentNode.replaceChild(newSendBtn, this.sendBtn);
+                this.sendBtn = newSendBtn;
+
+                const newTextarea = this.textarea.cloneNode(true);
+                this.textarea.parentNode.replaceChild(newTextarea, this.textarea);
+                this.textarea = newTextarea;
+
+                // 添加新的事件監聽器
+                this.sendBtn.addEventListener('click', () => {
+                    const message = this.textarea.value.trim();
+                    if (message) {
+                        this.addMessage(message, '顧客', true);
+                        this.textarea.value = '';
+                    }
+                });
+
+                this.textarea.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendBtn.click();
+                    }
+                });
+            }
+        }
+
+        // 打開留言板視窗
+        function openMessageBoard(button) {
+            const orderCard = button.closest('.order-card');
+            const orderId = orderCard.querySelector('.order-num').textContent.split('#')[1].trim();
+            const messageModal = document.querySelector('.message-modal');
+            
+            // 設置當前訂單ID到留言板
+            messageModal.setAttribute('data-order-id', orderId);
+            
+            // 顯示留言板視窗
+            messageModal.style.display = 'flex';
+            
+            // 載入該訂單的留言
+            const messageBoard = new MessageBoard(messageModal);
+        }
+
+        // 關閉留言板視窗
+        function closeMessageBoard(button) {
+            const messageModal = button.closest('.message-modal');
+            messageModal.style.display = 'none';
         }
 
         // 新增按鈕切換功能
@@ -204,6 +354,37 @@
                         }
                     });
                 });
+            });
+
+            // 點擊視窗外關閉留言板
+            document.querySelector('.message-modal').addEventListener('click', (e) => {
+                if (e.target.classList.contains('message-modal')) {
+                    closeMessageBoard(e.target.querySelector('.close-message-btn'));
+                }
+            });
+
+            // 如果是第一次訪問，添加示範留言
+            document.querySelectorAll('.order-card').forEach(orderCard => {
+                const orderId = orderCard.querySelector('.order-num').textContent.split('#')[1].trim();
+                const storageKey = `messages_${orderId}`;
+                
+                if (!localStorage.getItem(storageKey)) {
+                    const messages = [
+                        {
+                            content: '請問這道菜可以少放辣嗎？',
+                            sender: '顧客',
+                            isCustomer: true,
+                            time: new Date().toISOString()
+                        },
+                        {
+                            content: '沒問題，我會依照您的要求調整。',
+                            sender: '廚師',
+                            isCustomer: false,
+                            time: new Date(Date.now() + 1000).toISOString()
+                        }
+                    ];
+                    localStorage.setItem(storageKey, JSON.stringify(messages));
+                }
             });
         });
     </script>

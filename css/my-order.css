@@ -409,3 +409,182 @@ div.footer {
     font-size: 12px;
     margin-top: 40px;
 }
+
+/* 留言板樣式 */
+.message-board {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.message-list {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.message {
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.message.customer {
+    background-color: #F9C765;
+    color: #B3811C;
+    margin-left: 20px;
+}
+
+.message.chef {
+    background-color: #B3811C;
+    color: white;
+    margin-right: 20px;
+}
+
+.message .sender {
+    font-size: 12px;
+    margin-bottom: 4px;
+    opacity: 0.8;
+}
+
+.message .content {
+    font-size: 14px;
+}
+
+.message .time {
+    font-size: 11px;
+    text-align: right;
+    margin-top: 4px;
+    opacity: 0.7;
+}
+
+.message-input {
+    display: flex;
+    gap: 8px;
+}
+
+.message-input textarea {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    resize: none;
+    height: 36px;
+    font-size: 14px;
+}
+
+.message-input .send-btn {
+    padding: 8px 15px;
+    background-color: #B3811C;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.message-input .send-btn:hover {
+    background-color: #8e6616;
+}
+
+/* 按鈕組樣式 */
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.message-btn {
+    width: 80px;  /* 設定固定寬度 */
+    padding: 10px;
+    background-color: #B3811C;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;  /* 防止文字換行 */
+}
+
+.message-btn:hover {
+    background-color: #8e6616;
+}
+
+.order-btn {
+    flex: 1;  /* 讓這個按鈕佔據剩餘空間 */
+    padding: 10px;
+    background-color: #F9C765;
+    color: #B3811C;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.order-btn:hover {
+    background-color: #f0d090;
+}
+
+/* 留言板彈出視窗樣式 */
+.message-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.message-modal-content {
+    background-color: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.message-modal-header h3 {
+    margin: 0;
+    color: #B3811C;
+}
+
+.close-message-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+}
+
+.close-message-btn:hover {
+    color: #B3811C;
+}
+
+/* 更新留言板樣式 */
+.message-board {
+    padding: 20px;
+}
+
+.message-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
