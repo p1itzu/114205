@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ url_for('static', filename='css/reserve2.css') }}" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <title>修改菜單 - 代做菜媒合平台</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="/AfterLogin">首頁</a>
+            <a href="#">料理方式建議</a>
+            <a href="/SearchChef">發送訂單</a>
+            <a href="#">我的訂單</a>
+            <a href="#">通知中心</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <div class="section2">
+                <h3>修改菜單</h3>
+                <br>
+            </div>
+
+            <table id="menu-table">
+                <tr id="dish-section-1">
+                    <td>
+                        <div>
+                            <label for="food1" class="bold-text">第 1 道餐點</label>
+                            <br>
+                            <input type="text" id="dish-name" placeholder="請填寫餐點名稱">
+                        </div>
+
+                        <br>
+
+                        <div class="custom-number-input">
+                            <label for="food1" class="bold-text">分量：</label>
+                            <input type="number" id="custom-number" min="1" max="100" step="1">
+                            <span>人份</span>
+                        </div>
+
+                        <br>
+
+                        <div>
+                            <label for="food1" class="bold-text">需要的食材</label>
+                            <br>
+                            <input type="text" id="ingredients" placeholder="請填寫需要的食材">
+                        </div>
+
+                        <br>
+
+                        <div>
+                            <label for="food1" class="bold-text">特製作法</label>
+                            <br>
+                            <input type="text" id="special" placeholder="請提供您需要的特製作法給廚師">
+                        </div>
+
+                    </td>
+
+                    <td>
+                        <div>
+                            <label for="food1" class="bold-text">調味</label>
+                        </div>
+
+                        <div class="salinity-container">
+                            <label for="food1">鹹度：</label>
+                            <button class="salinity-button" type="button" data-value="極淡">極淡</button>
+                            <button class="salinity-button" type="button" data-value="清淡">清淡</button>
+                            <button class="salinity-button" type="button" data-value="標準">標準</button>
+                            <button class="salinity-button" type="button" data-value="濃郁">濃郁</button>
+                        </div>
+
+                        <div class="spiciness-container">
+                            <label for="food1">辣度：</label>
+                            <button class="spiciness-button" type="button" data-value="不辣">不辣</button>
+                            <button class="spiciness-button" type="button" data-value="小辣">小辣</button>
+                            <button class="spiciness-button" type="button" data-value="中辣">中辣</button>
+                            <button class="spiciness-button" type="button" data-value="大辣">大辣</button>
+                        </div>
+
+                        <div class="oillevel-container">
+                            <label for="food1">油度：</label>
+                            <button class="oillevel-button" type="button" data-value="低油">低油</button>
+                            <button class="oillevel-button" type="button" data-value="少油">少油</button>
+                            <button class="oillevel-button" type="button" data-value="標準">標準</button>
+                        </div>
+
+                        <br>
+
+                        <div>
+                            <label for="food1" class="bold-text">客製備註</label>
+                            <br>
+                            <input type="text" id="customized" placeholder="請填寫需要的備註事項">
+                        </div>
+
+                        <br>
+
+                        <div class="button-container">
+                            <button class="back" type="button" onclick="goToPreviousDish()">⭠</button>
+                            <button class="next" type="button" onclick="goToNextDish()">⭢</button>
+                            <button class="delete-button" type="button" onclick="deleteDish()">刪除</button>
+
+                            <button class="save-button" type="button" onclick="saveChanges()">儲存修改</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="step">第1步</div>
+        <div class="line"></div>
+        <div class="step active">第2步</div>
+        <div class="line"></div>
+        <div class="step">第3步</div>
+        <div class="line"></div>
+        <div class="step">第4步</div>
+    </div>
+
+    <!-- 設定小視窗 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2>設定</h2>
+            <p>帳號</p>
+            <p>其他</p>
+            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+        </div>
+    </div>
+
+    <script>
+        let dishCount = 1; // 當前的菜品數量
+        let currentDishIndex = 1; // 目前顯示的菜品
+        let dishData = {}; // 存儲每道菜的內容
+
+        // 頁面加載時讀取已保存的數據
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedDishData = localStorage.getItem('dishData');
+            if (savedDishData) {
+                dishData = JSON.parse(savedDishData);
+                dishCount = Object.keys(dishData).length;
+                if (dishCount > 0) {
+                    renderDish();
+                } else {
+                    Swal.fire({
+                        title: "沒有可修改的菜單",
+                        text: "請先在菜單填寫頁面新增菜品",
+                        icon: "warning",
+                        confirmButtonText: "確定"
+                    }).then(() => {
+                        window.location.href = '/reserve2';
+                    });
+                }
+            } else {
+                Swal.fire({
+                    title: "沒有可修改的菜單",
+                    text: "請先在菜單填寫頁面新增菜品",
+                    icon: "warning",
+                    confirmButtonText: "確定"
+                }).then(() => {
+                    window.location.href = '/reserve2';
+                });
+            }
+        });
+
+        function updateDish() {
+            saveCurrentDishData();
+            dishCount++;
+            currentDishIndex = dishCount;
+            renderDish();
+            saveTolocalStorage();
+        }
+
+        function saveCurrentDishData() {
+            const selectedSalinity = document.querySelector('.salinity-button.active')?.textContent || '';
+            const selectedSpiciness = document.querySelector('.spiciness-button.active')?.textContent || '';
+            const selectedOilLevel = document.querySelector('.oillevel-button.active')?.textContent || '';
+
+            dishData[currentDishIndex] = {
+                name: document.getElementById("dish-name").value,
+                portion: document.getElementById("custom-number").value,
+                ingredients: document.getElementById("ingredients").value,
+                special: document.getElementById("special").value,
+                customized: document.getElementById("customized").value,
+                salinity: selectedSalinity,
+                spiciness: selectedSpiciness,
+                oilLevel: selectedOilLevel
+            };
+            
+            saveTolocalStorage();
+        }
+
+        function saveTolocalStorage() {
+            localStorage.setItem('dishData', JSON.stringify(dishData));
+        }
+
+        function renderDish() {
+            document.querySelector(".bold-text").textContent = `第 ${currentDishIndex} 道餐點`;
+
+            const data = dishData[currentDishIndex] || {};
+            document.getElementById("dish-name").value = data.name || "";
+            document.getElementById("custom-number").value = data.portion || "";
+            document.getElementById("ingredients").value = data.ingredients || "";
+            document.getElementById("special").value = data.special || "";
+            document.getElementById("customized").value = data.customized || "";
+
+            document.querySelectorAll('.salinity-button, .spiciness-button, .oillevel-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            if (data.salinity) {
+                document.querySelector(`.salinity-button[data-value="${data.salinity}"]`)?.classList.add('active');
+            }
+            if (data.spiciness) {
+                document.querySelector(`.spiciness-button[data-value="${data.spiciness}"]`)?.classList.add('active');
+            }
+            if (data.oilLevel) {
+                document.querySelector(`.oillevel-button[data-value="${data.oilLevel}"]`)?.classList.add('active');
+            }
+        }
+
+        function goToNextDish() {
+            if (currentDishIndex < dishCount) {
+                saveCurrentDishData();
+                currentDishIndex++;
+                renderDish();
+            } else {
+                Swal.fire({
+                    title: "已經是最後一道菜",
+                    icon: "info",
+                    confirmButtonText: "確定"
+                });
+            }
+        }
+
+        function goToPreviousDish() {
+            if (currentDishIndex > 1) {
+                saveCurrentDishData();
+                currentDishIndex--;
+                renderDish();
+            } else {
+                Swal.fire({
+                    title: "已經是第一道菜",
+                    icon: "info",
+                    confirmButtonText: "確定"
+                });
+            }
+        }
+
+        function deleteDish() {
+            Swal.fire({
+                title: "確定刪除?",
+                icon: "warning",
+                showCancelButton: true,
+                cancelButtonText: "取消",
+                confirmButtonText: "確定",
+                customClass: {
+                    confirmButton: "swal-custom-button",
+                    cancelButton: "swal-custom-cancel-button"
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    delete dishData[currentDishIndex];
+                    
+                    const newDishData = {};
+                    let newIndex = 1;
+                    Object.values(dishData).forEach(dish => {
+                        if (dish) {
+                            newDishData[newIndex] = dish;
+                            newIndex++;
+                        }
+                    });
+                    
+                    dishData = newDishData;
+                    dishCount = Object.keys(dishData).length;
+                    
+                    if (dishCount === 0) {
+                        Swal.fire({
+                            title: "菜單已清空",
+                            text: "即將返回菜單填寫頁面",
+                            icon: "info",
+                            confirmButtonText: "確定"
+                        }).then(() => {
+                            window.location.href = '/reserve2';
+                        });
+                    } else {
+                        if (currentDishIndex > dishCount) {
+                            currentDishIndex = dishCount;
+                        }
+                        saveTolocalStorage();
+                        renderDish();
+                    }
+                }
+            });
+        }
+
+        function saveChanges() {
+            saveCurrentDishData();
+            Swal.fire({
+                title: "修改已儲存",
+                icon: "success",
+                confirmButtonText: "確定"
+            }).then(() => {
+                window.location.href = '/reserve3';
+            });
+        }
+
+        // 為調味按鈕添加點擊事件
+        document.querySelectorAll('.salinity-button, .spiciness-button, .oillevel-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const buttonType = this.className.split('-')[0];
+                document.querySelectorAll(`.${buttonType}-button`).forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                this.classList.add('active');
+                saveCurrentDishData();
+            });
+        });
+    </script>
+
+</body>
+
+</html>
