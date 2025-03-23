@@ -4,6 +4,7 @@ body {
     padding: 0;
     background-color: #FFE7B7;
     color: #B3811C;
+    overflow-y: hidden; /* 隱藏整個頁面的垂直滾動條 */
 }
 
 /* 導覽列樣式 */
@@ -75,50 +76,144 @@ body {
 }
 
 /* 左側主內容 */
-/* 自定義滾動條 */
 .main-content {
-    flex: 1;
+    flex: 2;
     padding: 20px;
     background-color: #FFF5DA;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    max-height: 80vh;
-    overflow: auto;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(179, 129, 28, 0.1);
+    max-height: 80vh;  /* 添加最大高度限制 */
+    overflow-y: auto;  /* 改為自動出現垂直滾動條 */
 }
 
-/* 設定滾動條的樣式 */
+/* 左側標題樣式 */
+.main-content h2 {
+    color: #B3811C;
+    font-size: 24px;
+    margin: 0 0 20px 10px;  /* 左邊距設為 10px，與卡片對齊 */
+    font-weight: bold;
+}
+
+/* 自定義滾動條 */
 .main-content::-webkit-scrollbar {
     width: 8px;
-    /* 設定滾動條寬度 */
 }
 
 /* 設定滾動條的顏色 */
 .main-content::-webkit-scrollbar-thumb {
-    background-color: #f9e4ba;
+    background-color: #F9C765;  /* 改為主題色 */
     border-radius: 10px;
-    /* 滾動條圓角 */
 }
 
 /* 設定滾動條的背景 */
 .main-content::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
-    /* 輕微灰色背景 */
+    background-color: rgba(249, 199, 101, 0.1);  /* 半透明的主題色 */
     border-radius: 10px;
 }
-
-
 
 /* 右側固定區塊 */
 .fixed-sidebar {
     width: 300px;
-    background-color: #F9E4BA;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #FFF5DA, #F9E4BA);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(179, 129, 28, 0.1);
     position: sticky;
-    top: 0;
-    /*height: 100vh; /* 讓側邊區塊填滿整個視窗高度 */
+    top: 20px;
 }
+
+.fixed-sidebar h3 {
+    color: #B3811C;
+    font-size: 24px;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 12px;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(179, 129, 28, 0.1);
+}
+
+.fixed-sidebar p {
+    position: relative;
+    padding: 15px 15px 15px 45px;
+    margin: 15px 0;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    color: #8B6014;
+    font-size: 15px;
+    line-height: 1.5;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(179, 129, 28, 0.1);
+}
+
+.fixed-sidebar p::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: #F9C765;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(179, 129, 28, 0.2);
+    color: #B3811C;
+    font-size: 16px;
+}
+
+.fixed-sidebar p:nth-child(2)::before { content: '1'; }
+.fixed-sidebar p:nth-child(3)::before { content: '2'; }
+.fixed-sidebar p:nth-child(4)::before { content: '3'; }
+.fixed-sidebar p:nth-child(5)::before { content: '4'; }
+.fixed-sidebar p:nth-child(6)::before { content: '5'; }
+
+.fixed-sidebar p:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 8px rgba(179, 129, 28, 0.15);
+}
+
+.fixed-sidebar p::after {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 100%;
+    width: 2px;
+    height: 15px;
+    background: #F9C765;
+    opacity: 0.5;
+}
+
+.fixed-sidebar p:last-child::after {
+    display: none;
+}
+
+/* 添加動畫效果 */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fixed-sidebar p {
+    animation: slideIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+.fixed-sidebar p:nth-child(2) { animation-delay: 0.1s; }
+.fixed-sidebar p:nth-child(3) { animation-delay: 0.2s; }
+.fixed-sidebar p:nth-child(4) { animation-delay: 0.3s; }
+.fixed-sidebar p:nth-child(5) { animation-delay: 0.4s; }
+.fixed-sidebar p:nth-child(6) { animation-delay: 0.5s; }
 
 /* 設定視窗 */
 .settings-modal {
@@ -237,7 +332,6 @@ body {
     align-items: center;
     margin-top: 10px;
 }
-
 
 /* 設定視窗 */
 .settings-modal {
@@ -367,8 +461,6 @@ body {
     display: inline-block;
 }
 
-
-
 .profile-avatar {
     width: 120px;
     height: 120px;
@@ -384,21 +476,21 @@ body {
     flex-wrap: wrap;
     gap: 20px;
     padding: 10px;
-    overflow-y: auto;
+    overflow: visible;
 }
 
 .chef-card {
     width: 260px;
-    background-color: #fff;
+    background-color: #fff;  /* 保持卡片為白色背景 */
     border-radius: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 8px rgba(179, 129, 28, 0.15);  /* 調整陰影顏色 */
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .chef-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 16px rgba(179, 129, 28, 0.2);  /* 調整懸停時的陰影顏色 */
 }
 
 .chef-img {
