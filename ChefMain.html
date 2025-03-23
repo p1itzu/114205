@@ -37,6 +37,22 @@
         window.onload = function () {
             generateCalendar();
         };
+        function toggleDropdown() {
+            document.getElementById("orderDropdown").classList.toggle("show");
+        }
+
+        // 點擊其他地方時關閉下拉選單
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
     </script>
 </head>
 
@@ -48,7 +64,18 @@
                 <a href="ChefAfterLogin.html">首頁</a>
                 <a href="ChefMain.html">我的頁面</a>
                 <a href="ChefUnOrder.html">待接單訂單</a>
-                <a href="#">我的訂單</a>
+
+                <!-- 新增下拉選單 -->
+                <div class="dropdown">
+                    <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                    <div class="dropdown-content" id="orderDropdown">
+                        <a href="ChefOrder.html">待完成訂單</a>
+                        <a href="OrderDone.html">已完成訂單</a>
+                        <a href="Charging.html">議價中訂單</a>
+                        <a href="CancelOrder.html">已取消訂單</a>
+                    </div>
+                </div>
+
                 <a href="#">客服聯絡</a>
             </div>
             <div class="user-info">
