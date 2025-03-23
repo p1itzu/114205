@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ url_for('static', filename='css/notification.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/cookingMethod.css') }}" rel="stylesheet" />
+    <title>料理方式建議 - 代做菜媒合平台</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="/AfterLogin">首頁</a>
+            <a href="/CookingMethod">料理方式建議</a>
+            <a href="/SearchChef">發送訂單</a>
+            <a href="/my-order">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+
+    <!-- 搜尋欄 -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="搜尋餐點...">
+        <button class="search-button" onclick="filterRecipes()">
+            <img src="{{ url_for('static', filename='imgs/search.png') }}" alt="搜尋">
+        </button>
+        <button class="return-button" id="returnButton" onclick="showAllRecipes()" style="display: none;">
+            <span>返回全部</span>
+        </button>
+    </div>
+
+    <!-- 餐點列表 -->
+    <div class="recipe-grid">
+        <div class="recipe-card" onclick="showRecipeModal('印度烤餅')">
+            <img src="{{ url_for('static', filename='imgs/印度烤餅.jpg') }}" alt="印度烤餅">
+            <h3>印度烤餅</h3>
+        </div>
+        
+        <div class="recipe-card" onclick="showRecipeModal('日式炸豬排')">
+            <img src="{{ url_for('static', filename='imgs/日式炸豬排.jpg') }}" alt="日式炸豬排">
+            <h3>日式炸豬排</h3>
+        </div>
+
+        <div class="recipe-card" onclick="showRecipeModal('泰式打拋豬')">
+            <img src="{{ url_for('static', filename='imgs/泰式打拋豬.jpg') }}" alt="泰式打拋豬">
+            <h3>泰式打拋豬</h3>
+        </div>
+
+        <div class="recipe-card" onclick="showRecipeModal('韓式泡菜炒飯')">
+            <img src="{{ url_for('static', filename='imgs/泡菜炒飯.jpg') }}" alt="韓式泡菜炒飯">
+            <h3>韓式泡菜炒飯</h3>
+        </div>
+
+        <div class="recipe-card" onclick="showRecipeModal('義式青醬麵')">
+            <img src="{{ url_for('static', filename='imgs/義大利麵.jpg') }}" alt="義式青醬麵">
+            <h3>義式青醬麵</h3>
+        </div>
+
+        <div class="recipe-card" onclick="showRecipeModal('日式親子丼')">
+            <img src="{{ url_for('static', filename='imgs/親子.jpg') }}" alt="日式親子丼">
+            <h3>日式親子丼</h3>
+        </div>
+    </div>
+
+    <!-- 食譜彈出視窗 -->
+    <div id="recipeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="recipeName"></h2>
+                <span class="close" onclick="closeRecipeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="recipe-section ingredients">
+                    <h3>材料</h3>
+                    <div class="copy-section">
+                        <div id="ingredientsList"></div>
+                        <button onclick="copyText('ingredientsList')" class="copy-button">
+                            <img src="{{ url_for('static', filename='imgs/clone.png') }}" alt="複製">
+                        </button>
+                    </div>
+                </div>
+                <div class="recipe-section steps">
+                    <h3>作法</h3>
+                    <div class="copy-section">
+                        <div id="stepsList"></div>
+                        <button onclick="copyText('stepsList')" class="copy-button">
+                            <img src="{{ url_for('static', filename='imgs/clone.png') }}" alt="複製">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
+    </div>
+
+    <!-- 設定小視窗 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2 class="title">設定</h2>
+
+            <!-- 帳號區塊 -->
+            <div class="section">
+                <h3>帳號</h3>
+                <div class="account-info">
+                    <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="Avatar" class="avatar">
+                    <div class="account-text">
+                        <p class="name">PeiTzu Chang</p>
+                        <p class="sub-text">個人資料</p>
+                    </div>
+                    <button class="arrow-btn" onclick="toggleProfileModal()">➜</button>
+                </div>
+            </div>
+
+            <!-- 其他 -->
+            <div class="section">
+                <h3>其他</h3>
+                <button class="logout-btn">
+                    <span>↩️ 登出</span>
+                </button>
+                <button class="delete-btn">
+                    🗑️ 刪除帳號
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- 第二個個人資料視窗 -->
+    <div class="settings-modal" id="profile-modal">
+        <div class="modal-content profile-content">
+            <h2 class="title">個人資料編輯</h2>
+
+            <div class="profile-container">
+                <!-- 頭像區塊 -->
+                <div class="avatar-section">
+                    <img id="profile-avatar" class="profile-avatar" src="{{ url_for('static', filename='imgs/chef.png') }}" alt="個人頭像">
+                    <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                    <button class="edit-avatar-btn" onclick="document.getElementById('avatar-input').click()">個人頭像編輯</button>
+                </div>
+
+                <!-- 輸入表單 -->
+                <div class="form-section">
+                    <label>姓名：</label> <input type="text" placeholder="請輸入姓名">
+                    <label>電子郵件：</label> <input type="email" placeholder="請輸入電子郵件">
+                    <label>電話：</label> <input type="tel" placeholder="請輸入電話">
+                    <label>密碼：</label> <input type="password" placeholder="請輸入密碼">
+                </div>
+            </div>
+
+            <!-- 儲存按鈕 -->
+            <button class="save-btn">儲存變更</button>
+            <button class="close-btn" onclick="toggleProfileModal()">返回</button>
+        </div>
+    </div>
+
+    <!-- 複製成功提示視窗 -->
+    <div class="copy-toast" id="copyToast">
+        <div class="toast-content">
+            <!--<img src="{{ url_for('static', filename='imgs/check.png') }}" alt="成功">-->
+            <span>複製成功！</span>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/notification.js') }}"></script>
+    <script>
+        // 食譜資料
+        const recipes = {
+            '印度烤餅': {
+                ingredients: `• 中筋麵粉：2 杯
+• 酵母粉：1 茶匙
+• 溫水：1/2 杯（約 40°C，微溫）
+• 砂糖：1 茶匙
+• 優格：1/4 杯（增添柔軟口感）
+• 橄欖油或植物油：2 湯匙
+• 鹽：1/2 茶匙
+• 大蒜碎（可選）：適量，增香用
+• 奶油或酥油（塗表面用）：適量`,
+                steps: `1. 製作麵團
+1. 將酵母粉和砂糖加入溫水中，靜置 5-10 分鐘，讓酵母活化（會起泡泡）。
+2. 在大碗中混合麵粉和鹽，加入活化好的酵母水、優格和油，揉成麵團。
+3. 把麵團揉至表面光滑（約 8-10 分鐘），如果太黏可以撒少量麵粉。
+4. 用清布或保鮮膜蓋住麵團，放在溫暖的地方發酵約 1 小時，直到麵團變成兩倍大。
+
+2. 整形與醱酵
+1. 將發好的麵團分成 6-8 等份，揉圓。
+2. 將每份麵團用擀麵棍擀成橢圓形或圓形（厚度約 0.5 公分），不必太完美。
+
+3. 取烤
+1. 預熱平底鍋（最好用厚底鑄鐵鍋），不用加油，保持中高火。
+2. 將擀好的麵皮放入鍋中，當麵皮表面出現氣泡、底部微焦時翻面（約 1 分鐘）。
+3. 翻面後再煎約 1 分鐘，直到兩面都呈現金黃斑點。
+4. 塗奶油或加料
+• 煎好的烤餅趁熱塗上奶油或酥油，可以撒上大蒜碎、香菜末等增添風味。`
+            },
+            '日式炸豬排': {
+                ingredients: `• 豬里肌肉：2片（約200g一片）
+• 鹽：適量
+• 黑胡椒：適量
+• 麵粉：1/2杯
+• 蛋液：2顆
+• 日式麵包粉：2杯
+• 高麗菜絲：200g（配菜用）
+• 炸油：適量
+
+醬汁：
+• 豬排醬：3大匙
+• 辣芥末：適量`,
+                steps: `1. 豬排準備
+1. 豬里肌肉兩面輕輕劃出刀痕（不要切斷）。
+2. 用肉槌輕輕敲打至約1公分厚。
+3. 灑上適量鹽和黑胡椒醃製10分鐘。
+
+2. 裹粉
+1. 準備三個盤子分別放入麵粉、蛋液、麵包粉。
+2. 豬排先裹上麵粉，再沾蛋液，最後裹上麵包粉。
+3. 輕輕拍打使麵包粉確實附著。
+
+3. 油炸
+1. 熱油至170度（放入筷子會冒出細小氣泡）。
+2. 放入豬排，中小火炸至兩面金黃酥脆（約3-4分鐘）。
+3. 取出後立刻瀝油，靜置1分鐘。
+
+4. 擺盤
+1. 切成條狀，搭配切絲高麗菜。
+2. 淋上豬排醬，搭配辣芥末享用。`
+            },
+            '泰式打拋豬': {
+                ingredients: `• 絞肉：300g
+• 蒜末：3-4瓣
+• 辣椒：2-3顆（依喜好調整）
+• 打拋葉：1把
+• 魚露：2大匙
+• 蠔油：1大匙
+• 醬油：1小匙
+• 糖：1小匙
+• 白胡椒粉：適量
+• 食用油：2大匙
+
+配菜：
+• 白飯
+• 荷包蛋`,
+                steps: `1. 醬料調製
+1. 將魚露、蠔油、醬油和糖混合，攪拌均勻備用。
+
+2. 炒製
+1. 熱鍋下油，爆香蒜末和辣椒。
+2. 加入絞肉，用中大火快炒至變色。
+3. 加入調製好的醬料，快速翻炒。
+4. 最後加入打拋葉，快速翻炒至葉子軟化。
+5. 撒上白胡椒粉調味。
+
+3. 擺盤
+1. 將打拋豬盛盤，搭配白飯。
+2. 上方放上煎好的荷包蛋。
+3. 可依個人喜好添加辣椒。`
+            },
+            '韓式泡菜炒飯': {
+                ingredients: `• 白飯：2碗
+• 韓式泡菜：1杯（切小塊）
+• 豬肉絲：100g
+• 蔥花：2根
+• 蒜末：2瓣
+• 雞蛋：2顆
+• 香油：1小匙
+• 食用油：2大匙
+• 醬油：1大匙
+• 韓式辣椒粉：1小匙（可依口味調整）`,
+                steps: `1. 準備
+1. 泡菜切小塊，豬肉絲醃製（醬油、蒜末）10分鐘。
+2. 蔥花切段，蒜切末。
+
+2. 炒製
+1. 熱鍋下油，先炒香蒜末。
+2. 加入豬肉絲快炒至變色。
+3. 加入泡菜炒香。
+4. 加入白飯，用中大火快炒。
+5. 加入醬油、韓式辣椒粉調味。
+6. 最後加入蔥花和香油。
+
+3. 完成
+1. 另起一鍋煎荷包蛋。
+2. 將炒飯盛盤，上方放上荷包蛋。
+3. 可撒上海苔絲點綴。`
+            },
+            '義式青醬麵': {
+                ingredients: `青醬：
+• 羅勒葉：2把
+• 松子：30g
+• 蒜末：2-3瓣
+• 橄欖油：1/2杯
+• 帕瑪森起司：50g
+• 鹽：適量
+• 黑胡椒：適量
+
+麵條：
+• 義大利麵：200g
+• 櫻桃番茄：10顆
+• 橄欖油：適量`,
+                steps: `1. 製作青醬
+1. 將松子烤香。
+2. 將羅勒葉、蒜末、松子放入食物調理機。
+3. 加入橄欖油打成醬狀。
+4. 加入帕瑪森起司、鹽和黑胡椒調味。
+
+2. 煮麵
+1. 大鍋煮水，加入適量鹽。
+2. 放入義大利麵，依包裝指示時間煮至al dente。
+3. 瀝乾麵條，保留一些煮麵水。
+
+3. 完成
+1. 熱鍋，倒入適量橄欖油。
+2. 加入青醬和煮好的麵條拌炒。
+3. 加入櫻桃番茄。
+4. 可視需要加入煮麵水調整醬汁濃稠度。
+5. 最後撒上帕瑪森起司絲即可。`
+            },
+            '日式親子丼': {
+                ingredients: `• 雞腿肉：200g
+• 洋蔥：1/2顆
+• 雞蛋：3顆
+• 蔥花：2根
+
+調味料：
+• 醬油：3大匙
+• 味醂：2大匙
+• 日式高湯：200ml
+• 糖：1小匙
+
+配料：
+• 白飯：2碗
+• 海苔絲：適量`,
+                steps: `1. 準備
+1. 雞腿肉切小塊。
+2. 洋蔥切絲。
+3. 蔥花切段。
+4. 雞蛋打散。
+
+2. 調味料
+1. 將醬油、味醂、高湯和糖混合。
+
+3. 烹調
+1. 鍋中倒入調味料，煮至沸騰。
+2. 加入雞肉塊和洋蔥，煮至雞肉熟透。
+3. 將打散的雞蛋緩緩倒入，蓋上鍋蓋燜煮約1分鐘。
+4. 最後撒上蔥花。
+
+4. 擺盤
+1. 將白飯盛碗。
+2. 將親子丼料淋在飯上。
+3. 撒上海苔絲點綴。`
+            }
+        };
+
+        // 顯示食譜彈出視窗
+        function showRecipeModal(recipeName) {
+            document.getElementById('recipeModal').style.display = 'block';
+            document.getElementById('recipeName').textContent = recipeName;
+            
+            // 填入對應的食譜內容
+            if (recipes[recipeName]) {
+                document.getElementById('ingredientsList').innerText = recipes[recipeName].ingredients;
+                document.getElementById('stepsList').innerText = recipes[recipeName].steps;
+            }
+        }
+
+        // 關閉食譜彈出視窗
+        function closeRecipeModal() {
+            document.getElementById('recipeModal').style.display = 'none';
+        }
+
+        // 複製文字功能
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                // 顯示複製成功提示視窗
+                const toast = document.getElementById('copyToast');
+                toast.classList.add('show');
+                
+                // 2秒後自動隱藏提示視窗
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+                
+                // 更改按鈕圖示
+                const button = event.currentTarget;
+                const originalImg = button.innerHTML;
+                button.innerHTML = '✓';
+                setTimeout(() => {
+                    button.innerHTML = originalImg;
+                }, 2000);
+            });
+        }
+
+        // 搜尋功能
+        function filterRecipes() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const recipes = document.getElementsByClassName('recipe-card');
+            const returnButton = document.getElementById('returnButton');
+            let hasHiddenRecipes = false;
+            
+            Array.from(recipes).forEach(recipe => {
+                const title = recipe.getElementsByTagName('h3')[0].textContent.toLowerCase();
+                if (title.includes(searchText)) {
+                    recipe.style.display = '';
+                } else {
+                    recipe.style.display = 'none';
+                    hasHiddenRecipes = true;
+                }
+            });
+
+            // 只有在有搜尋結果且有被隱藏的菜色時才顯示返回按鈕
+            returnButton.style.display = hasHiddenRecipes ? 'inline-block' : 'none';
+        }
+
+        // 顯示所有菜色
+        function showAllRecipes() {
+            const recipes = document.getElementsByClassName('recipe-card');
+            const returnButton = document.getElementById('returnButton');
+            const searchInput = document.getElementById('searchInput');
+            
+            // 清空搜尋欄
+            searchInput.value = '';
+            
+            // 顯示所有菜色
+            Array.from(recipes).forEach(recipe => {
+                recipe.style.display = '';
+            });
+            
+            // 隱藏返回按鈕
+            returnButton.style.display = 'none';
+        }
+
+        // 添加按Enter鍵也能搜尋的功能
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filterRecipes();
+            }
+        });
+
+        // 點擊視窗外關閉視窗
+        window.onclick = function(event) {
+            const modal = document.getElementById('recipeModal');
+            const settingsModal = document.getElementById('settings-modal');
+            const profileModal = document.getElementById('profile-modal');
+
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+            if (event.target == settingsModal) {
+                settingsModal.classList.remove('show');
+                setTimeout(() => {
+                    settingsModal.style.display = 'none';
+                }, 300);
+            }
+            if (event.target == profileModal) {
+                profileModal.classList.remove('show');
+                setTimeout(() => {
+                    profileModal.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        // 切換設定視窗
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            const profileModal = document.getElementById('profile-modal');
+
+            if (modal.classList.contains('show')) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            } else {
+                // 確保個人資料視窗是關閉的
+                profileModal.classList.remove('show');
+                profileModal.style.display = 'none';
+                
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+            }
+        }
+
+        // 切換個人資料視窗
+        function toggleProfileModal() {
+            const settingsModal = document.getElementById('settings-modal');
+            const profileModal = document.getElementById('profile-modal');
+
+            if (profileModal.classList.contains('show')) {
+                profileModal.classList.remove('show');
+                setTimeout(() => {
+                    profileModal.style.display = 'none';
+                }, 300);
+                
+                // 顯示設定視窗
+                settingsModal.style.display = 'flex';
+                setTimeout(() => {
+                    settingsModal.classList.add('show');
+                }, 10);
+            } else {
+                // 隱藏設定視窗
+                settingsModal.classList.remove('show');
+                setTimeout(() => {
+                    settingsModal.style.display = 'none';
+                }, 300);
+                
+                // 顯示個人資料視窗
+                profileModal.style.display = 'flex';
+                setTimeout(() => {
+                    profileModal.classList.add('show');
+                }, 10);
+            }
+        }
+
+        // 頭像上傳預覽
+        document.getElementById('avatar-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-avatar').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 確保在 DOM 載入完成後綁定事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 綁定頭像編輯按鈕點擊事件
+            const editAvatarBtn = document.querySelector('.edit-avatar-btn');
+            const avatarInput = document.getElementById('avatar-input');
+            
+            editAvatarBtn.addEventListener('click', function() {
+                avatarInput.click();
+            });
+        });
+    </script>
+</body>
+
+</html> 

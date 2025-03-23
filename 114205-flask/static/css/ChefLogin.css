@@ -1,0 +1,151 @@
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+}
+
+.left-section {
+    width: 33%;
+    background-color: #f6c25f;
+}
+
+.right-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background-color: #fdf7ed;
+}
+
+.top-right-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #d19238;
+    font-weight: bold;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+h2 {
+    color: #5b4636;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 90%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 2px solid #f6c25f;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.button {
+    width: 100%;
+    padding: 12px;
+    background-color: #f6c25f;
+    color: #FFF;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #e0a93d;
+}
+
+.top-right-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #d19238;
+    font-weight: bold;
+}
+
+.login-button {
+    margin-left: 10px;
+    padding: 6px 16px;
+    background-color: #f6c25f;
+    color: #FFF;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.login-button:hover {
+    background-color: #e0a93d;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #d8c7a9;
+}
+
+.divider span {
+    margin: 0 12px;
+    color: #5b4636;
+    font-size: 14px;
+}
+
+.google-login {
+    margin-top: 10px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.modal button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #f6c25f;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal button:hover {
+    background-color: #e0a93d;
+}

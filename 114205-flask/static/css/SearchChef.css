@@ -1,0 +1,543 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #FFE7B7;
+    color: #B3811C;
+    overflow-y: hidden; /* 隱藏整個頁面的垂直滾動條 */
+}
+
+/* 導覽列樣式 */
+.navbar {
+    background-color: #F9C765;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar .site-name {
+    font-size: 20px;
+    font-weight: bold;
+    padding-left: 20px;
+    color: #B3811C;
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 15px;
+    margin: 0 auto;
+}
+
+.navbar a {
+    color: #B3811C;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    background-color: #f9e4ba;
+    border-radius: 5px;
+}
+
+/* 使用者資訊區 */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
+}
+
+.user-info .username {
+    font-size: 18px;
+    color: #B3811C;
+    font-weight: bold;
+}
+
+.user-info .settings-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url('../imgs/settings.png');
+    /* 確保圖片路徑正確 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+/* 主要內容區域（左 + 右） */
+.content-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* 左側主內容 */
+.main-content {
+    flex: 2;
+    padding: 20px;
+    background-color: #FFF5DA;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(179, 129, 28, 0.1);
+    max-height: 80vh;  /* 添加最大高度限制 */
+    overflow-y: auto;  /* 改為自動出現垂直滾動條 */
+}
+
+/* 左側標題樣式 */
+.main-content h2 {
+    color: #B3811C;
+    font-size: 24px;
+    margin: 0 0 20px 10px;  /* 左邊距設為 10px，與卡片對齊 */
+    font-weight: bold;
+}
+
+/* 自定義滾動條 */
+.main-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* 設定滾動條的顏色 */
+.main-content::-webkit-scrollbar-thumb {
+    background-color: #F9C765;  /* 改為主題色 */
+    border-radius: 10px;
+}
+
+/* 設定滾動條的背景 */
+.main-content::-webkit-scrollbar-track {
+    background-color: rgba(249, 199, 101, 0.1);  /* 半透明的主題色 */
+    border-radius: 10px;
+}
+
+/* 右側固定區塊 */
+.fixed-sidebar {
+    width: 300px;
+    background: linear-gradient(135deg, #FFF5DA, #F9E4BA);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(179, 129, 28, 0.1);
+    position: sticky;
+    top: 20px;
+}
+
+.fixed-sidebar h3 {
+    color: #B3811C;
+    font-size: 24px;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 12px;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(179, 129, 28, 0.1);
+}
+
+.fixed-sidebar p {
+    position: relative;
+    padding: 15px 15px 15px 45px;
+    margin: 15px 0;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    color: #8B6014;
+    font-size: 15px;
+    line-height: 1.5;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(179, 129, 28, 0.1);
+}
+
+.fixed-sidebar p::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: #F9C765;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(179, 129, 28, 0.2);
+    color: #B3811C;
+    font-size: 16px;
+}
+
+.fixed-sidebar p:nth-child(2)::before { content: '1'; }
+.fixed-sidebar p:nth-child(3)::before { content: '2'; }
+.fixed-sidebar p:nth-child(4)::before { content: '3'; }
+.fixed-sidebar p:nth-child(5)::before { content: '4'; }
+.fixed-sidebar p:nth-child(6)::before { content: '5'; }
+
+.fixed-sidebar p:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 8px rgba(179, 129, 28, 0.15);
+}
+
+.fixed-sidebar p::after {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 100%;
+    width: 2px;
+    height: 15px;
+    background: #F9C765;
+    opacity: 0.5;
+}
+
+.fixed-sidebar p:last-child::after {
+    display: none;
+}
+
+/* 添加動畫效果 */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fixed-sidebar p {
+    animation: slideIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+.fixed-sidebar p:nth-child(2) { animation-delay: 0.1s; }
+.fixed-sidebar p:nth-child(3) { animation-delay: 0.2s; }
+.fixed-sidebar p:nth-child(4) { animation-delay: 0.3s; }
+.fixed-sidebar p:nth-child(5) { animation-delay: 0.4s; }
+.fixed-sidebar p:nth-child(6) { animation-delay: 0.5s; }
+
+/* 設定視窗 */
+.settings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+/* 彈出視窗 */
+.settings-modal .modal-content {
+    background-color: #C5933D;
+    padding: 30px;
+    border-radius: 15px;
+    width: 320px;
+    color: white;
+
+    /* 動畫初始狀態 */
+    transform: translateY(20px);
+    opacity: 0;
+
+    /* 加入過渡動畫 */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* 當視窗顯示時，讓內容滑上來並淡入 */
+.settings-modal.show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* 標題 */
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* 每個區塊 */
+.section {
+    margin-bottom: 20px;
+}
+
+/* 小標題 */
+.section h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 帳號資訊 */
+.account-info {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* 頭像 */
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+/* 帳號名稱 */
+.name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 副標題 */
+.sub-text {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+/* 箭頭按鈕 */
+.arrow-btn {
+    background: #F7D28C;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+/* 登出按鈕 */
+.logout-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* 刪除帳號按鈕 */
+.delete-btn {
+    background: none;
+    font-weight: bold;
+    border: none;
+    color: rgb(115, 9, 9);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+/* 設定視窗 */
+.settings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+/* 彈跳視窗內容 */
+.profile-content {
+    background-color: #CC9234;
+    width: 400px !important;  /* 固定寬度 */
+    max-width: 800px !important;  /* 設定最大寬度，確保不超過 */
+    padding: 30px;
+    border-radius: 15px;
+    color: white;
+    margin: 0 auto; /* 置中 */
+}
+
+/* 顯示時 */
+.settings-modal.show {
+    display: flex;
+}
+
+/* 彈出視窗 */
+.settings-modal .modal-content {
+    background-color: #C5933D;
+    padding: 30px;
+    border-radius: 15px;
+    width: 320px;
+    color: white;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* 彈出動畫 */
+.settings-modal.show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* 排版：左圖 + 右輸入 */
+.profile-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center; /* 置中 */
+}
+
+/* 頭像區塊 */
+.avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.edit-avatar-btn {
+    margin-top: 10px;
+    background: #F7D28C;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: black;
+}
+
+/* 表單區塊 */
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-section label {
+    font-weight: bold;
+    color: white;
+}
+
+.form-section input {
+    width: 250px;
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    background: #FDE7C8;
+}
+
+/* 儲存按鈕 */
+.save-btn {
+    background: #A86D23;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    display: block;
+    margin: 20px auto 0;
+}
+
+/* 返回按鈕 */
+.close-btn {
+    position: absolute;
+    bottom: 30px;  /* 距離底部 15px */
+    left: 30px;  /* 距離左側 15px */
+    background: #ba8a38;
+    border: none;
+    padding: 6px 12px;  /* 縮小內距 */
+    cursor: pointer;
+    border-radius: 5px;
+    color: white;
+    font-size: 14px;  /* 縮小字體 */
+    display: inline-block;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: white;
+    object-fit: cover; /* 確保圖片填滿框 */
+    cursor: pointer;
+}
+
+/* 廚師列表區域設定 */
+.chef-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px;
+    overflow: visible;
+}
+
+.chef-card {
+    width: 260px;
+    background-color: #fff;  /* 保持卡片為白色背景 */
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(179, 129, 28, 0.15);  /* 調整陰影顏色 */
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chef-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(179, 129, 28, 0.2);  /* 調整懸停時的陰影顏色 */
+}
+
+.chef-img {
+    /*width: 150%;*/
+    height: 85px;
+    object-fit: cover;
+}
+
+.chef-info {
+    padding: 15px;
+    font-family: "Noto Sans HK", sans-serif;
+}
+
+.chef-info h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.chef-info p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.order-btn {
+    width: 93%;
+    padding: 10px;
+    background-color: #F9C765;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    margin: 10px;
+}
+
+.order-btn:hover {
+    background-color: #f0d090;
+}
+
+.chef-img {
+    vertical-align: top;
+    /* 上對齊 */
+    padding-top: 6px;
+    /* 往下移動 */
+    padding-left: 7px;
+    /* 往右移動 (可自行調整數值) */
+}
