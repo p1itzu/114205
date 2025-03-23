@@ -30,7 +30,6 @@ def get_db_connection():
 
 @app.route('/')
 def route_home():
-    # 你可以預設進到 NotLogin.html，或跳轉到 AfterLogin.html
     return redirect(url_for('route_not_login'))
 
 @app.route('/NotLogin')
