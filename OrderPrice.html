@@ -8,97 +8,9 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f3e9;
-        }
-
-        .container {
-            width: 600px;
-            background: #fdf8eb;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-            margin: 50px auto;
-        }
-
-        h2 {
-            font-size: 18px;
-        }
-
-        .info-box {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .info-box span:first-child {
-            flex: 0 0 auto;
-            margin-right: 5px;
-        }
-
-        .info-box span:last-child {
-            flex: 1;
-        }
-
-        .order-list {
-            background: #f3ede3;
-            padding: 10px;
-            border-radius: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .item {
-            margin-bottom: 10px;
-        }
-
-        .price-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 5px;
-        }
-
-        .input-box {
-            width: 100px;
-            height: 25px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .confirm-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-top: 20px;
-        }
-
-        .confirm-box {
-            text-align: right;
-        }
-
-        .confirm-box button {
-            background: #f5c16c;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .confirm-box button:hover {
-            background: #e5a85c;
-        }
-
-        .remark-input {
-            width: 200px;
-            height: 80px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 5px;
+            background-color: #FFE7B7;
+            margin: 0;
+            padding: 0;
         }
 
         .navbar {
@@ -135,7 +47,6 @@
             border-radius: 5px;
         }
 
-        /* 使用者資訊區 */
         .user-info {
             display: flex;
             align-items: center;
@@ -153,11 +64,167 @@
             width: 20px;
             height: 20px;
             background-image: url('../imgs/settings.png');
-            /* 確保圖片路徑正確 */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             cursor: pointer;
+        }
+
+        /* 新增的彈窗樣式 */
+        .modal-container {
+            position: fixed;
+            top: calc(50% + 40px);
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f5f5f5;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-height: calc(100vh - 100px);
+            overflow-y: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            color: #333;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .close-button {
+            cursor: pointer;
+            font-size: 24px;
+            color: #666;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .menu-list {
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        /* 自定義滾動條樣式 */
+        .menu-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .menu-list::-webkit-scrollbar-track {
+            background: #8b8585;
+            border-radius: 4px;
+        }
+
+        .menu-list::-webkit-scrollbar-thumb {
+            background: #F9C765;
+            border-radius: 4px;
+        }
+
+        .menu-list::-webkit-scrollbar-thumb:hover {
+            background: #e5b65c;
+        }
+
+        .menu-item {
+            margin-bottom: 15px;
+        }
+
+        .menu-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .price-input {
+            width: 150px;
+            height: 30px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0 10px;
+        }
+
+        .system-price {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+
+        .remark-section {
+            flex: 0 0 auto;
+            margin-right: 30px;
+            width: 250px;
+        }
+
+        .remark-input {
+            width: 100%;
+            height: 80px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            resize: none;
+            margin-top: 5px;
+        }
+
+        .price-section {
+            text-align: right;
+            margin-right: 40px;
+            margin-top: 20px;
+        }
+
+        .confirm-button {
+            background-color: #F9C765;
+            height: 40px;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .total-price-input {
+            width: 150px;
+            height: 40px;
+            border: 5px solid #ddd;
+            border-radius: 8px;
+            padding: 0 10px;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -177,59 +244,93 @@
             <div class="settings-icon" onclick="toggleSettingsModal()"></div>
         </div>
     </div>
-    <div class="container">
 
-
-        <h2>訂單編號 #20250125059</h2>
-        <div class="info-box">
-            <span>預約時間：</span> <span>2025/03/18 12:30</span>
-        </div>
-        <div class="info-box">
-            <span>地址：</span> <span>台北市中山區</span>
-        </div>
-        <div class="info-box">
-            <span>取餐方式：</span> <span>外帶</span>
-        </div>
-        <div class="info-box">
-            <span>聯絡人資訊：</span> <span>王小明 0912345678</span>
+    <!-- 新的彈窗設計 -->
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 class="modal-title">訂單編號 #2025012059</h2>
+            <span class="close-button">×</span>
         </div>
 
-        <h3>菜單列表：</h3>
-        <div class="order-list">
-            <div class="item">
-                <p>1. 番茄炒蛋 3人份</p>
-                <p>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</p>
-                <div class="price-box">
-                    <span>第一道價格</span>
-                    <input type="text" class="input-box" placeholder="請輸入">
+        <div class="info-grid">
+            <div class="info-label">預約時間：<span class="info-value">2025/03/18 12:30</span></div>
+            <div class="info-label">地址：<span class="info-value">台北市中山區</span></div>
+            <div class="info-label">取餐方式：<span class="info-value">外帶</span></div>
+            <div class="info-label">聯絡人資訊：<span class="info-value">王小明 0912345678</span></div>
+        </div>
+
+        <div class="menu-list">
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>1. 番茄炒蛋 3人份</div>
+                    <div>
+                        <span>第一道價格</span>
+                        <input type="text" class="price-input">
+                    </div>
                 </div>
-                <div class="price-box">
-                    <span>系統評估：200</span>
-                </div>
+                <div>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</div>
+                <div class="system-price">系統評估：200</div>
             </div>
-            <div class="item">
-                <p>2. 番茄炒蛋 3人份</p>
-                <p>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</p>
-                <div class="price-box">
-                    <span>第二道價格</span>
-                    <input type="text" class="input-box" placeholder="請輸入">
+
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>2. 番茄炒蛋 3人份</div>
+                    <div>
+                        <span>第二道價格</span>
+                        <input type="text" class="price-input">
+                    </div>
                 </div>
-                <div class="price-box">
-                    <span>系統評估：350</span>
+                <div>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</div>
+                <div class="system-price">系統評估：350</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>3. 清蒸魚 2人份</div>
+                    <div>
+                        <span>第三道價格</span>
+                        <input type="text" class="price-input">
+                    </div>
                 </div>
+                <div>（鹹度:正常 辣度:不辣 油度:少油 辛香料:薑）</div>
+                <div class="system-price">系統評估：450</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>4. 炒青菜 4人份</div>
+                    <div>
+                        <span>第四道價格</span>
+                        <input type="text" class="price-input">
+                    </div>
+                </div>
+                <div>（鹹度:正常 辣度:不辣 油度:正常 辛香料:蒜）</div>
+                <div class="system-price">系統評估：180</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>5. 紅燒豆腐 3人份</div>
+                    <div>
+                        <span>第五道價格</span>
+                        <input type="text" class="price-input">
+                    </div>
+                </div>
+                <div>（鹹度:正常 辣度:微辣 油度:正常 辛香料:蔥、薑）</div>
+                <div class="system-price">系統評估：250</div>
             </div>
         </div>
 
-        <div class="confirm-section">
-            <div>
-                <span>備註：</span>
+        <div class="footer">
+            <div class="remark-section">
+                <div>備註：</div>
                 <textarea class="remark-input" placeholder="特殊料理價格理由或其他特殊原因"></textarea>
             </div>
-            <div class="confirm-box">
-                <p>系統估價為：2000</p>
-                <p>最高上限價格：1500</p>
-                <input type="text" class="input-box" style="width: 180px; height: 35px;" placeholder="請輸入入帳金額">
-                <button>確定</button>
+            <div class="price-section">
+                <div>系統估價為：2000</div>
+                <div>最高上限價格：1500</div>
+                <input type="text" class="total-price-input" placeholder="請輸入入帳金額">
+                <button class="confirm-button">確定</button>
             </div>
         </div>
     </div>
