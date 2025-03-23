@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/evaluate.css" rel="stylesheet" />
+    <link href="css/notification.css" rel="stylesheet" />
+    <title>廚師評價</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="AfterLogin.html">首頁</a>
+            <a href="CookingMethod.html">料理方式建議</a>
+            <a href="SearchChef.html">發送訂單</a>
+            <a href="my-order.html">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
+    </div>
+
+    <!-- 主要內容區塊 -->
+    <div class="content-container">
+        <!-- 左側固定區塊 -->
+        <div class="fixed-sidebar">
+            <img src="imgs/chef.png" alt="廚師照片" class="chef-img2">
+            <h3>[廚師名字]</h3>
+            <div class="star">
+                <p>★★★★★</p>
+                <div class="rating-score">5.0/5</div>
+            </div>
+            <div class="service-count">服務次數：15</div>
+            <div class="info-section">
+                <h4>擅長項目：</h4>
+                <p>日式料理、中式料理、西式料理</p>
+            </div>
+            <div class="info-section">
+                <h4>證照：</h4>
+                <p>中餐烹調技術士、日本料理技能檢定</p>
+            </div>
+            <div class="info-section">
+                <h4>地區：</h4>
+                <p>台北市、新北市</p>
+            </div>
+        </div>
+
+        <!-- 右側評價區塊 -->
+        <div class="main-content">
+            <div class="rating-filters">
+                <button class="rating-btn active" data-rating="all">全部</button>
+                <button class="rating-btn" data-rating="5">5顆星</button>
+                <button class="rating-btn" data-rating="4">4顆星</button>
+                <button class="rating-btn" data-rating="3">3顆星</button>
+                <button class="rating-btn" data-rating="2">2顆星</button>
+                <button class="rating-btn" data-rating="1">1顆星</button>
+            </div>
+            <div class="chef-list">
+                <!-- 5星評價 -->
+                <div class="chef-card" data-rating="5">
+                    <div class="review-header">
+                        <img src="imgs/chef.png" alt="評價者照片" class="reviewer-img">
+                        <span class="reviewer-name">P********g</span>
+                        <div class="review-stars">★★★★★</div>
+                    </div>
+                    <div class="review-content">
+                        廚師很專業，料理非常美味，擺盤精緻，服務態度也很好，整體非常滿意！
+                    </div>
+                </div>
+                <!-- 4星評價 -->
+                <div class="chef-card" data-rating="4">
+                    <div class="review-header">
+                        <img src="imgs/chef.png" alt="評價者照片" class="reviewer-img">
+                        <span class="reviewer-name">L********n</span>
+                        <div class="review-stars">★★★★☆</div>
+                    </div>
+                    <div class="review-content">
+                        食材新鮮，口味不錯，建議可以再加強一下擺盤的美感。
+                    </div>
+                </div>
+                <!-- 3星評價 -->
+                <div class="chef-card" data-rating="3">
+                    <div class="review-header">
+                        <img src="imgs/chef.png" alt="評價者照片" class="reviewer-img">
+                        <span class="reviewer-name">K********h</span>
+                        <div class="review-stars">★★★☆☆</div>
+                    </div>
+                    <div class="review-content">
+                        整體表現普通，價格稍微偏高，但服務態度不錯。
+                    </div>
+                </div>
+                <!-- 2星評價 -->
+                <div class="chef-card" data-rating="2">
+                    <div class="review-header">
+                        <img src="imgs/chef.png" alt="評價者照片" class="reviewer-img">
+                        <span class="reviewer-name">M********e</span>
+                        <div class="review-stars">★★☆☆☆</div>
+                    </div>
+                    <div class="review-content">
+                        等待時間較長，部分菜品味道不夠理想。
+                    </div>
+                </div>
+                <!-- 1星評價 -->
+                <div class="chef-card" data-rating="1">
+                    <div class="review-header">
+                        <img src="imgs/chef.png" alt="評價者照片" class="reviewer-img">
+                        <span class="reviewer-name">R********t</span>
+                        <div class="review-stars">★☆☆☆☆</div>
+                    </div>
+                    <div class="review-content">
+                        溝通不良，送達時間嚴重延誤，需要改進。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 設定小視窗 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2 class="title">設定</h2>
+
+            <!-- 帳號區塊 -->
+            <div class="section">
+                <h3>帳號</h3>
+                <div class="account-info">
+                    <img src="imgs/chef.png" alt="Avatar" class="avatar">
+                    <div class="account-text">
+                        <p class="name">PeiTzu Chang</p>
+                        <p class="sub-text">個人資料</p>
+                    </div>
+                    <button class="arrow-btn" onclick="toggleProfileModal()">➜</button>
+                </div>
+            </div>
+
+            <!-- 其他 -->
+            <div class="section">
+                <h3>其他</h3>
+                <button class="logout-btn">
+                    <span>↩️ 登出</span>
+                </button>
+                <button class="delete-btn">
+                    🗑️ 刪除帳號
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- 第二個個人資料視窗 -->
+    <div class="settings-modal" id="profile-modal">
+        <div class="modal-content profile-content">
+            <h2 class="title">個人資料編輯</h2>
+
+            <div class="profile-container">
+                <!-- 頭像區塊 -->
+                <div class="avatar-section">
+                    <label for="avatar-input">
+                        <img id="profile-avatar" class="profile-avatar" src="imgs/chef.png" alt="個人頭像">
+                    </label>
+                    <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                    <button class="edit-avatar-btn">個人頭像編輯</button>
+                </div>
+
+                <!-- 輸入表單 -->
+                <div class="form-section">
+                    <label>姓名：</label> <input type="text" placeholder="請輸入姓名">
+                    <label>電子郵件：</label> <input type="email" placeholder="請輸入電子郵件">
+                    <label>電話：</label> <input type="tel" placeholder="請輸入電話">
+                    <label>密碼：</label> <input type="password" placeholder="請輸入密碼">
+                </div>
+            </div>
+
+            <!-- 儲存按鈕 -->
+            <button class="save-btn">儲存變更</button>
+            <button class="close-btn" onclick="toggleProfileModal()">返回</button>
+        </div>
+    </div>
+
+    <script>
+        // 切換設定視窗
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+
+            if (modal.classList.contains('show')) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300); // 等動畫結束再隱藏
+            } else {
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+            }
+        }
+
+        // 切換個人資料視窗
+        function toggleProfileModal() {
+            const profileModal = document.getElementById('profile-modal');
+
+            if (profileModal.classList.contains('show')) {
+                profileModal.classList.remove('show');
+                setTimeout(() => {
+                    profileModal.style.display = 'none';
+                }, 300);
+            } else {
+                profileModal.style.display = 'flex';
+                setTimeout(() => {
+                    profileModal.classList.add('show');
+                }, 10);
+            }
+        }
+
+        // 點擊視窗外部關閉
+        window.onclick = function (event) {
+            const settingsModal = document.getElementById('settings-modal');
+            const profileModal = document.getElementById('profile-modal');
+
+            // 如果點擊的目標是 `settingsModal` 本身，則關閉它
+            if (event.target === settingsModal) {
+                toggleSettingsModal();
+            }
+
+            // 如果點擊的目標是 `profileModal` 本身，則關閉它
+            if (event.target === profileModal) {
+                toggleProfileModal();
+            }
+        };
+
+        document.getElementById('avatar-input').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profile-avatar').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const avatarInput = document.getElementById("avatar-input");
+            const profileAvatar = document.getElementById("profile-avatar");
+            const editAvatarBtn = document.querySelector(".edit-avatar-btn");
+
+            // 點擊按鈕時，打開文件選擇視窗
+            editAvatarBtn.addEventListener("click", function () {
+                avatarInput.click();
+            });
+
+            // 當用戶選擇圖片時
+            avatarInput.addEventListener("change", function (event) {
+                const file = event.target.files[0];
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        profileAvatar.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // 添加評價篩選功能
+        document.addEventListener('DOMContentLoaded', function () {
+            const ratingBtns = document.querySelectorAll('.rating-btn');
+            const cards = document.querySelectorAll('.chef-card');
+
+            ratingBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    // 移除所有按鈕的active狀態
+                    ratingBtns.forEach(b => b.classList.remove('active'));
+                    // 為當前按鈕添加active狀態
+                    this.classList.add('active');
+
+                    const selectedRating = this.getAttribute('data-rating');
+
+                    // 顯示或隱藏評價卡片
+                    cards.forEach(card => {
+                        if (selectedRating === 'all' || card.getAttribute('data-rating') === selectedRating) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    <script src="js/notification.js"></script>
+</body>
+
+</html>

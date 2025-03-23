@@ -7,18 +7,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/ALmenu.css" rel="stylesheet" />
+    <link href="css/notification.css" rel="stylesheet" />
     <title>代做菜媒合平台</title>
 </head>
 <body>
     <div class="navbar">
         <div class="site-name">[網站名稱]</div>
         <div class="nav-links">
-            <a href="#">首頁</a>
-            <a href="#">料理方式建議</a>
+            <a href="AfterLogin.html">首頁</a>
+            <a href="CookingMethod.html">料理方式建議</a>
             <a href="SearchChef.html">發送訂單</a>
-            <a href="#">我的訂單</a>
-            <a href="#">通知中心</a>
-
+            <a href="my-order.html">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
         </div>
         <div class="user-info">
             <div class="username">11336012@ntub.edu.tw</div>
@@ -69,6 +69,17 @@
         </div>
     </div>
 
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
+    </div>
+
     <script>
         function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
@@ -79,5 +90,6 @@
             }
         }
     </script>
+    <script src="js/notification.js"></script>
 </body>
 </html>

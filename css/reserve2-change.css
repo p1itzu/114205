@@ -341,12 +341,6 @@ input[type="text"]{
     transform: translateY(-1px); /* 滑鼠移入時上升 3px */
 }
 
-/* 鹹度按鈕選中狀態 */
-.salinity-button.active {
-    background-color: rgb(127, 91, 14);
-    transform: translateY(-1px);
-}
-
 /*辣度*/
 .spiciness-button {
     display: flex;
@@ -374,12 +368,6 @@ input[type="text"]{
 .spiciness-button:hover {
     background-color: rgb(127, 91, 14);
     transform: translateY(-1px); /* 滑鼠移入時上升 3px */
-}
-
-/* 辣度按鈕選中狀態 */
-.spiciness-button.active {
-    background-color: rgb(127, 91, 14);
-    transform: translateY(-1px);
 }
 
 /*油度*/
@@ -411,12 +399,6 @@ input[type="text"]{
     transform: translateY(-1px); /* 滑鼠移入時上升 3px */
 }
 
-/* 油度按鈕選中狀態 */
-.oillevel-button.active {
-    background-color: rgb(127, 91, 14);
-    transform: translateY(-1px);
-}
-
 .bold-text {
     font-weight: bold;
 }
@@ -443,14 +425,14 @@ input[type="text"]{
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s ease; /* 過渡效果 */
-    margin: 10px;
-    float: right; /* 靠右 */
+    margin-right: 100px; /* 保持按鈕間距 */
 }
 
 .save-button:hover {
     background-color: #638253;
     transform: translateY(-3px); /* 滑鼠移入時上升 3px */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
+    margin-right: 20px;
 }
 
 
@@ -467,6 +449,7 @@ input[type="text"]{
     transition: all 0.3s ease; /* 過渡效果 */
     margin: 10px;
     float: right; /* 靠右 */
+    margin-right: 20px;
 }
 
 .next-button:hover {
@@ -488,6 +471,7 @@ input[type="text"]{
     transition: all 0.3s ease; /* 過渡效果 */
     margin: 10px;
     float: right; /* 靠右 */
+    margin-right: 20px;
 }
 
 .delete-button:hover {
@@ -509,6 +493,7 @@ input[type="text"]{
     transition: all 0.3s ease; /* 過渡效果 */
     margin: 10px;
     float: right; /* 靠右 */
+    margin-right: 20px;
 }
 
 .back:hover {
@@ -530,6 +515,7 @@ input[type="text"]{
     transition: all 0.3s ease; /* 過渡效果 */
     margin: 10px;
     float: right; /* 靠右 */
+    margin-right: 20px;
 }
 
 .next:hover {
@@ -542,7 +528,7 @@ input[type="text"]{
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 35px; 
+    margin-right: 20px;
 }
 
 

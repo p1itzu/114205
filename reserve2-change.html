@@ -12,7 +12,7 @@
     <link href="css/reserve2.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <title>代做菜媒合平台</title>
+    <title>修改菜單 - 代做菜媒合平台</title>
 </head>
 
 <body>
@@ -34,7 +34,7 @@
     <div class="content">
         <div class="section">
             <div class="section2">
-                <h3>Step2 - 菜單填寫</h3>
+                <h3>修改菜單</h3>
                 <br>
             </div>
 
@@ -57,7 +57,6 @@
 
                         <br>
 
-
                         <div>
                             <label for="food1" class="bold-text">需要的食材</label>
                             <br>
@@ -78,7 +77,6 @@
                         <div>
                             <label for="food1" class="bold-text">調味</label>
                         </div>
-
 
                         <div class="salinity-container">
                             <label for="food1">鹹度：</label>
@@ -114,20 +112,15 @@
                         <br>
 
                         <div class="button-container">
-                            <button class="back" type="submit" onclick="goToPreviousDish()">⭠</button>
-                            <button class="next" type="submit" onclick="goToNextDish()">⭢</button>
-                            <button class="delete-button" type="submit" onclick="deleteDish()">刪除</button>
-                            <button class="next-button" type="button" onclick="updateDish()">新增下一道</button>
-                            <button class="save-button" type="submit"
-                                onclick="location.href='reserve3.html'">菜單確認</button>
+                            <button class="back" type="button" onclick="goToPreviousDish()">⭠</button>
+                            <button class="next" type="button" onclick="goToNextDish()">⭢</button>
+                            <button class="delete-button" type="button" onclick="deleteDish()">刪除</button>
 
+                            <button class="save-button" type="button" onclick="saveChanges()">儲存修改</button>
                         </div>
-
-
                     </td>
                 </tr>
             </table>
-            </form>
         </div>
     </div>
 
@@ -140,7 +133,6 @@
         <div class="line"></div>
         <div class="step">第4步</div>
     </div>
-
 
     <!-- 設定小視窗 -->
     <div class="settings-modal" id="settings-modal">
@@ -163,28 +155,43 @@
             if (savedDishData) {
                 dishData = JSON.parse(savedDishData);
                 dishCount = Object.keys(dishData).length;
-                renderDish();
+                if (dishCount > 0) {
+                    renderDish();
+                } else {
+                    Swal.fire({
+                        title: "沒有可修改的菜單",
+                        text: "請先在菜單填寫頁面新增菜品",
+                        icon: "warning",
+                        confirmButtonText: "確定"
+                    }).then(() => {
+                        window.location.href = 'reserve2.html';
+                    });
+                }
+            } else {
+                Swal.fire({
+                    title: "沒有可修改的菜單",
+                    text: "請先在菜單填寫頁面新增菜品",
+                    icon: "warning",
+                    confirmButtonText: "確定"
+                }).then(() => {
+                    window.location.href = 'reserve2.html';
+                });
             }
         });
 
         function updateDish() {
-            // 儲存目前輸入的內容
             saveCurrentDishData();
-            
-            dishCount++; // 增加菜品數量
-            currentDishIndex = dishCount; // 切換到最新的菜品
-
-            renderDish(); // 更新畫面
-            saveTolocalStorage(); // 保存到localStorage
+            dishCount++;
+            currentDishIndex = dishCount;
+            renderDish();
+            saveTolocalStorage();
         }
 
         function saveCurrentDishData() {
-            // 獲取所選的調味按鈕
             const selectedSalinity = document.querySelector('.salinity-button.active')?.textContent || '';
             const selectedSpiciness = document.querySelector('.spiciness-button.active')?.textContent || '';
             const selectedOilLevel = document.querySelector('.oillevel-button.active')?.textContent || '';
 
-            // 抓取目前的輸入值並存入 dishData
             dishData[currentDishIndex] = {
                 name: document.getElementById("dish-name").value,
                 portion: document.getElementById("custom-number").value,
@@ -196,7 +203,7 @@
                 oilLevel: selectedOilLevel
             };
             
-            saveTolocalStorage(); // 保存到localStorage
+            saveTolocalStorage();
         }
 
         function saveTolocalStorage() {
@@ -204,10 +211,8 @@
         }
 
         function renderDish() {
-            // 更新標題
             document.querySelector(".bold-text").textContent = `第 ${currentDishIndex} 道餐點`;
 
-            // 讀取 dishData，如果沒有該道菜的資料則清空
             const data = dishData[currentDishIndex] || {};
             document.getElementById("dish-name").value = data.name || "";
             document.getElementById("custom-number").value = data.portion || "";
@@ -215,12 +220,10 @@
             document.getElementById("special").value = data.special || "";
             document.getElementById("customized").value = data.customized || "";
 
-            // 重置所有調味按鈕的狀態
             document.querySelectorAll('.salinity-button, .spiciness-button, .oillevel-button').forEach(btn => {
                 btn.classList.remove('active');
             });
 
-            // 設置已保存的調味按鈕狀態
             if (data.salinity) {
                 document.querySelector(`.salinity-button[data-value="${data.salinity}"]`)?.classList.add('active');
             }
@@ -273,10 +276,8 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // 刪除當前菜品的數據
                     delete dishData[currentDishIndex];
                     
-                    // 重新整理菜品編號
                     const newDishData = {};
                     let newIndex = 1;
                     Object.values(dishData).forEach(dish => {
@@ -289,39 +290,52 @@
                     dishData = newDishData;
                     dishCount = Object.keys(dishData).length;
                     
-                    // 如果刪除的是最後一道菜，將當前索引減1
-                    if (currentDishIndex > dishCount) {
-                        currentDishIndex = dishCount;
+                    if (dishCount === 0) {
+                        Swal.fire({
+                            title: "菜單已清空",
+                            text: "即將返回菜單填寫頁面",
+                            icon: "info",
+                            confirmButtonText: "確定"
+                        }).then(() => {
+                            window.location.href = 'reserve2.html';
+                        });
+                    } else {
+                        if (currentDishIndex > dishCount) {
+                            currentDishIndex = dishCount;
+                        }
+                        saveTolocalStorage();
+                        renderDish();
                     }
-                    
-                    saveTolocalStorage();
-                    renderDish();
                 }
             });
         }
 
-        // 為所有調味按鈕添加點擊事件
-        document.addEventListener('DOMContentLoaded', function() {
-            // 為所有調味按鈕添加點擊事件
-            document.querySelectorAll('.salinity-button, .spiciness-button, .oillevel-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    // 移除同類按鈕的 active 狀態
-                    const buttonType = this.className.split('-')[0]; // 獲取按鈕類型（salinity/spiciness/oillevel）
-                    document.querySelectorAll(`.${buttonType}-button`).forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    
-                    // 為當前按鈕添加 active 狀態
-                    this.classList.add('active');
-                    
-                    // 保存當前選擇
-                    saveCurrentDishData();
+        function saveChanges() {
+            saveCurrentDishData();
+            Swal.fire({
+                title: "修改已儲存",
+                icon: "success",
+                confirmButtonText: "確定"
+            }).then(() => {
+                window.location.href = 'reserve3.html';
+            });
+        }
+
+        // 為調味按鈕添加點擊事件
+        document.querySelectorAll('.salinity-button, .spiciness-button, .oillevel-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const buttonType = this.className.split('-')[0];
+                document.querySelectorAll(`.${buttonType}-button`).forEach(btn => {
+                    btn.classList.remove('active');
                 });
+                
+                this.classList.add('active');
+                saveCurrentDishData();
             });
         });
     </script>
-
-
 
 </body>
 
