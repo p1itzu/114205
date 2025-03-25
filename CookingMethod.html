@@ -47,7 +47,7 @@
             <img src="imgs/印度烤餅.jpg" alt="印度烤餅">
             <h3>印度烤餅</h3>
         </div>
-        
+
         <div class="recipe-card" onclick="showRecipeModal('日式炸豬排')">
             <img src="imgs/日式炸豬排.jpg" alt="日式炸豬排">
             <h3>日式炸豬排</h3>
@@ -155,7 +155,8 @@
                 <div class="avatar-section">
                     <img id="profile-avatar" class="profile-avatar" src="imgs/chef.png" alt="個人頭像">
                     <input type="file" id="avatar-input" accept="image/*" style="display: none;">
-                    <button class="edit-avatar-btn" onclick="document.getElementById('avatar-input').click()">個人頭像編輯</button>
+                    <button class="edit-avatar-btn"
+                        onclick="document.getElementById('avatar-input').click()">個人頭像編輯</button>
                 </div>
 
                 <!-- 輸入表單 -->
@@ -186,7 +187,8 @@
         // 食譜資料
         const recipes = {
             '印度烤餅': {
-                ingredients: `• 中筋麵粉：2 杯
+                ingredients:
+`• 中筋麵粉：2 杯
 • 酵母粉：1 茶匙
 • 溫水：1/2 杯（約 40°C，微溫）
 • 砂糖：1 茶匙
@@ -195,22 +197,26 @@
 • 鹽：1/2 茶匙
 • 大蒜碎（可選）：適量，增香用
 • 奶油或酥油（塗表面用）：適量`,
-                steps: `1. 製作麵團
-1. 將酵母粉和砂糖加入溫水中，靜置 5-10 分鐘，讓酵母活化（會起泡泡）。
-2. 在大碗中混合麵粉和鹽，加入活化好的酵母水、優格和油，揉成麵團。
-3. 把麵團揉至表面光滑（約 8-10 分鐘），如果太黏可以撒少量麵粉。
-4. 用清布或保鮮膜蓋住麵團，放在溫暖的地方發酵約 1 小時，直到麵團變成兩倍大。
+                steps: 
+`1.準備發酵
+在溫水中加入乾酵母與糖，攪拌後靜置約 5~10分鐘，直到表面出現泡沫，表示酵母已活化。
 
-2. 整形與醱酵
-1. 將發好的麵團分成 6-8 等份，揉圓。
-2. 將每份麵團用擀麵棍擀成橢圓形或圓形（厚度約 0.5 公分），不必太完美。
+2.揉麵糰
+將中筋麵粉、鹽放入大碗中，加入優格、橄欖油，倒入發酵的酵母水。
+用手或攪拌機揉成光滑的麵糰，約 10分鐘，直到麵糰不黏手且有彈性。
 
-3. 取烤
-1. 預熱平底鍋（最好用厚底鑄鐵鍋），不用加油，保持中高火。
-2. 將擀好的麵皮放入鍋中，當麵皮表面出現氣泡、底部微焦時翻面（約 1 分鐘）。
-3. 翻面後再煎約 1 分鐘，直到兩面都呈現金黃斑點。
-4. 塗奶油或加料
-• 煎好的烤餅趁熱塗上奶油或酥油，可以撒上大蒜碎、香菜末等增添風味。`
+3.發酵
+將麵糰放入抹油的碗中，蓋上濕布或保鮮膜，靜置 1小時，讓麵糰發酵至兩倍大。
+
+4.整形
+發酵後，將麵糰取出排氣，分成 6等份，滾圓後擀成 橢圓形或圓形（約0.5公分厚）。
+
+5.煎烤烤餅
+平底鍋加熱（不放油），轉中高火，將麵餅放入鍋中。
+烤約 1~2分鐘，當底部出現焦斑、膨脹時翻面，再烤 1~2分鐘，直到兩面微焦且膨起即可。
+
+6.塗抹奶油（可選）
+出鍋後，可塗上一層融化奶油，撒上大蒜末或香菜，增加風味。`
             },
             '日式炸豬排': {
                 ingredients: `• 豬里肌肉：2片（約200g一片）
@@ -225,24 +231,28 @@
 醬汁：
 • 豬排醬：3大匙
 • 辣芥末：適量`,
-                steps: `1. 豬排準備
-1. 豬里肌肉兩面輕輕劃出刀痕（不要切斷）。
-2. 用肉槌輕輕敲打至約1公分厚。
-3. 灑上適量鹽和黑胡椒醃製10分鐘。
+                steps: 
+`1.處理豬排
+將豬排的筋用刀切斷幾處，以防炸後捲曲。用肉錘或刀背輕輕敲打，使肉質更嫩。
 
-2. 裹粉
-1. 準備三個盤子分別放入麵粉、蛋液、麵包粉。
-2. 豬排先裹上麵粉，再沾蛋液，最後裹上麵包粉。
-3. 輕輕拍打使麵包粉確實附著。
+2.調味
+在豬排兩面均勻撒上鹽和黑胡椒，靜置約5分鐘入味。
 
-3. 油炸
-1. 熱油至170度（放入筷子會冒出細小氣泡）。
-2. 放入豬排，中小火炸至兩面金黃酥脆（約3-4分鐘）。
-3. 取出後立刻瀝油，靜置1分鐘。
+3.裹粉
+依序將豬排沾上 低筋麵粉 → 蛋液 → 麵包粉，確保每層都均勻覆蓋。
 
-4. 擺盤
-1. 切成條狀，搭配切絲高麗菜。
-2. 淋上豬排醬，搭配辣芥末享用。`
+4.靜置
+將裹好粉的豬排放置5~10分鐘，讓麵包粉固定，避免炸時脫落。
+
+5.炸豬排
+鍋中倒入足夠的油，加熱至 170~180°C（放一小塊麵包粉進去，約2秒內浮起即為適合的溫度）。
+將豬排放入油鍋，炸約 3~4分鐘，翻面後再炸 2~3分鐘，至表面金黃酥脆。
+
+6.瀝油
+取出炸好的豬排，放在廚房紙巾或瀝油架上，靜置約2分鐘，使內部肉汁回流，口感更佳。
+
+7.切片與擺盤
+將豬排切成約 2公分寬的條狀，搭配高麗菜絲、檸檬片和日式炸豬排醬（とんかつソース）食用。`
             },
             '泰式打拋豬': {
                 ingredients: `• 絞肉：300g
@@ -259,20 +269,24 @@
 配菜：
 • 白飯
 • 荷包蛋`,
-                steps: `1. 醬料調製
-1. 將魚露、蠔油、醬油和糖混合，攪拌均勻備用。
+                steps: `
+1.準備食材
+蒜頭與辣椒切末，洋蔥切絲，九層塔葉洗淨備用。
 
-2. 炒製
-1. 熱鍋下油，爆香蒜末和辣椒。
-2. 加入絞肉，用中大火快炒至變色。
-3. 加入調製好的醬料，快速翻炒。
-4. 最後加入打拋葉，快速翻炒至葉子軟化。
-5. 撒上白胡椒粉調味。
+2.熱鍋爆香
+鍋中倒入1大匙油，加熱後放入蒜末與辣椒，中小火炒香。
 
-3. 擺盤
-1. 將打拋豬盛盤，搭配白飯。
-2. 上方放上煎好的荷包蛋。
-3. 可依個人喜好添加辣椒。`
+3.炒肉
+加入絞豬肉，大火拌炒至變色，炒到肉稍微焦香。
+
+4.調味
+依序加入魚露、蠔油、醬油、砂糖，拌炒均勻後倒入2大匙水，讓肉吸收醬汁。
+
+5.加入九層塔
+起鍋前轉小火，加入九層塔葉，快速翻炒幾下至稍微軟化即可關火。
+
+6.盛盤
+與白飯一起盛盤，搭配煎好的荷包蛋享用。`
             },
             '韓式泡菜炒飯': {
                 ingredients: `• 白飯：2碗
@@ -285,22 +299,23 @@
 • 食用油：2大匙
 • 醬油：1大匙
 • 韓式辣椒粉：1小匙（可依口味調整）`,
-                steps: `1. 準備
-1. 泡菜切小塊，豬肉絲醃製（醬油、蒜末）10分鐘。
-2. 蔥花切段，蒜切末。
+                steps: `
+1.炒香泡菜
+熱鍋加1大匙油，放入蒜末與洋蔥丁炒香。
+加入泡菜，炒至香氣釋放並帶有些許焦香。
 
-2. 炒製
-1. 熱鍋下油，先炒香蒜末。
-2. 加入豬肉絲快炒至變色。
-3. 加入泡菜炒香。
-4. 加入白飯，用中大火快炒。
-5. 加入醬油、韓式辣椒粉調味。
-6. 最後加入蔥花和香油。
+2.炒肉（可省略）
+若使用豬肉或午餐肉，加入鍋中拌炒至熟。
 
-3. 完成
-1. 另起一鍋煎荷包蛋。
-2. 將炒飯盛盤，上方放上荷包蛋。
-3. 可撒上海苔絲點綴。`
+3.加入白飯
+倒入白飯，用鍋鏟壓散，使飯均勻混合泡菜。
+
+4.調味
+加入韓式辣醬、醬油、砂糖（可選），翻炒均勻，使醬料包裹每顆米飯。
+
+5.收尾與盛盤
+起鍋前淋上芝麻油增添香氣，拌勻後關火。
+盛盤，撒上蔥花與白芝麻，可搭配煎好的荷包蛋享用。`
             },
             '義式青醬麵': {
                 ingredients: `青醬：
@@ -316,23 +331,24 @@
 • 義大利麵：200g
 • 櫻桃番茄：10顆
 • 橄欖油：適量`,
-                steps: `1. 製作青醬
-1. 將松子烤香。
-2. 將羅勒葉、蒜末、松子放入食物調理機。
-3. 加入橄欖油打成醬狀。
-4. 加入帕瑪森起司、鹽和黑胡椒調味。
+                steps: `
+1. 製作青醬
+乾炒松子（可選）：中小火乾炒松子至微金黃，讓香氣更濃郁。
+攪拌青醬：將九層塔、松子、大蒜、帕瑪森起司放入調理機（或食物處理機），加入鹽與黑胡椒，倒入橄欖油，攪拌至濃稠醬狀。（不需攪拌過久，以保留清新口感）
+調整口味：若太稠可再加點橄欖油，味道可依個人口味增減鹽和黑胡椒。
 
-2. 煮麵
-1. 大鍋煮水，加入適量鹽。
-2. 放入義大利麵，依包裝指示時間煮至al dente。
-3. 瀝乾麵條，保留一些煮麵水。
+2. 煮義大利麵
+煮麵：大鍋加水煮沸，加入1小匙鹽，再放入義大利麵，依包裝時間煮至「彈牙」（約8~10分鐘）。
+瀝水：撈出義大利麵，保留約 50ml 煮麵水，以備混合青醬時使用。
 
-3. 完成
-1. 熱鍋，倒入適量橄欖油。
-2. 加入青醬和煮好的麵條拌炒。
-3. 加入櫻桃番茄。
-4. 可視需要加入煮麵水調整醬汁濃稠度。
-5. 最後撒上帕瑪森起司絲即可。`
+3. 拌炒義大利麵
+熱鍋，加入1小匙橄欖油，放入煮好的義大利麵，轉小火。
+倒入青醬，加入適量煮麵水，使醬汁更均勻地包裹麵條。快速拌勻後關火。
+
+4. 盛盤與裝飾
+將義大利麵盛入盤中，撒上帕瑪森起司，可再淋少許橄欖油提升香氣。
+
+`
             },
             '日式親子丼': {
                 ingredients: `• 雞腿肉：200g
@@ -349,25 +365,21 @@
 配料：
 • 白飯：2碗
 • 海苔絲：適量`,
-                steps: `1. 準備
-1. 雞腿肉切小塊。
-2. 洋蔥切絲。
-3. 蔥花切段。
-4. 雞蛋打散。
+                steps: `
+1.準備食材
+雞腿肉切塊，洋蔥切絲，雞蛋打散備用。
 
-2. 調味料
-1. 將醬油、味醂、高湯和糖混合。
+2.煮醬汁與雞肉
+在鍋中加入醬油、味醂、清酒、砂糖與高湯，開中火加熱。
+放入洋蔥絲煮軟，再加入雞腿肉，煮至變色且熟透。
 
-3. 烹調
-1. 鍋中倒入調味料，煮至沸騰。
-2. 加入雞肉塊和洋蔥，煮至雞肉熟透。
-3. 將打散的雞蛋緩緩倒入，蓋上鍋蓋燜煮約1分鐘。
-4. 最後撒上蔥花。
+3.加入蛋液
+轉小火，倒入 2/3 的蛋液，蓋上鍋蓋燜煮約 30秒~1分鐘，讓蛋液稍微凝固但仍保有滑嫩口感。
+最後再淋上剩餘的蛋液，讓表面呈現半熟狀態，熄火。
 
-4. 擺盤
-1. 將白飯盛碗。
-2. 將親子丼料淋在飯上。
-3. 撒上海苔絲點綴。`
+4.盛盤與裝飾
+準備好白飯，將煮好的親子丼淋在飯上。
+可放上一顆 半熟蛋黃 提升濃郁度，撒上蔥花增添香氣。`
             }
         };
 
@@ -375,7 +387,7 @@
         function showRecipeModal(recipeName) {
             document.getElementById('recipeModal').style.display = 'block';
             document.getElementById('recipeName').textContent = recipeName;
-            
+
             // 填入對應的食譜內容
             if (recipes[recipeName]) {
                 document.getElementById('ingredientsList').innerText = recipes[recipeName].ingredients;
@@ -395,12 +407,12 @@
                 // 顯示複製成功提示視窗
                 const toast = document.getElementById('copyToast');
                 toast.classList.add('show');
-                
+
                 // 2秒後自動隱藏提示視窗
                 setTimeout(() => {
                     toast.classList.remove('show');
                 }, 2000);
-                
+
                 // 更改按鈕圖示
                 const button = event.currentTarget;
                 const originalImg = button.innerHTML;
@@ -417,7 +429,7 @@
             const recipes = document.getElementsByClassName('recipe-card');
             const returnButton = document.getElementById('returnButton');
             let hasHiddenRecipes = false;
-            
+
             Array.from(recipes).forEach(recipe => {
                 const title = recipe.getElementsByTagName('h3')[0].textContent.toLowerCase();
                 if (title.includes(searchText)) {
@@ -437,28 +449,28 @@
             const recipes = document.getElementsByClassName('recipe-card');
             const returnButton = document.getElementById('returnButton');
             const searchInput = document.getElementById('searchInput');
-            
+
             // 清空搜尋欄
             searchInput.value = '';
-            
+
             // 顯示所有菜色
             Array.from(recipes).forEach(recipe => {
                 recipe.style.display = '';
             });
-            
+
             // 隱藏返回按鈕
             returnButton.style.display = 'none';
         }
 
         // 添加按Enter鍵也能搜尋的功能
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 filterRecipes();
             }
         });
 
         // 點擊視窗外關閉視窗
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('recipeModal');
             const settingsModal = document.getElementById('settings-modal');
             const profileModal = document.getElementById('profile-modal');
@@ -494,7 +506,7 @@
                 // 確保個人資料視窗是關閉的
                 profileModal.classList.remove('show');
                 profileModal.style.display = 'none';
-                
+
                 modal.style.display = 'flex';
                 setTimeout(() => {
                     modal.classList.add('show');
@@ -512,7 +524,7 @@
                 setTimeout(() => {
                     profileModal.style.display = 'none';
                 }, 300);
-                
+
                 // 顯示設定視窗
                 settingsModal.style.display = 'flex';
                 setTimeout(() => {
@@ -524,7 +536,7 @@
                 setTimeout(() => {
                     settingsModal.style.display = 'none';
                 }, 300);
-                
+
                 // 顯示個人資料視窗
                 profileModal.style.display = 'flex';
                 setTimeout(() => {
@@ -534,11 +546,11 @@
         }
 
         // 頭像上傳預覽
-        document.getElementById('avatar-input').addEventListener('change', function(e) {
+        document.getElementById('avatar-input').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     document.getElementById('profile-avatar').src = e.target.result;
                 }
                 reader.readAsDataURL(file);
@@ -546,16 +558,16 @@
         });
 
         // 確保在 DOM 載入完成後綁定事件
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 綁定頭像編輯按鈕點擊事件
             const editAvatarBtn = document.querySelector('.edit-avatar-btn');
             const avatarInput = document.getElementById('avatar-input');
-            
-            editAvatarBtn.addEventListener('click', function() {
+
+            editAvatarBtn.addEventListener('click', function () {
                 avatarInput.click();
             });
         });
     </script>
 </body>
 
-</html> 
+</html>
