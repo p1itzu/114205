@@ -9,8 +9,8 @@
         rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="css/SearchChef.css" rel="stylesheet" />
-    <link href="css/notification.css" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/SearchChef.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/notification.css') }}" rel="stylesheet" />
     <title>尋找廚師</title>
 </head>
 
@@ -18,10 +18,10 @@
     <div class="navbar">
         <div class="site-name">[網站名稱]</div>
         <div class="nav-links">
-            <a href="AfterLogin.html">首頁</a>
-            <a href="CookingMethod.html">料理方式建議</a>
-            <a href="SearchChef.html">發送訂單</a>
-            <a href="my-order.html">我的訂單</a>
+            <a href="/AfterLogin">首頁</a>
+            <a href="/CookingMethod">料理方式建議</a>
+            <a href="/SearchChef">發送訂單</a>
+            <a href="/my-order">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
         </div>
         <div class="user-info">
@@ -50,7 +50,7 @@
                     <table>
                         <tr>
                             <td class="chef-img">
-                                <img src="imgs/chef.png" alt="廚師照片" class="chef-img">
+                                <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="廚師照片" class="chef-img">
                             </td>
                             <td>
                                 <div class="chef-info">
@@ -62,10 +62,10 @@
                         </tr>
                         <tr>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='reserve.html'">預約</button>
+                                <button class="order-btn" onclick="window.location.href='/reserve'">預約</button>
                             </td>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='evaluate.html'">查看評價</button>
+                                <button class="order-btn" onclick="window.location.href='/evaluate'">查看評價</button>
                             </td>
                         </tr>
                     </table>
@@ -74,7 +74,7 @@
                     <table>
                         <tr>
                             <td class="chef-img">
-                                <img src="imgs/chef.png" alt="廚師照片" class="chef-img">
+                                <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="廚師照片" class="chef-img">
                             </td>
                             <td>
                                 <div class="chef-info">
@@ -86,10 +86,10 @@
                         </tr>
                         <tr>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='reserve.html'">預約</button>
+                                <button class="order-btn" onclick="window.location.href='/reserve'">預約</button>
                             </td>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='evaluate.html'">查看評價</button>
+                                <button class="order-btn" onclick="window.location.href='/evaluate'">查看評價</button>
                             </td>
                         </tr>
                     </table>
@@ -98,7 +98,7 @@
                     <table>
                         <tr>
                             <td class="chef-img">
-                                <img src="imgs/chef.png" alt="廚師照片" class="chef-img">
+                                <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="廚師照片" class="chef-img">
                             </td>
                             <td>
                                 <div class="chef-info">
@@ -110,10 +110,10 @@
                         </tr>
                         <tr>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='reserve.html'">預約</button>
+                                <button class="order-btn" onclick="window.location.href='/reserve'">預約</button>
                             </td>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='evaluate.html'">查看評價</button>
+                                <button class="order-btn" onclick="window.location.href='/evaluate'">查看評價</button>
                             </td>
                         </tr>
                     </table>
@@ -122,7 +122,7 @@
                     <table>
                         <tr>
                             <td class="chef-img">
-                                <img src="imgs/chef.png" alt="廚師照片" class="chef-img">
+                                <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="廚師照片" class="chef-img">
                             </td>
                             <td>
                                 <div class="chef-info">
@@ -134,10 +134,10 @@
                         </tr>
                         <tr>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='reserve.html'">預約</button>
+                                <button class="order-btn" onclick="window.location.href='/reserve'">預約</button>
                             </td>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='evaluate.html'">查看評價</button>
+                                <button class="order-btn" onclick="window.location.href='/evaluate'">查看評價</button>
                             </td>
                         </tr>
                     </table>
@@ -146,7 +146,7 @@
                     <table>
                         <tr>
                             <td class="chef-img">
-                                <img src="imgs/chef.png" alt="廚師照片" class="chef-img">
+                                <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="廚師照片" class="chef-img">
                             </td>
                             <td>
                                 <div class="chef-info">
@@ -158,10 +158,10 @@
                         </tr>
                         <tr>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='reserve.html'">預約</button>
+                                <button class="order-btn" onclick="window.location.href='/reserve'">預約</button>
                             </td>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='evaluate.html'">查看評價</button>
+                                <button class="order-btn" onclick="window.location.href='/evaluate'">查看評價</button>
                             </td>
                         </tr>
                     </table>
@@ -170,7 +170,7 @@
                     <table>
                         <tr>
                             <td class="chef-img">
-                                <img src="imgs/chef.png" alt="廚師照片" class="chef-img">
+                                <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="廚師照片" class="chef-img">
                             </td>
                             <td>
                                 <div class="chef-info">
@@ -182,10 +182,10 @@
                         </tr>
                         <tr>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='reserve.html'">預約</button>
+                                <button class="order-btn" onclick="window.location.href='/reserve'">預約</button>
                             </td>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='evaluate.html'">查看評價</button>
+                                <button class="order-btn" onclick="window.location.href='/evaluate'">查看評價</button>
                             </td>
                         </tr>
                     </table>
@@ -194,7 +194,7 @@
                     <table>
                         <tr>
                             <td class="chef-img">
-                                <img src="imgs/chef.png" alt="廚師照片" class="chef-img">
+                                <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="廚師照片" class="chef-img">
                             </td>
                             <td>
                                 <div class="chef-info">
@@ -206,10 +206,10 @@
                         </tr>
                         <tr>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='reserve.html'">預約</button>
+                                <button class="order-btn" onclick="window.location.href='/reserve'">預約</button>
                             </td>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='evaluate.html'">查看評價</button>
+                                <button class="order-btn" onclick="window.location.href='/evaluate'">查看評價</button>
                             </td>
                         </tr>
                     </table>
@@ -218,7 +218,7 @@
                     <table>
                         <tr>
                             <td class="chef-img">
-                                <img src="imgs/chef.png" alt="廚師照片" class="chef-img">
+                                <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="廚師照片" class="chef-img">
                             </td>
                             <td>
                                 <div class="chef-info">
@@ -230,10 +230,10 @@
                         </tr>
                         <tr>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='reserve.html'">預約</button>
+                                <button class="order-btn" onclick="window.location.href='/reserve'">預約</button>
                             </td>
                             <td>
-                                <button class="order-btn" onclick="window.location.href='evaluate.html'">查看評價</button>
+                                <button class="order-btn" onclick="window.location.href='/evaluate'">查看評價</button>
                             </td>
                         </tr>
                     </table>
@@ -263,7 +263,7 @@
             <div class="section">
                 <h3>帳號</h3>
                 <div class="account-info">
-                    <img src="imgs/chef.png" alt="Avatar" class="avatar">
+                    <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="Avatar" class="avatar">
                     <div class="account-text">
                         <p class="name">PeiTzu Chang</p>
                         <p class="sub-text">個人資料</p>
@@ -293,7 +293,7 @@
                 <!-- 頭像區塊 -->
                 <div class="avatar-section">
                     <label for="avatar-input">
-                        <img id="profile-avatar" class="profile-avatar" src="imgs/chef.png" alt="個人頭像">
+                        <img id="profile-avatar" class="profile-avatar" src="{{ url_for('static', filename='imgs/chef.png') }}" alt="個人頭像">
                     </label>
                     <input type="file" id="avatar-input" accept="image/*" style="display: none;">
                     <button class="edit-avatar-btn">個人頭像編輯</button>
@@ -406,7 +406,7 @@
             });
         });
     </script>
-    <script src="js/notification.js"></script>
+    <script src="{{ url_for('static', filename='js/notification.js') }}"></script>
 </body>
 
 </html>

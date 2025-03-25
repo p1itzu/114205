@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>廚師登入</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ChefLogin.css') }}">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        /* 確保 successModal 預設隱藏 */
+        #successModal {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="left-section"></div>
+    <div class="right-section">
+        <div class="top-right-link">
+            尚未註冊帳號？<a href="/ChefRegister" class="login-button">註冊</a>
+        </div>
+        <div class="form-container">
+            <h2>Welcome to [系統名稱]！</h2>
+            <form onsubmit="validateForm(event)">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="密碼 (8位數字+字母)" required>
+                <button type="submit" class="button">登入</button>
+            </form>
+
+            <div class="divider"><span>or</span></div>
+
+            <div id="g_id_onload" class="google-login" data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                data-callback="handleCredentialResponse">
+            </div>
+            <div class="g_id_signin" data-type="standard"></div>
+        </div>
+    </div>
+
+    <div id="successModal" class="modal">
+        <p>註冊成功！</p>
+        <button onclick="closeModal()">關閉</button>
+    </div>
+
+    <script>
+        function validateForm(event) {
+            event.preventDefault();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            let errorMessage = "";
+
+            // 驗證 Email 格式
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                errorMessage += "請輸入有效的電子郵件\n";
+            }
+
+            // 驗證密碼是否有輸入
+            if (!password) {
+                errorMessage += "請輸入密碼\n";
+            }
+
+            if (errorMessage) {
+                alert(errorMessage);
+            } else {
+                // ✅ 登入成功後立即跳轉
+                window.location.href = "/AfterLogin";
+            }
+        }
+
+        function closeModal() {
+            document.getElementById("successModal").style.display = "none";
+        }
+
+        function handleCredentialResponse(response) {
+            console.log("Google 登入成功", response);
+            // ✅ Google 登入成功後立即跳轉
+            window.location.href = "/AfterLogin";
+        }
+    </script>
+
+
+</body>
+
+</html>

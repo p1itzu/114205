@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ChefMain.css') }}">
+    <title>訂單管理系統</title>
+    <script>
+        function generateCalendar() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+            document.getElementById("calendar-header").innerText = monthNames[month] + " " + year;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            let calendarHTML = "<div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>";
+            for (let i = 0; i < firstDay; i++) {
+                calendarHTML += "<div></div>";
+            }
+            for (let day = 1; day <= daysInMonth; day++) {
+                calendarHTML += `<div>${day}</div>`;
+            }
+            document.getElementById("calendar").innerHTML = calendarHTML;
+        }
+        function editProfile() {
+            let name = prompt("請輸入您的姓名", document.getElementById("chef-name").innerText);
+            let style = prompt("請輸入您的擅長料理方式", document.getElementById("chef-style").innerText);
+            let specialty = prompt("請輸入您的擅長菜色", document.getElementById("chef-specialty").innerText);
+
+            if (name) document.getElementById("chef-name").innerText = name;
+            if (style) document.getElementById("chef-style").innerText = style;
+            if (specialty) document.getElementById("chef-specialty").innerText = specialty;
+        }
+        window.onload = function () {
+            generateCalendar();
+        };
+        function toggleDropdown() {
+            document.getElementById("orderDropdown").classList.toggle("show");
+        }
+
+        // 點擊其他地方時關閉下拉選單
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div class="site-name">[網站名稱]</div>
+            <div class="nav-links">
+                <a href="/ChefAfterLogin">首頁</a>
+                <a href="/ChefMain">我的頁面</a>
+                <a href="/ChefUnOrder">待接單訂單</a>
+
+                <!-- 新增下拉選單 -->
+                <div class="dropdown">
+                    <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                    <div class="dropdown-content" id="orderDropdown">
+                        <a href="/ChefOrder">待完成訂單</a>
+                        <a href="/OrderDone">已完成訂單</a>
+                        <a href="/Charging">議價中訂單</a>
+                        <a href="/CancelOrder">已取消訂單</a>
+                    </div>
+                </div>
+
+                <a href="#">客服聯絡</a>
+            </div>
+            <div class="user-info">
+                <div class="username">11336012@ntub.edu.tw</div>
+                <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="box profile">
+                <div class="profile-content">
+                    <button class="edit-button" onclick="editProfile()">編輯</button>
+                    <div class="profile-image">
+                        <img id="chef-photo" src="{{ url_for('static', filename='imgs/chef.png') }}" alt="廚師照片">
+                    </div>
+                    <div class="profile-text">
+                        <h2 id="chef-name">伍慕君</h2>
+                        <p><strong>擅長料理方式：</strong> <span id="chef-style">中式料理</span></p>
+                        <p><strong>擅長菜色：</strong> <span id="chef-specialty">紅燒牛肉麵</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box square-box notifications">
+                <div class="notification-icon">🔔</div>
+                <ul>
+                    <li><a href="#">#20250125066的訂單顧客回覆</a></li>
+                    <li><a href="#">#20250125066的議價失敗</a></li>
+                    <li><a href="#">#20250125066的議價成功</a></li>
+                </ul>
+            </div>
+
+            <div class="right-section">
+                <div class="box square-box calendar-box">
+                    <div class="calendar-header" id="calendar-header"></div>
+                    <div id="calendar" class="calendar"></div>
+                </div>
+                <div class="orders">
+                    <div class="order-item"><a href="#">訂單編號 #1001</a></div>
+                    <div class="order-item"><a href="#">訂單編號 #1002</a></div>
+                    <div class="order-item"><a href="#">訂單編號 #1003</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
