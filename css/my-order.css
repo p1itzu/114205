@@ -493,6 +493,8 @@ div.footer {
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
+    text-decoration: none; /* 移除底線 */
+    text-align: center; /* 讓文字水平置中 */
 }
 
 .order-btn:hover {

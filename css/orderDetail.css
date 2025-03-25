@@ -648,3 +648,10 @@ input[type="text"]:not(.text-input) {
 .price-negotiation {
     margin-left: 0; /* 保證內部區域的內容不受影響 */
 }
+
+.price-input,
+.text-input,
+.submit-btn,
+.note {
+    display: none;
+}

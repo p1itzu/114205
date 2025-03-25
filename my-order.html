@@ -65,7 +65,7 @@
             </p>
             <div class="button-group">
                 <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
-                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
             </div>
         </div>
 
@@ -105,7 +105,7 @@
             </p>
             <div class="button-group">
                 <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
-                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
             </div>
         </div>
         <div class="order-card" data-status="ongoing">
@@ -124,7 +124,7 @@
             </p>
             <div class="button-group">
                 <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
-                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
             </div>
         </div>
         <!-- 已完成訂單卡片 -->
@@ -143,7 +143,7 @@
             </p>
             <div class="button-group">
                 <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
-                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
             </div>
         </div>
         <div class="order-card" data-status="completed">
@@ -161,7 +161,7 @@
             </p>
             <div class="button-group">
                 <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
-                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
             </div>
         </div>
         <!-- 已取消訂單卡片 -->
@@ -180,7 +180,7 @@
             </p>
             <div class="button-group">
                 <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
-                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
             </div>
         </div>
         <div class="order-card" data-status="cancelled">
@@ -198,66 +198,66 @@
             </p>
             <div class="button-group">
                 <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
-                <button class="order-btn" onclick="window.location.href='orderDetail.html'">查看詳細訂單資訊</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
             </div>
         </div>
         <!-- 設定小視窗 -->
-     <div class="settings-modal" id="settings-modal">
-        <div class="modal-content">
-            <h2 class="title">設定</h2>
+        <div class="settings-modal" id="settings-modal">
+            <div class="modal-content">
+                <h2 class="title">設定</h2>
 
-            <!-- 帳號區塊 -->
-            <div class="section2">
-                <h3>帳號</h3>
-                <div class="account-info">
-                    <img src="imgs/chef.png" alt="Avatar" class="avatar">
-                    <div class="account-text">
-                        <p class="name">PeiTzu Chang</p>
-                        <p class="sub-text">個人資料</p>
+                <!-- 帳號區塊 -->
+                <div class="section2">
+                    <h3>帳號</h3>
+                    <div class="account-info">
+                        <img src="imgs/chef.png" alt="Avatar" class="avatar">
+                        <div class="account-text">
+                            <p class="name">PeiTzu Chang</p>
+                            <p class="sub-text">個人資料</p>
+                        </div>
+                        <button class="arrow-btn" onclick="toggleProfileModal()">➜</button>
                     </div>
-                    <button class="arrow-btn" onclick="toggleProfileModal()">➜</button>
                 </div>
-            </div>
 
-            <!-- 其他 -->
-            <div class="section2">
-                <h3>其他</h3>
-                <button class="logout-btn">
-                    <span>↩️ 登出</span>
-                </button>
-                <button class="delete-btn">
-                    🗑️ 刪除帳號
-                </button>
+                <!-- 其他 -->
+                <div class="section2">
+                    <h3>其他</h3>
+                    <button class="logout-btn">
+                        <span>↩️ 登出</span>
+                    </button>
+                    <button class="delete-btn">
+                        🗑️ 刪除帳號
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- 第二個個人資料視窗 -->
-    <div class="settings-modal" id="profile-modal">
-        <div class="modal-content profile-content">
-            <h2 class="title">個人資料編輯</h2>
+        <!-- 第二個個人資料視窗 -->
+        <div class="settings-modal" id="profile-modal">
+            <div class="modal-content profile-content">
+                <h2 class="title">個人資料編輯</h2>
 
-            <div class="profile-container">
-                <!-- 頭像區塊 -->
-                <div class="avatar-section">
-                    <img id="profile-avatar" class="profile-avatar" src="imgs/chef.png" alt="個人頭像">
-                    <input type="file" id="avatar-input" accept="image/*" style="display: none;">
-                    <button class="edit-avatar-btn">個人頭像編輯</button>
+                <div class="profile-container">
+                    <!-- 頭像區塊 -->
+                    <div class="avatar-section">
+                        <img id="profile-avatar" class="profile-avatar" src="imgs/chef.png" alt="個人頭像">
+                        <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                        <button class="edit-avatar-btn">個人頭像編輯</button>
+                    </div>
+
+                    <!-- 輸入表單 -->
+                    <div class="form-section">
+                        <label>姓名：</label> <input type="text" placeholder="請輸入姓名">
+                        <label>電子郵件：</label> <input type="email" placeholder="請輸入電子郵件">
+                        <label>電話：</label> <input type="tel" placeholder="請輸入電話">
+                        <label>密碼：</label> <input type="password" placeholder="請輸入密碼">
+                    </div>
                 </div>
 
-                <!-- 輸入表單 -->
-                <div class="form-section">
-                    <label>姓名：</label> <input type="text" placeholder="請輸入姓名">
-                    <label>電子郵件：</label> <input type="email" placeholder="請輸入電子郵件">
-                    <label>電話：</label> <input type="tel" placeholder="請輸入電話">
-                    <label>密碼：</label> <input type="password" placeholder="請輸入密碼">
-                </div>
+                <!-- 儲存按鈕 -->
+                <button class="save-btn">儲存變更</button>
+                <button class="close-btn" onclick="toggleProfileModal()">返回</button>
             </div>
-
-            <!-- 儲存按鈕 -->
-            <button class="save-btn">儲存變更</button>
-            <button class="close-btn" onclick="toggleProfileModal()">返回</button>
         </div>
-    </div>
     </div>
     <script>
         function toggleSettingsModal() {
@@ -277,7 +277,7 @@
                 this.messageList = messageModal.querySelector('.message-list');
                 this.textarea = messageModal.querySelector('.message-input textarea');
                 this.sendBtn = messageModal.querySelector('.message-input .send-btn');
-                
+
                 this.messages = this.loadMessages();
                 this.initializeEventListeners();
                 this.renderMessages();
@@ -307,10 +307,10 @@
             renderMessage(message) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${message.isCustomer ? 'customer' : 'chef'}`;
-                
-                const time = new Date(message.time).toLocaleTimeString('zh-TW', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
+
+                const time = new Date(message.time).toLocaleTimeString('zh-TW', {
+                    hour: '2-digit',
+                    minute: '2-digit'
                 });
 
                 messageDiv.innerHTML = `
@@ -361,13 +361,13 @@
             const orderCard = button.closest('.order-card');
             const orderId = orderCard.querySelector('.order-num').textContent.split('#')[1].trim();
             const messageModal = document.querySelector('.message-modal');
-            
+
             // 設置當前訂單ID到留言板
             messageModal.setAttribute('data-order-id', orderId);
-            
+
             // 顯示留言板視窗
             messageModal.style.display = 'flex';
-            
+
             // 載入該訂單的留言
             const messageBoard = new MessageBoard(messageModal);
         }
@@ -415,7 +415,7 @@
             document.querySelectorAll('.order-card').forEach(orderCard => {
                 const orderId = orderCard.querySelector('.order-num').textContent.split('#')[1].trim();
                 const storageKey = `messages_${orderId}`;
-                
+
                 if (!localStorage.getItem(storageKey)) {
                     const messages = [
                         {
@@ -435,8 +435,8 @@
                 }
             });
         });
-         // 切換設定視窗
-         function toggleSettingsModal() {
+        // 切換設定視窗
+        function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
 
             if (modal.classList.contains('show')) {
@@ -508,6 +508,45 @@
                 }
             });
         });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const viewOrderBtn = document.getElementById("viewOrderBtn");
+            const agreeButtons = document.querySelectorAll(".btn-agree"); // 選取所有「同意」按鈕
+
+            // 監聽「同意」按鈕的點擊事件
+            agreeButtons.forEach(button => {
+                button.addEventListener("click", function (event) {
+                    event.preventDefault(); // 防止預設行為
+
+                    Swal.fire({
+                        title: "訂單成立",
+                        icon: "success",
+                        confirmButtonText: "確認"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            localStorage.setItem("orderConfirmed", "true"); // 設定 localStorage
+                            window.location.href = "my-order.html"; // 跳轉回 my-order.html
+                        }
+                    });
+                });
+            });
+
+            // 在 my-order.html 設定「查看詳細訂單資訊」按鈕的跳轉目標
+            if (viewOrderBtn) {
+                if (localStorage.getItem("orderConfirmed") === "true") {
+                    viewOrderBtn.href = "orderDetail3.html"; // 若從 orderDetail2.html / orderDetail.html 來，跳轉到 orderDetail3.html
+                } else {
+                    viewOrderBtn.href = "orderDetail.html"; // 否則跳轉到 orderDetail.html
+                }
+
+                // 清除記錄，避免影響下一次點擊
+                localStorage.removeItem("orderConfirmed");
+            }
+        });
+
+
+
+
     </script>
     <script src="js/notification.js"></script>
 </body>
