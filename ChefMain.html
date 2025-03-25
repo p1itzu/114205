@@ -26,13 +26,10 @@
             document.getElementById("calendar").innerHTML = calendarHTML;
         }
         function editProfile() {
-            let name = prompt("請輸入您的姓名", document.getElementById("chef-name").innerText);
-            let style = prompt("請輸入您的擅長料理方式", document.getElementById("chef-style").innerText);
-            let specialty = prompt("請輸入您的擅長菜色", document.getElementById("chef-specialty").innerText);
-
-            if (name) document.getElementById("chef-name").innerText = name;
-            if (style) document.getElementById("chef-style").innerText = style;
-            if (specialty) document.getElementById("chef-specialty").innerText = specialty;
+            document.getElementById('editModal').style.display = 'block';
+        }
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
         }
         window.onload = function () {
             generateCalendar();
@@ -93,8 +90,15 @@
                     </div>
                     <div class="profile-text">
                         <h2 id="chef-name">伍慕君</h2>
-                        <p><strong>擅長料理方式：</strong> <span id="chef-style">中式料理</span></p>
-                        <p><strong>擅長菜色：</strong> <span id="chef-specialty">紅燒牛肉麵</span></p>
+                        <p><strong>聯絡方式：</strong>0900284729</p>
+                        <p><strong>廚房地址：</strong>台北市大安區仁愛路四段123號</p>
+                        <p><strong>專業證照：</strong><span class="underline">HACCP 食品安全</span></p>
+                        <p><strong>料理專長：</strong>中式川菜</p>
+                        <p><strong>招牌菜：</strong>麻婆豆腐</p>
+                        <p><strong>食物照：</strong></p>
+                        <img src="imgs/food1.png" alt="食物照片1"
+                            style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+                        <img src="imgs/food2.png" alt="食物照片2" style="width: 100%; border-radius: 8px;">
                     </div>
                 </div>
             </div>
@@ -105,6 +109,11 @@
                     <li><a href="#">#20250125066的訂單顧客回覆</a></li>
                     <li><a href="#">#20250125066的議價失敗</a></li>
                     <li><a href="#">#20250125066的議價成功</a></li>
+                    <li><a href="#">#20250125065的訂單已完成付款</a></li>
+                    <li><a href="#">#20250125064的訂單已確認收貨</a></li>
+                    <li><a href="#">#20250125063的顧客給予五星好評</a></li>
+                    <li><a href="#">#20250125062需要更改訂單內容</a></li>
+                    <li><a href="#">系統提醒：請記得更新本週菜單</a></li>
                 </ul>
             </div>
 
@@ -117,6 +126,33 @@
                     <div class="order-item"><a href="#">訂單編號 #1001</a></div>
                     <div class="order-item"><a href="#">訂單編號 #1002</a></div>
                     <div class="order-item"><a href="#">訂單編號 #1003</a></div>
+                </div>
+            </div>
+
+            <!-- 編輯模態框 -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditModal()">&times;</span>
+                    <h2>編輯簡介</h2>
+                    <form>
+                        <label for="name">姓名：</label>
+                        <input type="text" id="name" name="name" value="伍慕君"><br><br>
+                        <label for="contact">聯絡方式：</label>
+                        <input type="text" id="contact" name="contact" value="0900284729"><br><br>
+                        <label for="address">廚房地址：</label>
+                        <input type="text" id="address" name="address" value="台北市大安區仁愛路四段123號"><br><br>
+                        <label for="certificate">專業證照：</label>
+                        <input type="text" id="certificate" name="certificate" value="HACCP 食品安全"><br><br>
+                        <label for="specialty">料理專長：</label>
+                        <input type="text" id="specialty" name="specialty" value="中式川菜"><br><br>
+                        <label for="signature">招牌菜：</label>
+                        <input type="text" id="signature" name="signature" value="麻婆豆腐"><br><br>
+                        <label for="photo">上傳新照片：</label>
+                        <input type="file" id="photo" name="photo"><br><br>
+                        <label for="certificatePhoto">上傳新證照：</label>
+                        <input type="file" id="certificatePhoto" name="certificatePhoto"><br><br>
+                        <input type="submit" value="保存">
+                    </form>
                 </div>
             </div>
         </div>
