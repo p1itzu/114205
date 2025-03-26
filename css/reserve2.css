@@ -312,6 +312,62 @@ input[type="text"]{
     background-color: #e3ab3b;
 }
 
+
+
+
+
+
+
+/*方法*/
+.cookingmethod-button {
+    display: flex;
+    justify-content: center; /* 水平置中 */
+    align-items: center; /* 垂直置中 */
+    width: 50px;
+    height: 30px;
+    background-color: #e3ab3b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin: 10px;
+    float: left;
+}
+
+.salinity-container {
+    display: flex;
+    align-items: center; /* 讓按鈕和文字垂直對齊 */
+    gap: 0.1px; /* 控制按鈕間距 */
+}
+
+.cookingmethod-button:hover {
+    background-color: rgb(127, 91, 14);
+    transform: translateY(-1px); /* 滑鼠移入時上升 3px */
+}
+
+/* 鹹度按鈕選中狀態 */
+.cookingmethod-button.active {
+    background-color: rgb(127, 91, 14);
+    transform: translateY(-1px);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*鹹度*/
 .salinity-button {
     display: flex;
@@ -605,7 +661,7 @@ input[type="number"] {
 
 #special {
     width: 350px;  /* 設定寬度 */
-    height: 120px;  /* 設定高度 */
+    height: 80px;  /* 設定高度 */
     font-size: 16px; /* 讓文字也變大 */
     padding: 10px; /* 增加內邊距，讓輸入框更舒適 */
 }
