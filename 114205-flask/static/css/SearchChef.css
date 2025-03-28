@@ -541,3 +541,29 @@ body {
     padding-left: 7px;
     /* 往右移動 (可自行調整數值) */
 }
+
+/* 新增篩選下拉式選單的樣式 */
+.filter-container {
+    margin-bottom: 20px;
+     padding-left: 20px; /* 讓整個容器內的內容右移一點 */
+}
+
+.filter-container label {
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.filter-container select {
+    font-size: 16px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.filter-container select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px f0d090(0, 123, 255, 0.5);
+}

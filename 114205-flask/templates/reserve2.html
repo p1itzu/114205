@@ -69,6 +69,10 @@
                         <div>
                             <label for="food1" class="bold-text">特製作法</label>
                             <br>
+                            <button class="cookingmethod-button" type="button" data-value="紅燒">紅燒</button>
+                            <button class="cookingmethod-button" type="button" data-value="清蒸">清蒸</button>
+                            <button class="cookingmethod-button" type="button" data-value="油煎">油煎</button>
+                            <button class="cookingmethod-button" type="button" data-value="川燙">川燙</button>
                             <input type="text" id="special" placeholder="請提供您需要的特製作法給廚師">
                         </div>
 
@@ -303,7 +307,7 @@
         // 為所有調味按鈕添加點擊事件
         document.addEventListener('DOMContentLoaded', function() {
             // 為所有調味按鈕添加點擊事件
-            document.querySelectorAll('.salinity-button, .spiciness-button, .oillevel-button').forEach(button => {
+            document.querySelectorAll('.salinity-button, .spiciness-button, .oillevel-button, .cookingmethod-button').forEach(button => {
                 button.addEventListener('click', function() {
                     // 移除同類按鈕的 active 狀態
                     const buttonType = this.className.split('-')[0]; // 獲取按鈕類型（salinity/spiciness/oillevel）

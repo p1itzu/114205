@@ -158,6 +158,50 @@
             }
         }
 
+        document.addEventListener("DOMContentLoaded", function () {
+            const negotiateBtn = document.querySelector(".btn-negotiate"); // 再議價按鈕
+            const agreeBtn = document.querySelector(".btn-agree"); // 同意按鈕
+            const priceInput = document.querySelector(".price-input"); // 金額輸入欄
+            const textInput = document.querySelector(".text-input"); // 理由輸入欄
+            const submitBtn = document.querySelector(".submit-btn"); // 送出按鈕
+            const noteText = document.querySelector(".note"); // *注意：僅此一次議價機會*
+
+            // 預設隱藏輸入框、送出按鈕與提示文字
+            priceInput.style.display = "none";
+            textInput.style.display = "none";
+            submitBtn.style.display = "none";
+            noteText.style.display = "none";
+
+            // 點擊「再議價」按鈕時，顯示輸入框與提示文字
+            negotiateBtn.addEventListener("click", function () {
+                priceInput.style.display = "block";
+                textInput.style.display = "block";
+                noteText.style.display = "block";
+            });
+
+            // 當使用者輸入內容時，顯示「送出」按鈕
+            function checkInput() {
+                if (priceInput.value.trim() !== "" || textInput.value.trim() !== "") {
+                    submitBtn.style.display = "block";
+                } else {
+                    submitBtn.style.display = "none";
+                }
+            }
+
+            // 監聽輸入框變化
+            priceInput.addEventListener("input", checkInput);
+            textInput.addEventListener("input", checkInput);
+
+            // 點擊「同意」時，隱藏所有輸入欄、送出按鈕與提示文字
+            agreeBtn.addEventListener("click", function () {
+                priceInput.style.display = "none";
+                textInput.style.display = "none";
+                submitBtn.style.display = "none";
+                noteText.style.display = "none";
+            });
+        });
+
+
 
     </script>
     <script src="{{ url_for('static', filename='js/notification.js') }}"></script>

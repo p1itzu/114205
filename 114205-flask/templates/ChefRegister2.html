@@ -13,45 +13,81 @@
     <div class="right-section">
         <div class="form-container">
             <h2>請輸入基本資料</h2>
+            <form action="/api/register_chef" method="POST" enctype="multipart/form-data" id="registerChefForm">
+                <input type="hidden" name="name" id="username">
+                <input type="hidden" name="email" id="email">
+                <input type="hidden" name="password" id="password">
+                <input type="hidden" name="phone" id="phone">
 
-            <!-- 服務地區 多選 Checkbox 兩排排列 -->
-            <label class="main">服務地區</label>
-            <div class="checkbox-group">
-                <div><input type="checkbox" id="taipei" value="台北市"> <label for="taipei">台北市</label></div>
-                <div><input type="checkbox" id="newtaipei" value="新北市"> <label for="newtaipei">新北市</label></div>
-                <div><input type="checkbox" id="taoyuan" value="桃園市"> <label for="taoyuan">桃園市</label></div>
-                <div><input type="checkbox" id="taichung" value="台中市"> <label for="taichung">台中市</label></div>
-                <div><input type="checkbox" id="tainan" value="台南市"> <label for="tainan">台南市</label></div>
-                <div><input type="checkbox" id="kaohsiung" value="高雄市"> <label for="kaohsiung">高雄市</label></div>
-                <div><input type="checkbox" id="kaohsiung" value="基隆市"> <label for="kaohsiung">基隆市</label></div>
-                <div><input type="checkbox" id="kaohsiung" value="新竹市"> <label for="kaohsiung">新竹市</label></div>
-                <div><input type="checkbox" id="kaohsiung" value="嘉義市"> <label for="kaohsiung">嘉義市</label></div>
-                <div><input type="checkbox" id="kaohsiung" value="宜蘭縣"> <label for="kaohsiung">宜蘭縣</label></div>
-            </div>
+                <label class="main">服務地區</label>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" name="service_areas" id="service_area_taipei" value="台北市"> 台北市</div>
+                    <div><input type="checkbox" name="service_areas" id="service_area_newtaipei" value="新北市"> 新北市</div>
+                    <div><input type="checkbox" name="service_areas" id="service_area_taoyuan" value="桃園市"> 桃園市</div>
+                    <div><input type="checkbox" name="service_areas" id="service_area_taichung" value="台中市"> 台中市</div>
+                    <div><input type="checkbox" name="service_areas" id="service_area_tainan" value="台南市"> 台南市</div>
+                    <div><input type="checkbox" name="service_areas" id="service_area_kaohsiung" value="高雄市"> 高雄市</div>
+                    <div><input type="checkbox" name="service_areas" id="service_area_keelung" value="基隆市"> 基隆市</div>
+                    <div><input type="checkbox" name="service_areas" id="service_area_hsinchu" value="新竹市"> 新竹市</div>
+                    <div><input type="checkbox" name="service_areas" id="service_area_chiayi" value="嘉義市"> 嘉義市</div>
+                    <div><input type="checkbox" name="service_areas" id="service_area_yilan" value="宜蘭縣"> 宜蘭縣</div>
+                </div>
 
-            <!-- 廚師證照登記 上傳檔案 -->
-            <label class="main" for="certificate">廚師證照登記</label>
-            <input type="file" id="certificate" accept="image/*, .pdf">
+                <label class="main" for="certificate">廚師證照登記</label>
+                <input type="file" name="certificate" id="certificate" accept="image/*, .pdf">
 
-            <!-- 擅長領域 多選 Checkbox -->
-            <label class="main">擅長領域</label>
-            <div class="checkbox-group">
-                <div><input type="checkbox" id="chinese" value="中式料理"> <label for="chinese">中式料理</label></div>
-                <div><input type="checkbox" id="western" value="西式料理"> <label for="western">西式料理</label></div>
-                <div><input type="checkbox" id="western" value="日式料理"> <label for="western">日式料理</label></div>
-                <div><input type="checkbox" id="western" value="韓式料理"> <label for="western">韓式料理</label></div>
-                <div><input type="checkbox" id="western" value="東南亞料理"> <label for="western">東南亞料理</label></div>
-                <div><input type="checkbox" id="western" value="南亞料理"> <label for="western">南亞料理</label></div>
+                <label class="main">擅長領域</label>
+                <div class="checkbox-group">
+                    <div><input type="checkbox" name="specialties" id="specialty_chinese" value="中式料理"> 中式料理</div>
+                    <div><input type="checkbox" name="specialties" id="specialty_western" value="西式料理"> 西式料理</div>
+                    <div><input type="checkbox" name="specialties" id="specialty_japanese" value="日式料理"> 日式料理</div>
+                    <div><input type="checkbox" name="specialties" id="specialty_korean" value="韓式料理"> 韓式料理</div>
+                    <div><input type="checkbox" name="specialties" id="specialty_southeast_asian" value="東南亞料理"> 東南亞料理</div>
+                    <div><input type="checkbox" name="specialties" id="specialty_southeastern" value="南洋料理"> 南洋料理</div>
+                </div>
 
-            </div>
+                <label class="main" for="kitchen_address">廚房地址</label>
+                <input type="text" name="kitchen_address" id="kitchen_address" placeholder="請輸入廚房地址" required>
 
-            <!-- 廚房地址 -->
-            <label class="main" for="kitchen-address">廚房地址</label>
-            <input type="text" id="kitchen-address" placeholder="請輸入廚房地址" required>
-
-            <button onclick="window.location.href='/ChefMain'">繼續</button>
+                <button type="submit" class="button">完成註冊</button>
+            </form>
         </div>
     </div>
+
+    <script>
+        // 從 URL 查詢參數中取得資料，並填入隱藏欄位
+        const urlParams = new URLSearchParams(window.location.search);
+        document.getElementById("username").value = urlParams.get("name");
+        document.getElementById("email").value = urlParams.get("email");
+        document.getElementById("password").value = urlParams.get("password");
+        document.getElementById("phone").value = urlParams.get("phone");
+
+        // 表單提交前驗證
+        document.getElementById("registerChefForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(result.message || "註冊成功！");
+                    window.location.href = result.redirect_url; // 跳轉到登入頁面
+                } else {
+                    alert(result.error || "註冊失敗，請檢查輸入內容！");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("伺服器發生錯誤，請稍後再試！");
+            }
+        });
+    </script>
 </body>
 
 </html>

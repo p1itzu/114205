@@ -1,3 +1,4 @@
+/* 通用樣式 */
 body {
     font-family: 'Noto Sans TC', sans-serif;
     margin: 0;
@@ -25,19 +26,24 @@ body {
     text-align: center;
 }
 
-h2 {
+h2, h3 {
     color: #5b4636;
-    margin-bottom: 20px;
     font-weight: bold;
 }
 
-input[type="text"], input[type="email"], input[type="password"] {
-    width: 90%;
-    padding: 12px;
-    margin: 8px 0;
-    border: 2px solid #f6c25f;
-    border-radius: 8px;
-    font-size: 14px;
+/* 通用輸入框樣式 */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%; /* 確保寬度一致 */
+    max-width: 400px; /* 與容器一致 */
+    padding: 12px; /* 內邊距，確保高度一致 */
+    margin: 8px 0; /* 與其他輸入框的間距一致 */
+    border: 2px solid #f6c25f; /* 邊框樣式 */
+    border-radius: 8px; /* 圓角樣式 */
+    font-size: 14px; /* 字體大小 */
+    line-height: 1.5; /* 行高，確保文字垂直居中 */
+    box-sizing: border-box; /* 包含內邊距和邊框 */
 }
 
 .button {
@@ -92,7 +98,8 @@ input[type="text"], input[type="email"], input[type="password"] {
     margin: 20px 0;
 }
 
-.divider::before, .divider::after {
+.divider::before,
+.divider::after {
     content: "";
     flex: 1;
     height: 1px;
@@ -118,7 +125,7 @@ input[type="text"], input[type="email"], input[type="password"] {
     background: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
     text-align: center;
 }
 
@@ -134,4 +141,50 @@ input[type="text"], input[type="email"], input[type="password"] {
 
 .modal button:hover {
     background-color: #e0a93d;
+}
+
+/* 密碼輸入框容器 */
+.password-container {
+    position: relative;
+    width: 100%; /* 與其他輸入框一致 */
+    max-width: 400px; /* 與其他輸入框一致 */
+    margin: 8px 0; /* 與其他輸入框的間距一致 */
+    display: flex;
+    align-items: center;
+    border: 2px solid #f6c25f; /* 與其他輸入框的邊框一致 */
+    border-radius: 8px; /* 與其他輸入框的圓角一致 */
+    background-color: #fff; /* 與其他輸入框的背景色一致 */
+    box-sizing: border-box; /* 包含內邊距和邊框 */
+    height: 48px; /* 固定高度，與其他輸入框一致 */
+}
+
+/* 密碼輸入框 */
+.password-container input[type="password"],
+.password-container input[type="text"] {
+    flex: 1; /* 讓輸入框填滿容器 */
+    border: none; /* 移除內部輸入框的邊框 */
+    padding: 12px; /* 與其他輸入框的內邊距一致 */
+    font-size: 14px; /* 與其他輸入框的字體大小一致 */
+    line-height: 1.5; /* 行高，確保文字垂直居中 */
+    outline: none; /* 移除輸入框的聚焦邊框 */
+    height: 100%; /* 與容器高度一致 */
+    box-sizing: border-box; /* 包含內邊距和邊框 */
+}
+
+/* 密碼顯示切換按鈕 */
+.password-container button {
+    width: auto; /* 自動調整按鈕寬度 */
+    padding: 0 12px; /* 與輸入框的內邊距一致 */
+    background-color: transparent; /* 背景透明 */
+    border: none; /* 移除按鈕邊框 */
+    color: #d19238; /* 按鈕文字顏色 */
+    font-size: 14px; /* 按鈕文字大小 */
+    font-weight: bold; /* 按鈕文字加粗 */
+    cursor: pointer; /* 滑鼠移上時顯示手型 */
+    height: 100%; /* 與容器高度一致 */
+    transition: color 0.3s ease; /* 顏色過渡效果 */
+}
+
+.password-container button:hover {
+    color: #e0a93d; /* 滑鼠懸停時的顏色 */
 }

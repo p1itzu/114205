@@ -9,6 +9,7 @@
         rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="{{ url_for('static', filename='css/orderDetail2.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename='css/notification.css') }}" rel="stylesheet" />
     <title>代做菜媒合平台</title>
@@ -88,8 +89,7 @@
                     <div class="price-negotiation">
                         <h4>廚師第2次定價：NT$430</h4>
                         <div class="negotiation-buttons">
-                            <button class="btn-agree" type="submit"
-                                onclick="location.href='/orderDetail3'">同意</button>
+                            <button class="btn-agree" type="button">同意</button>
                             <button class="btn-negotiate">不同意</button>
                             <p class="note">*注意：此次不同意及取消訂單</p>
                         </div>
@@ -156,7 +156,39 @@
             }
         }
 
+        document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector(".btn-agree").addEventListener("click", function (event) {
+            event.preventDefault(); // 防止預設行為
 
+            Swal.fire({
+                title: "訂單成立",
+                text: "您的訂單已成功成立！",
+                icon: "success",
+                confirmButtonText: "確定"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.setItem("orderConfirmed", "true"); // 記錄訂單已成立
+                    window.location.href = "/my-order"; // 跳轉到「我的訂單」
+                }
+            });
+        });
+
+        document.querySelector(".btn-negotiate").addEventListener("click", function () {
+            Swal.fire({
+                title: "確定取消訂單？",
+                text: "取消後將無法恢復！",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "確定取消",
+                cancelButtonText: "返回",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/SearchChef"; // 取消後跳轉到「發送訂單」
+                }
+            });
+        });
+    });
     </script>
     <script src="{{ url_for('static', filename='js/notification.js') }}"></script>
 </body>
