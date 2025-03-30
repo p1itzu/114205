@@ -510,7 +510,7 @@
         });
 
         document.addEventListener("DOMContentLoaded", function () {
-            const viewOrderBtn = document.getElementById("viewOrderBtn");
+            const viewOrderBtns = document.querySelectorAll(".order-btn");
             const agreeButtons = document.querySelectorAll(".btn-agree"); // 選取所有「同意」按鈕
 
             // 監聽「同意」按鈕的點擊事件
@@ -532,16 +532,24 @@
             });
 
             // 在 my-order.html 設定「查看詳細訂單資訊」按鈕的跳轉目標
-            if (viewOrderBtn) {
+
+
+            //if (viewOrderBtn) {
                 if (localStorage.getItem("orderConfirmed") === "true") {
-                    viewOrderBtn.href = "orderDetail3.html"; // 若從 orderDetail2.html / orderDetail.html 來，跳轉到 orderDetail3.html
+                    viewOrderBtns.forEach(btn => {
+                        btn.href = "orderDetail3.html"; // 若從 orderDetail3.html 來，跳轉到 orderDetail2.html
+                    });
+                    //viewOrderBtn.href = "orderDetail3.html"; // 若從 orderDetail2.html / orderDetail.html 來，跳轉到 orderDetail3.html
                 } else {
-                    viewOrderBtn.href = "orderDetail.html"; // 否則跳轉到 orderDetail.html
+                    viewOrderBtns.forEach(btn => {
+                        btn.href = "orderDetail.html"; // 否則跳轉到 orderDetail.html
+                    });
+                    //viewOrderBtn.href = "orderDetail.html"; // 否則跳轉到 orderDetail.html
                 }
 
                 // 清除記錄，避免影響下一次點擊
                 localStorage.removeItem("orderConfirmed");
-            }
+            //}
         });
 
 
