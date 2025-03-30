@@ -305,10 +305,7 @@ input[type="text"]{
     font-size: 14px;
     transition: background-color 0.2s ease;
     margin: 10px;
-}
-
-.button:hover {
-    background-color: #e3ab3b;
+    transition: all 0.3s ease;
 }
 
 .save-button {
@@ -365,4 +362,15 @@ input[type="text"]{
 .step.active {
     background-color: #e2a93b;
     color: white;
+}
+
+/* 取餐方式按鈕選中狀態 */
+.button.active {
+    background-color: rgb(127, 91, 14);
+    transform: translateY(-1px);
+}
+
+.button:hover {
+    background-color: rgb(127, 91, 14);
+    transform: translateY(-1px); /* 滑鼠移入時上升 3px */
 }
