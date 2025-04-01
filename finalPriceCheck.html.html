@@ -13,62 +13,66 @@
             padding: 0;
         }
 
+
         .navbar {
-            background-color: #F9C765;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    background-color: #F9C765;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-        .navbar .site-name {
-            font-size: 25px;
-            font-weight: bold;
-            padding-left: 20px;
-            color: #B3811C;
-        }
+.navbar .site-name {
+    font-size: 20px;
+    font-weight: bold;
+    padding-left: 20px;
+    color: #B3811C;
+}
 
-        .navbar .nav-links {
-            display: flex;
-            gap: 15px;
-            margin: 0 auto;
-        }
+.navbar .nav-links {
+    display: flex;
+    gap: 15px;
+    margin: 0 auto;
+}
 
-        .navbar a {
-            color: #B3811C;
-            text-decoration: none;
-            padding: 10px 20px;
-            font-size: 20px;
-            font-weight: bold;
-        }
+.navbar a {
+    color: #B3811C;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
 
-        .navbar a:hover {
-            background-color: #f9e4ba;
-            border-radius: 5px;
-        }
+.navbar a:hover {
+    background-color: #f9e4ba;
+    border-radius: 5px;
+}
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-right: 20px;
-        }
+/* 使用者資訊區 */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
+}
 
-        .user-info .username {
-            font-size: 18px;
-            color: #B3811C;
-            font-weight: bold;
-        }
+.user-info .username {
+    font-size: 18px;
+    color: #B3811C;
+    font-weight: bold;
+}
 
-        .user-info .settings-icon {
-            width: 20px;
-            height: 20px;
-            background-image: url('../imgs/settings.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            cursor: pointer;
-        }
+.user-info .settings-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url('../imgs/settings.png');
+    /* 確保圖片路徑正確 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
 
         /* 新增的彈窗樣式 */
         .modal-container {
@@ -225,7 +229,7 @@
 
         .right-column {
             width: 55%;
-            padding-left: 5%;
+            padding-left: 25%;
         }
 
         .customer-remark {
@@ -260,6 +264,7 @@
             font-size: 22px;
             font-weight: 800;
             color: #1e2576;
+            margin-left: 20px;
         }
 
         .bottom-section {
@@ -281,7 +286,13 @@
             font-size: 14px;
             cursor: pointer;
             display: inline-block;
-            margin: 0 0 0 170px;
+            margin: 10px 0 0 100px;
+        }
+        .final-check{
+            font-size: 22px;
+            font-weight: 800;
+            color: #000;
+            margin-left: 60px;
         }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
@@ -394,29 +405,12 @@
         <div class="price-section">
             <div class="price-content">
                 <div class="two-column-layout">
-                    <!-- 左欄：備註 -->
-                    <div class="left-column">
-                        <div class="customer-remark">
-                            <div class="price-row">顧客議價金額：1000</div>
-                            <div class="remark-label">備註原因：</div>
-                            <div class="remark-text">我覺得番茄炒蛋的價格太過高價了 如果但少一顆 便宜50元可以嗎</div>
-                        </div>
-                    </div>
-                    
                     <!-- 右欄：價格資訊 -->
                     <div class="right-column">
                         <div class="price-info">
-                            <div class="price-final">最終定價金額為：<span id="finalTotalPrice">0</span></div>
-                            <div class="price-row">原定價：1500</div>
+                            <div class="price-final">最終定價金額為：$<span id="finalTotalPrice">0</span></div>
+                            <div class="final-check">此訂單正式成立</div>
                         </div>
-                        <button class="confirm-button">確認送出</button>
-                    </div>
-                </div>
-                
-                <!-- 底部提示和按鈕 -->
-                <div class="bottom-section">
-                    <div class="price-note">
-                        *提醒最後一次議價，若顧客依然不同意此價格，此訂單將不成立
                     </div>
                 </div>
             </div>
