@@ -1,0 +1,70 @@
+body {
+    display: flex;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.left-section {
+    width: 35%;
+    background-color: #F9C765;
+}
+
+.right-section {
+    width: 75%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fdf7ec;
+
+}
+
+.form-container {
+    width: 80%;
+    max-width: 400px;
+    text-align: left;
+}
+
+input[type="text"],
+input[type="file"],
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #F9C765;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 420px;
+}
+
+
+/* 讓 checkbox 兩欄排列 */
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 10px 0;
+}
+
+/* 讓 checkbox 和 label 保持在同一行 */
+.checkbox-group div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.main {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+h2 {
+    text-align: center;
+    font-size: 30px;
+}

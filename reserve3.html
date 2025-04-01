@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/reserve3.css" rel="stylesheet" />
+    <link href="css/notification.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <title>代做菜媒合平台</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="AfterLogin.html">首頁</a>
+            <a href="#">料理方式建議</a>
+            <a href="SearchChef.html">發送訂單</a>
+            <a href="my-order.html">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <div class="section2">
+                <h3>Step3 - 總菜單確認</h3>
+                <br>
+            </div>
+
+            <table>
+                <tr>
+                    <div class="meal-container">
+                        <ul class="meal-list">
+                            <li>
+                                香煎奶油鱸魚
+                                <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                            </li>
+                            <li>
+                                蒜香白酒蛤蜊義大利麵
+                                <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                            </li>
+                            <li>
+                                泰式打拋豬飯
+                                <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                            </li>
+                            <li>
+                                麻辣鴨血臭豆腐
+                                <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                            </li>
+                            <li>
+                                韓式部隊鍋
+                                <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                            </li>
+                            <li>
+                                照燒雞腿丼飯
+                                <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                            </li>
+                            <li>
+                                酥炸金沙豆腐
+                                <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                            </li>
+                            <li>
+                                香草奶油燉飯
+                                <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                            </li>
+                            <li>
+                                蒙古烤肉拼盤
+                                <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                            </li>
+                            <li>
+                                起司瀑布漢堡
+                                <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                            </li>
+                        </ul>
+                    </div>
+
+
+
+                    <br>
+
+                    <button class="save-button" type="submit" onclick="location.href='reserve4.html'">確認</button>
+                    <button class="next-button" type="submit" onclick="location.href='reserve2.html'">上一步</button>
+                    </td>
+                </tr>
+            </table>
+            </form>
+        </div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="step">第1步</div>
+        <div class="line"></div>
+        <div class="step">第2步</div>
+        <div class="line"></div>
+        <div class="step active">第3步</div>
+        <div class="line"></div>
+        <div class="step">第4步</div>
+    </div>
+
+
+    <!-- 設定小視窗 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2>設定</h2>
+            <p>帳號</p>
+            <p>其他</p>
+            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+        </div>
+    </div>
+
+    <script>
+
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function selectDelivery(type) {
+            const pickupBtn = document.getElementById('pickup');
+            const deliveryBtn = document.getElementById('delivery');
+            const addressField = document.getElementById('address-field');
+
+            if (type === 'pickup') {
+                pickupBtn.classList.add('active');
+                deliveryBtn.classList.remove('active');
+                addressField.classList.add('hidden');
+            } else {
+                deliveryBtn.classList.add('active');
+                pickupBtn.classList.remove('active');
+                addressField.classList.remove('hidden');
+            }
+        }
+
+        function selectDelivery(type) {
+            // 移除所有按鈕的 active 類別
+            document.getElementById('pickup').classList.remove('active');
+            document.getElementById('delivery').classList.remove('active');
+
+            // 根據選擇的類型為相應按鈕添加 active 類別
+            if (type === 'pickup') {
+                document.getElementById('pickup').classList.add('active');
+            } else if (type === 'delivery') {
+                document.getElementById('delivery').classList.add('active');
+            }
+        }
+
+        function setNumber(value) {
+            document.getElementById("custom-number").value = value;
+        }
+        function deleteDish() {
+            Swal.fire({
+                title: "確定刪除?",
+                icon: "warning",  // ⚠️ 驚嘆號圖示
+                showCancelButton: true,  // 顯示取消按鈕
+                confirmButtonText: "確定",
+                cancelButtonText: "取消",  // 取消按鈕的文字
+                customClass: {
+                    confirmButton: "swal-custom-button",
+                    cancelButton: "swal-custom-cancel-button"  // 可自訂取消按鈕的樣式
+                }
+            });
+        }
+    </script>
+    <script src="js/notification.js"></script>
+</body>
+
+</html>

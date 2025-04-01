@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ChefMain.css') }}">
+    <title>訂單管理系統</title>
+    <script>
+        function generateCalendar() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+            document.getElementById("calendar-header").innerText = monthNames[month] + " " + year;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            let calendarHTML = "<div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>";
+            for (let i = 0; i < firstDay; i++) {
+                calendarHTML += "<div></div>";
+            }
+            for (let day = 1; day <= daysInMonth; day++) {
+                calendarHTML += `<div>${day}</div>`;
+            }
+            document.getElementById("calendar").innerHTML = calendarHTML;
+        }
+        function editProfile() {
+            document.getElementById('editModal').style.display = 'block';
+        }
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+        window.onload = function () {
+            generateCalendar();
+        };
+        function toggleDropdown() {
+            document.getElementById("orderDropdown").classList.toggle("show");
+        }
+
+        // 點擊其他地方時關閉下拉選單
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div class="site-name">[網站名稱]</div>
+            <div class="nav-links">
+                <a href="/ChefAfterLogin">首頁</a>
+                <a href="/ChefMain">我的頁面</a>
+                <a href="/ChefUnOrder">待接單訂單</a>
+
+                <!-- 新增下拉選單 -->
+                <div class="dropdown">
+                    <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                    <div class="dropdown-content" id="orderDropdown">
+                        <a href="/ChefOrder">待完成訂單</a>
+                        <a href="/OrderDone">已完成訂單</a>
+                        <a href="/Charging">議價中訂單</a>
+                        <a href="/CancelOrder">已取消訂單</a>
+                    </div>
+                </div>
+
+                <a href="#">客服聯絡</a>
+            </div>
+            <div class="user-info">
+                <div class="username">11336012@ntub.edu.tw</div>
+                <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="box profile">
+                <div class="profile-content">
+                    <button class="edit-button" onclick="editProfile()">編輯</button>
+                    <div class="profile-image">
+                        <img id="chef-photo" src="{{ url_for('static', filename='imgs/chef.png') }}" alt="廚師照片">
+                    </div>
+                    <div class="profile-text">
+                        <h2 id="chef-name">伍慕君</h2>
+                        <p><strong>聯絡方式：</strong>0900284729</p>
+                        <p><strong>廚房地址：</strong>台北市大安區仁愛路四段123號</p>
+                        <p><strong>專業證照：</strong><span class="underline">HACCP 食品安全</span></p>
+                        <p><strong>料理專長：</strong>中式川菜</p>
+                        <p><strong>招牌菜：</strong>麻婆豆腐</p>
+                        <p><strong>食物照：</strong></p>
+                        <img src="{{ url_for('static', filename='imgs/food1.png') }}" alt="食物照片1"
+                            style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+                        <img src="{{ url_for('static', filename='imgs/food2.png') }}" alt="食物照片2" style="width: 100%; border-radius: 8px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="box square-box notifications">
+                <div class="notification-icon">🔔</div>
+                <ul>
+                    <li><a href="#">#20250125066的訂單顧客回覆</a></li>
+                    <li><a href="#">#20250125066的議價失敗</a></li>
+                    <li><a href="#">#20250125066的議價成功</a></li>
+                    <li><a href="#">#20250125065的訂單已完成付款</a></li>
+                    <li><a href="#">#20250125064的訂單已確認收貨</a></li>
+                    <li><a href="#">#20250125063的顧客給予五星好評</a></li>
+                    <li><a href="#">#20250125062需要更改訂單內容</a></li>
+                    <li><a href="#">系統提醒：請記得更新本週菜單</a></li>
+                </ul>
+            </div>
+
+            <div class="right-section">
+                <div class="box square-box calendar-box">
+                    <div class="calendar-header" id="calendar-header"></div>
+                    <div id="calendar" class="calendar"></div>
+                </div>
+                <div class="orders">
+                    <div class="order-item"><a href="#">訂單編號 #1001</a></div>
+                    <div class="order-item"><a href="#">訂單編號 #1002</a></div>
+                    <div class="order-item"><a href="#">訂單編號 #1003</a></div>
+                </div>
+            </div>
+
+            <!-- 編輯模態框 -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditModal()">&times;</span>
+                    <h2>編輯簡介</h2>
+                    <form>
+                        <label for="name">姓名：</label>
+                        <input type="text" id="name" name="name" value="伍慕君"><br><br>
+                        <label for="contact">聯絡方式：</label>
+                        <input type="text" id="contact" name="contact" value="0900284729"><br><br>
+                        <label for="address">廚房地址：</label>
+                        <input type="text" id="address" name="address" value="台北市大安區仁愛路四段123號"><br><br>
+                        <label for="certificate">專業證照：</label>
+                        <input type="text" id="certificate" name="certificate" value="HACCP 食品安全"><br><br>
+                        <label for="specialty">料理專長：</label>
+                        <input type="text" id="specialty" name="specialty" value="中式川菜"><br><br>
+                        <label for="signature">招牌菜：</label>
+                        <input type="text" id="signature" name="signature" value="麻婆豆腐"><br><br>
+                        <label for="photo">上傳新照片：</label>
+                        <input type="file" id="photo" name="photo"><br><br>
+                        <label for="certificatePhoto">上傳新證照：</label>
+                        <input type="file" id="certificatePhoto" name="certificatePhoto"><br><br>
+                        <input type="submit" value="保存">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

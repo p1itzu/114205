@@ -1,0 +1,755 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #FFE7B7;
+    color: #B3811C;
+}
+
+.navbar {
+    background-color: #F9C765;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar .site-name {
+    font-size: 20px;
+    font-weight: bold;
+    padding-left: 20px;
+    color: #B3811C;
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 15px;
+    margin: 0 auto;
+}
+
+.navbar a {
+    color: #B3811C;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    background-color: #f9e4ba;
+    border-radius: 5px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
+}
+
+.user-info .username {
+    font-size: 18px;
+    color: #B3811C;
+    font-weight: bold;
+}
+
+.user-info .settings-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url('../imgs/settings.png');
+    /* 確保圖片路徑正確 */
+    background-size: cover;
+    /* 確保圖片完全覆蓋容器 */
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 0%;
+    /* 去除圓形邊框 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.user-info .settings-icon:before {
+    background-image: url('../imgs/settings.png');
+    color: white;
+    font-size: 14px;
+}
+
+.navbar .user-info .login-button {
+    background-color: #fff9ec;
+    /* 與導航條一致的背景顏色 */
+    color: #B3811C;
+    /* 與導航欄一致的文字顏色 */
+    padding: 10px 20px;
+    /* 內邊距 */
+    font-size: 16px;
+    /* 字體大小 */
+    font-weight: bold;
+    /* 字體加粗 */
+    border: none;
+    /* 去除邊框 */
+    border-radius: 5px;
+    /* 圓角 */
+    cursor: pointer;
+    /* 游標變為手形 */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    /* 過渡效果 */
+}
+
+.navbar .user-info .login-button:hover {
+    background-color: #f9e4ba;
+    /* 滑鼠懸停時背景顏色變化 */
+    transform: scale(1.05);
+    /* 滑鼠懸停時放大按鈕 */
+}
+
+.content {
+    padding: 20px;
+    text-align: left;
+}
+
+/* 設定視窗 */
+.settings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.settings-modal .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    padding-left: 40px;
+    line-height: 1.4;
+}
+
+.settings-modal .close-btn {
+    background-color: #F9C765;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 800px;
+    height: 450px;
+    min-height: 500px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/*step1*/
+.section2 h3 {
+    color: #777777;
+    padding: 5px;
+    text-align: left;
+    border-radius: 10px;
+    font-size: 23px;
+}
+
+.order-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #F4B400;
+    color: white;
+    cursor: pointer;
+    width: 100px;
+    font-size: 16px;
+}
+
+.hidden {
+    display: none;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    /* 讓內容區自動撐開 */
+}
+
+
+h3,
+p {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    text-align: left;
+}
+
+/* 遮罩層（顯示/隱藏選擇身分小視窗時使用） */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 半透明灰色 */
+    z-index: 900;
+}
+
+.login-modal h2 {
+    margin: 0 0 20px;
+    font-size: 24px;
+    color: #B3811C;
+}
+
+
+/* 美化日期選擇框 */
+input[type="date"] {
+    font-family: 'Noto Sans HK', sans-serif;
+    /* 設定字體 */
+    font-size: 16px;
+    /* 調整字型大小 */
+    padding: 10px;
+    /* 調整內邊距 */
+    border: 3px solid #ccc;
+    /* 邊框顏色 */
+    border-radius: 8px;
+    /* 圓角邊框 */
+    transition: border-color 0.3s;
+    /* 邊框顏色過渡效果 */
+    width: 375px;
+}
+
+
+input[type="date"]:focus {
+    border-color: #F9C765;
+    /* 當元素獲得焦點時，變更邊框顏色 */
+    outline: none;
+    /* 去除瀏覽器默認的藍色輪廓 */
+}
+
+/* 美化時間選擇框 */
+input[type="time"] {
+    font-family: 'Noto Sans HK', sans-serif;
+    /* 設定字體 */
+    font-size: 16px;
+    /* 調整字型大小 */
+    padding: 10px;
+    /* 調整內邊距 */
+    border: 3px solid #ccc;
+    /* 邊框顏色 */
+    border-radius: 8px;
+    /* 圓角邊框 */
+    transition: border-color 0.3s;
+    /* 邊框顏色過渡效果 */
+    width: 375px;
+}
+
+/* 移除一般輸入框的樣式 */
+input[type="text"].price-input,
+.price-input {
+    width: 160px !important;
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+    border: 1px solid #ddd !important;
+    background-color: #F5F5F5 !important;
+    font-size: 14px !important;
+    color: #666 !important;
+    font-family: Arial, sans-serif !important;
+}
+
+input[type="text"].price-input::placeholder {
+    color: #999;
+}
+
+/* 移除一般input樣式中對price-input的影響 */
+input[type="text"]:not(.price-input) {
+    font-family: 'Noto Sans HK', sans-serif;
+    font-size: 16px;
+    padding: 10px;
+    border: 3px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s;
+    width: 375px;
+}
+
+.button {
+    width: 80px;
+    height: 40px;
+    padding: 10px;
+    background-color: #F9C765;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    margin: 10px;
+}
+
+.button:hover {
+    background-color: #e3ab3b;
+}
+
+.save-button {
+    width: 80px;
+    height: 40px;
+    padding: 10px;
+    background-color: #84A176;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease; /* 過渡效果 */
+    margin: 10px;
+    float: right; /* 靠右 */
+}
+
+.save-button:hover {
+    background-color: #638253;
+    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
+}
+
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 35px; 
+}
+
+
+
+.step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 40px;
+    background-color: #fff9ec;
+    color: #e2a93b;
+    font-weight: bold;
+    border-radius: 20px;
+    border: 2px solid #e2a93b;
+    transition: all 0.3s ease-in-out;
+}
+
+.line {
+    width: 40px;
+    height: 4px;
+    background-color: #e2a93b;
+}
+
+.step.active {
+    background-color: #e2a93b;
+    color: white;
+}
+
+/* 狀態列 */
+.status-bar {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+/* 統一狀態顏色（初始狀態） */
+.status {
+    display: flex;
+    justify-content: center;  /* 水平置中 */
+    align-items: center;  /* 垂直置中 */
+    width: 86px;
+    height: 30px;
+    padding: 10px 20px;
+    border-radius: 8px; /* 圓角 */
+    background-color: #EDE7DA; /* 淺色背景 */
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* 當狀態被選中時 */
+.status.active {
+    background-color: #a77a2d; /* 深色背景 */
+    color: white;
+}
+
+
+.detail {
+    border-radius: 10px;
+    padding: 15px 20px;
+    background-color: #EDE7DA;
+    width: 100%;
+    height: 180px;
+    color: #777777;
+    font-weight: bold;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+/* 設定 table 內部排版 */
+.detail table {
+    width: 100%; /* 讓表格撐滿 */
+    border-collapse: collapse; /* 移除表格間隙 */
+}
+
+/* 左右區塊 */
+.detail td {
+    padding: 1px 1px; /* 讓左右內容不會太擠 */
+    vertical-align: top; /* 讓內容從上方開始對齊 */
+}
+
+/* 調整左右欄位寬度 */
+.detail .left {
+    width: 50%; /* 左半部 */
+}
+
+.detail .right {
+    width: 50%; /* 右半部 */
+}
+
+
+/* 外層區塊 */
+.extra-section {
+    border-radius: 10px;
+    padding: 15px;
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    box-sizing: border-box;
+}
+
+.extra-right {
+    flex: 2;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    height: auto;
+    box-sizing: border-box;
+}
+
+.extra-left {
+    background-color: #f1efe9;
+    border-radius: 10px;
+    padding: 20px;
+    height: 112px;
+    width: 370px;  /* 設定固定寬度 */
+    flex-shrink: 0;  /* 避免被縮小 */
+    margin: 0;  /* 去除任何邊距 */
+    position: relative;  /* 使用相對定位 */
+    left: -10px;  /* 向左偏移 */
+}
+
+
+
+
+.price-negotiation h4 {
+    font-size: 20px !important;
+    color: #333 !important;
+    margin-bottom: 5px !important;  /* 進一步減少底部間距 */
+    margin-top: -30px !important;  /* 設為更大的負值，讓它往上移 */
+    font-weight: bold !important;
+}
+
+
+.negotiation-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.btn-agree, 
+.btn-negotiate {
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    border: none !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    min-width: 70px !important;
+    margin: 0 !important;
+    width: auto !important;
+}
+
+.btn-agree {
+    background-color: #777777 !important;
+    color: white !important;
+}
+
+.btn-negotiate {
+    background-color: #84A176 !important;
+    color: white !important;
+}
+
+.communication-area {
+    margin-top: 12px;
+}
+
+.communication-area p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.communication-area textarea {
+    width: 100% !important;
+    height: 80px !important;
+    padding: 8px 12px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    background-color: #F5F5F5 !important;
+    resize: none !important;
+    margin-bottom: 8px !important;
+    font-size: 14px !important;
+    box-sizing: border-box !important;
+}
+
+.btn-send {
+    float: right;
+    background-color: #F9C765;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.previous-element { /* 假設這是 .note 上方的元素 */
+    margin-bottom: 6px; /* 減少底部間距 */
+}
+
+.note {
+    clear: both;
+    color: #999;
+    font-size: 12px;
+    margin-top: 60px; /* 減少間距，讓它往上移 */
+    position: relative;
+    top: -10px; /* 讓它往上移 6px */
+}
+
+
+.price-details h4 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+
+.price-list p {
+    margin-bottom: 10px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* 右側價錢明細的點點 */
+.price-list p:not(:last-child)::after {
+    content: "......";
+    color: #999;
+    letter-spacing: 2px;
+    margin-left: 5px;
+}
+
+input[type="text"].text-input,
+.text-input {
+    width: 320px !important;
+    height: 50px;
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+    border: 1px solid #ddd !important;
+    background-color: #F5F5F5 !important;
+    font-size: 14px !important;
+    color: #666 !important;
+    margin-bottom: 8px !important;
+}
+
+input[type="text"].text-input::placeholder {
+    color: #999;
+}
+
+/* 移除一般input樣式中對price-input的影響 */
+input[type="text"]:not(.text-input) {
+    font-family: 'Noto Sans HK', sans-serif;
+    font-size: 16px;
+    padding: 10px;
+    border: 3px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s;
+    width: 375px;
+}
+
+.submit-btn {
+    background-color: #F9C765 !important;
+    color: white !important;
+    padding: 6px 12px !important;
+    border-radius: 4px !important;
+    border: none !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    float: left !important;
+    margin-top: 8px !important;
+    min-width: 50px !important;
+    width: auto !important;
+}
+
+.submit-btn:hover {
+    background-color: #e3ab3b !important;
+}
+
+.note {
+    clear: both;
+    color: #999;
+    font-size: 12px;
+    margin-top: 40px !important;
+}
+
+.chefnote {
+    border-radius: 10px;
+    height: 70px;
+    background-color: transparent;
+    border: 3px solid #EDE7DA;
+    color: #cec3b4;
+    font-weight: bold;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    text-align: right; /* 讓文字靠右 */
+    padding-left: 50px;  /* 減少左邊距 */
+    padding-right: 20px; /* 增加右邊距，讓文字稍微往右移 */
+}
+
+
+.extra-left {
+    padding-left: 0; /* 取消內距，確保內容貼齊左側 */
+    margin-left: 0; /* 取消外距，避免整個區塊被推開 */
+}
+.price-negotiation, .negotiation-buttons, .chefnote {
+    padding-left: 0;
+    margin-left: 0;
+    text-align: left; /* 確保文字也靠左 */
+}
+
+.extra-left {
+    margin-left: 0;
+}
+
+.price-negotiation {
+    margin-left: 0;
+}
+
+.star-rating {
+    display: flex;
+    gap: 5px; /* 星星之間的間距 */
+    font-size: 40px;
+    color: #ccc; /* 未選中的星星顏色 */
+}
+
+.star-rating .star {
+    cursor: pointer;
+}
+
+.star-rating .star.selected {
+    color: #e3ab3b; /* 選中的星星顏色 */
+}
+
+.text-input {
+    margin-top: 10px;
+    padding: 8px;
+    width: 100%;
+    height: 100px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.btn-submit {
+    width: 80px;
+    height: 40px;
+    padding: 10px;
+    background-color: #84A176;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease; /* 過渡效果 */
+    margin: 10px;
+    float: left;
+    margin-left: 0;  /* 讓按鈕更靠左，根據需要調整數值 */
+}
+
+
+.btn-submit:hover {
+    background-color: #638253;
+    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
+}
+
+/*彈跳視窗的按鈕*/
+.swal-custom-button {
+    width: 200px !important; /* 設定按鈕寬度 */
+    font-size: 16px; /* 讓字體適中 */
+    padding: 10px 0; /* 增加上下間距 */
+    background-color: #B3811C;
+}
+
+.chef-img {
+    width: 100px;  /* 設定寬度為 100px */
+    height: 100px; /* 設定高度為 100px */
+    object-fit: cover; /* 使圖片裁切以適應指定的寬高 */
+}
+
+.chef-container {
+    display: flex;
+    align-items: center; /* 讓圖片和文字垂直居中對齊 */
+    color: #686666;
+    margin-left: 15px;  /* 向右偏移 */
+}
+
+
+.chef-img {
+    width: 100px;  /* 調整圖片的寬度 */
+    height: auto; /* 保持比例 */
+    margin-right: 15px;  /* 圖片與文字之間的間距 */
+}
+
+.chef-info h3, .chef-info p {
+    margin: 0;  /* 去掉默認的上下邊距 */
+}

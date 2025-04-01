@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
+    <title>訂單確認</title>
+    <link rel="stylesheet" href="css/Order.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">網站名稱</div>
+        <div class="nav-links">
+            <a href="ChefAfterLogin.html">首頁</a>
+            <a href="#">常見問題</a>
+            <a href="#">我的訂單</a>
+            <a href="ChefUnOrder.html">待接單訂單</a>
+            <a href="#">客服聯絡</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="back-button" onclick="goBack()">← 返回</div>
+        <div class="title">訂單編號 #20250125059</div>
+        <div class="content">
+            <p><strong>預約日期與時間：2025/03/10 17:00</strong></p>
+            <p><strong>取餐方式：外送</strong></p>
+            <p><strong>地址：台北市信義區松高路19號</strong></p>
+            <p><strong>聯絡人資訊：0936562142</strong></p>
+            <p><strong>Line ID：0936562142</strong></p>
+            <hr>
+            <p><strong>菜單列表：</strong></p>
+            <p><strong>1. 番茄炒蛋 3人份</strong></p>
+            <p>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</p>
+            <p>食材：番茄*2顆 雞蛋*5顆</p>
+            <p>客製化補充：番茄醬要加 糖也需要加 喜歡偏甜的</p>
+            <p>做法：蛋與番茄要先分開炒</p>
+
+            <p><strong>2. 炒水蓮 3人份</strong></p>
+            <p>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</p>
+            <p>食材：水蓮</p>
+            <p>客製化補充：多蒜 喜歡口感脆</p>
+            <p>做法：大火快炒</p>
+
+            <p><strong>3. 宮保雞丁 3人份</strong></p>
+            <p>（鹹度:適中 辣度:中辣 油度:正常 辛香料:蒜、薑、蔥）</p>
+            <p>食材：雞胸肉*300g 乾辣椒*5根 花生*適量 青椒*1顆 紅椒*1顆</p>
+            <p>客製化補充：雞肉要醃過，花生多一點</p>
+            <p>做法：先炒香辛香料，再下雞肉翻炒，最後加入醬汁拌勻</p>
+
+            <p><strong>4. 魚香茄子 3人份</strong></p>
+            <p>（鹹度:偏重 辣度:小辣 油度:稍多 辛香料:蒜、薑、蔥）</p>
+            <p>食材：茄子*2根 絞肉*100g 辣豆瓣醬*1大匙</p>
+            <p>客製化補充：希望醬汁多一點，可以拌飯</p>
+            <p>做法：茄子先炸（或炒），再與醬料、絞肉拌炒收汁</p>
+
+            <p><strong>5. 蘿蔔排骨湯 3人份</strong></p>
+            <p>（鹹度:清淡 辣度:無 辛香料:蔥、薑）</p>
+            <p>食材：白蘿蔔*1條 排骨*300g 枸杞*適量</p>
+            <p>客製化補充：想要湯頭更鮮甜，可以加紅棗</p>
+            <p>做法：排骨先汆燙，再與白蘿蔔一起熬煮至軟爛</p>
+
+        </div>
+        <p style="text-align: center; margin-top: 15px; font-weight: bold;">請確認是否要接單？</p>
+        <div class="buttons">
+            <button class="reject">拒絕</button>
+            <button class="accept" type="button" onclick="acceptOrder()">接單</button>
+        </div>
+    </div>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+        function acceptOrder() {
+            Swal.fire({
+                title: "接單成功！",
+                icon: "success",
+                confirmButtonText: "立即前往估價",
+                customClass: {
+                    confirmButton: "swal-custom-button"
+                }
+            }).then(() => {
+                window.location.href = "OrderPrice.html"; // 只有「確認送出」才跳轉
+            });
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector(".reject").addEventListener("click", function () {
+                Swal.fire({
+                    title: "確定拒絕此單",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "否",  // 這裡交換位置
+                    cancelButtonText: "是",
+                    reverseButtons: true, // 這行讓按鈕左右對調
+                    customClass: {
+                        confirmButton: "swal-custom-cancel",
+                        cancelButton: "swal-custom-button"
+                    }
+                }).then((result) => {
+                    if (!result.isConfirmed) { // 按下「是」進入下一步
+                        Swal.fire({
+                            title: "拒絕原因",
+                            icon: "question",
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            html: `
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                            <button class="swal2-confirm reason-button" data-reason="菜單">菜單</button>
+                            <button class="swal2-confirm reason-button" data-reason="時間">時間</button>
+                            <button class="swal2-confirm reason-button" data-reason="地區">地區</button>
+                            <button class="swal2-confirm reason-button" data-reason="其他">其他</button>
+                        </div>
+                    `,
+                            didOpen: () => {
+                                document.querySelectorAll(".reason-button").forEach(button => {
+                                    button.addEventListener("click", function () {
+                                        let reason = this.getAttribute("data-reason");
+                                        Swal.fire({
+                                            title: `訂單已拒絕`,
+                                            text: `原因：${reason}`,
+                                            icon: "success",
+                                            confirmButtonText: "確認"
+                                        }).then(() => {
+                                            window.location.href = "ChefUnOrder.html"; // 按下確認後跳轉
+                                        });
+                                    });
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

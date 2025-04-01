@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>廚師註冊</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ChefRegister.css') }}">
+</head>
+
+<body>
+    <div class="left-section"></div>
+    <div class="right-section">
+        <div class="top-right-link">
+            已經有帳號？<a href="/ChefLogin" class="login-button">登入</a>
+        </div>
+        <div class="form-container">
+            <h2>Welcome to [系統名稱]！</h2>
+            <h3>註冊廚師帳號</h3>
+            <form action="/ChefRegister2" method="GET" id="registerForm">
+                <input type="text" name="name" id="username" placeholder="Name" required>
+                <input type="email" name="email" id="email" placeholder="Email" required>
+                <span id="emailError" class="error-message"></span>
+                <div class="password-container">
+                    <input type="password" name="password" id="password" placeholder="密碼 (8位數字+字母)" required>
+                    <button type="button" id="togglePassword">顯示</button>
+                </div>
+                <input type="tel" id="phone" name="phone" placeholder="Phone" required>
+                <span id="phoneError" class="error-message"></span>
+                <button type="submit" class="button">下一步</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 顯示或隱藏密碼
+        document.getElementById("togglePassword").addEventListener("click", function () {
+            const passwordField = document.getElementById("password");
+            const type = passwordField.type === "password" ? "text" : "password";
+            passwordField.type = type;
+            this.textContent = type === "password" ? "顯示" : "隱藏";
+        });
+
+        // 表單提交前檢查
+        document.getElementById("registerForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); // 阻止表單默認提交行為
+
+            const name = document.getElementById("username").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            const phone = document.getElementById("phone").value.trim();
+            const emailError = document.getElementById("emailError");
+            const phoneError = document.getElementById("phoneError");
+            let errorMessage = "";
+
+            // 清空錯誤訊息
+            emailError.textContent = "";
+            phoneError.textContent = "";
+
+            // 驗證姓名
+            if (!name) {
+                errorMessage += "姓名不能為空\n";
+            }
+
+            // 驗證 Email
+            if (!email) {
+                errorMessage += "Email 不能為空\n";
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                errorMessage += "請輸入有效的 Email\n";
+            } else {
+                // 檢查 Email 是否已被註冊
+                try {
+                    const emailResponse = await fetch("/api/register_chef", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email, check_only: true })
+                    });
+                    const emailResult = await emailResponse.json();
+                    if (emailResponse.ok && emailResult.exists) {
+                        errorMessage += "此 Email 已被註冊\n";
+                    }
+                } catch (error) {
+                    errorMessage += "檢查 Email 時發生錯誤\n";
+                }
+            }
+
+            // 驗證電話
+            if (!phone) {
+                errorMessage += "電話不能為空\n";
+            } else if (!/^\d{10}$/.test(phone)) {
+                errorMessage += "請輸入有效的 10 位數字電話號碼\n";
+            } else {
+                // 檢查電話是否已被註冊
+                try {
+                    const phoneResponse = await fetch("/api/register_chef", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ phone, check_only: true })
+                    });
+                    const phoneResult = await phoneResponse.json();
+                    if (phoneResponse.ok && phoneResult.exists) {
+                        errorMessage += "此電話已被註冊\n";
+                    }
+                } catch (error) {
+                    errorMessage += "檢查電話時發生錯誤\n";
+                }
+            }
+
+            // 驗證密碼
+            if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)) {
+                errorMessage += "密碼需包含至少8個字元，且至少包含1個字母與1個數字\n";
+            }
+
+            // 如果有錯誤訊息，顯示錯誤並阻止提交
+            if (errorMessage) {
+                alert(errorMessage);
+            } else {
+                // 如果沒有錯誤，提交表單
+                event.target.submit();
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="css/orderDetail2.css" rel="stylesheet" />
+    <link href="css/notification.css" rel="stylesheet" />
+    <title>代做菜媒合平台</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="AfterLogin.html">首頁</a>
+            <a href="#">料理方式建議</a>
+            <a href="SearchChef.html">發送訂單</a>
+            <a href="#">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <div class="section2">
+                <h3>訂單編號 : #20250125059</h3>
+                <div class="status-bar">
+                    <div class="status">等待回應</div>
+                    <div class="status active">議價中</div>
+                    <div class="status">已接單</div>
+                    <div class="status">製作中</div>
+                    <div class="status">製作完成</div>
+                    <div class="status">交付完成</div>
+                </div>
+            </div>
+            <br>
+
+            <div class="detail">
+                <table>
+                    <tr>
+                        <td class="left">
+                            <p>預約日期 : 2025/03/19</p>
+                            <br>
+                            <p>預約時間 : 18:00</p>
+                            <br>
+                            <p>取餐方式 : 自取</p>
+                        </td>
+                        <td class="right">
+                            <p>聯絡人資訊 : 0912-345-678</p>
+                            <br>
+                            <p>菜單列表 :
+                                <br>
+                                1.蔥爆牛肉
+                                <br>
+                                2.炒青椒
+                                <br>
+                                3.糖醋里肌
+                                <br>
+                                4.海帶湯
+                            </p>
+                        </td>
+
+                    </tr>
+                </table>
+            </div>
+            <div class="extra-section">
+                <div class="extra-left">
+                    <div class="price-negotiation">
+                        <h4>廚師第2次定價：NT$430</h4>
+                        <div class="negotiation-buttons">
+                            <button class="btn-agree" type="button">同意</button>
+                            <button class="btn-negotiate">不同意</button>
+                            <p class="note">*注意：此次不同意及取消訂單</p>
+                        </div>
+                        <p class="chefnote">廚師留言廚師留言廚師留言....</p>
+                    </div>
+                </div>
+                <div class="extra-right">
+                    <p>價錢明細:</p>
+                    <p>1.蔥爆牛肉 NT$ 160</p>
+                    <p>2.炒青椒 NT$ 80 </p>
+                    <p>3.糖醋里肌 NT$ 170 </p>
+                    <p>4.海帶湯 NT$ 55</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+    <!-- 設定小視窗 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2>設定</h2>
+            <p>帳號</p>
+            <p>其他</p>
+            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function selectDelivery(type) {
+            const pickupBtn = document.getElementById('pickup');
+            const deliveryBtn = document.getElementById('delivery');
+            const addressField = document.getElementById('address-field');
+
+            if (type === 'pickup') {
+                pickupBtn.classList.add('active');
+                deliveryBtn.classList.remove('active');
+                addressField.classList.add('hidden');
+            } else {
+                deliveryBtn.classList.add('active');
+                pickupBtn.classList.remove('active');
+                addressField.classList.remove('hidden');
+            }
+        }
+
+        function selectDelivery(type) {
+            // 移除所有按鈕的 active 類別
+            document.getElementById('pickup').classList.remove('active');
+            document.getElementById('delivery').classList.remove('active');
+
+            // 根據選擇的類型為相應按鈕添加 active 類別
+            if (type === 'pickup') {
+                document.getElementById('pickup').classList.add('active');
+            } else if (type === 'delivery') {
+                document.getElementById('delivery').classList.add('active');
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector(".btn-agree").addEventListener("click", function (event) {
+            event.preventDefault(); // 防止預設行為
+
+            Swal.fire({
+                title: "訂單成立",
+                text: "您的訂單已成功成立！",
+                icon: "success",
+                confirmButtonText: "確定"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.setItem("orderConfirmed", "true"); // 記錄訂單已成立
+                    window.location.href = "my-order.html"; // 跳轉到「我的訂單」
+                }
+            });
+        });
+
+        document.querySelector(".btn-negotiate").addEventListener("click", function () {
+            Swal.fire({
+                title: "確定取消訂單？",
+                text: "取消後將無法恢復！",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "確定取消",
+                cancelButtonText: "返回",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "SearchChef.html"; // 取消後跳轉到「發送訂單」
+                }
+            });
+        });
+    });
+    </script>
+    <script src="js/notification.js"></script>
+</body>
+
+</html>

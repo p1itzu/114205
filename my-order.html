@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/my-order.css" rel="stylesheet" />
+    <link href="css/notification.css" rel="stylesheet" />
+    <title>代做菜媒合平台</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="AfterLogin.html">首頁</a>
+            <a href="CookingMethod.html">料理方式建議</a>
+            <a href="SearchChef.html">發送訂單</a>
+            <a href="#">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+
+        </div>
+        <!-- 通知中心視窗 -->
+        <div class="notification-center" id="notificationCenter">
+            <div class="notification-header">
+                <span>通知中心</span>
+                <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+            </div>
+            <ul class="notification-list" id="notificationList">
+                <!-- 通知項目會動態添加在這裡 -->
+            </ul>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+    <br>
+    <div class="maintext">所有訂單</div>
+    <div class="filter-buttons">
+        <button class="filter-btn active" data-status="all">全部</button>
+        <button class="filter-btn" data-status="ongoing">進行中</button>
+        <button class="filter-btn" data-status="completed">已完成</button>
+        <button class="filter-btn" data-status="cancelled">已取消</button>
+    </div>
+    <div class="container">
+        <!-- 全部訂單卡片 -->
+        <div class="order-card" data-status="all">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126001</p>
+            <p>
+                菜單列表：
+                <br>
+                1.紅燒肉
+                <br>
+                2.清炒時蔬
+                <br>
+                3.糖醋魚
+                <br>
+                4.蛋花湯
+            </p>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
+            </div>
+        </div>
+
+        <!-- 留言板彈出視窗 -->
+        <div class="message-modal">
+            <div class="message-modal-content">
+                <div class="message-modal-header">
+                    <h3>訂單留言</h3>
+                    <button class="close-message-btn" onclick="closeMessageBoard(this)">&times;</button>
+                </div>
+                <div class="message-board">
+                    <div class="message-list">
+                        <!-- 留言會動態添加在這裡 -->
+                    </div>
+                    <div class="message-input">
+                        <textarea placeholder="輸入留言..."></textarea>
+                        <button class="send-btn">發送</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 進行中訂單卡片 -->
+        <div class="order-card" data-status="ongoing">
+            <span class="status-tag-waiting">等待回應中</span>
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126002</p>
+            <p>
+                菜單列表：
+                <br>
+                1.紅燒肉
+                <br>
+                2.清炒時蔬
+                <br>
+                3.糖醋魚
+                <br>
+                4.蛋花湯
+            </p>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
+            </div>
+        </div>
+        <div class="order-card" data-status="ongoing">
+            <span class="status-tag-negotiating">議價中</span>
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126003</p>
+            <p>
+                菜單列表：
+                <br>
+                1.麻婆豆腐
+                <br>
+                2.蒜蓉炒青菜
+                <br>
+                3.宮保雞丁
+                <br>
+                4.紫菜蛋花湯
+            </p>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
+            </div>
+        </div>
+        <!-- 已完成訂單卡片 -->
+        <div class="order-card" data-status="completed">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126004</p>
+            <p>
+                菜單列表：
+                <br>
+                1.三杯雞
+                <br>
+                2.炒空心菜
+                <br>
+                3.清蒸魚
+                <br>
+                4.玉米濃湯
+            </p>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
+            </div>
+        </div>
+        <div class="order-card" data-status="completed">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126005</p>
+            <p>
+                菜單列表：
+                <br>
+                1.回鍋肉
+                <br>
+                2.炒高麗菜
+                <br>
+                3.糖醋排骨
+                <br>
+                4.番茄蛋湯
+            </p>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
+            </div>
+        </div>
+        <!-- 已取消訂單卡片 -->
+        <div class="order-card" data-status="cancelled">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126006</p>
+            <p>
+                菜單列表：
+                <br>
+                1.水煮魚
+                <br>
+                2.炒豆芽
+                <br>
+                3.紅燒茄子
+                <br>
+                4.酸辣湯
+            </p>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
+            </div>
+        </div>
+        <div class="order-card" data-status="cancelled">
+            <p class="order-num"><strong>訂單編號</strong><br>#20250126007</p>
+            <p>
+                菜單列表：
+                <br>
+                1.蔥爆牛肉
+                <br>
+                2.炒青椒
+                <br>
+                3.糖醋里肌
+                <br>
+                4.海帶湯
+            </p>
+            <div class="button-group">
+                <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
+                <a href="#" id="viewOrderBtn" class="order-btn">查看詳細訂單資訊</a>
+            </div>
+        </div>
+        <!-- 設定小視窗 -->
+        <div class="settings-modal" id="settings-modal">
+            <div class="modal-content">
+                <h2 class="title">設定</h2>
+
+                <!-- 帳號區塊 -->
+                <div class="section2">
+                    <h3>帳號</h3>
+                    <div class="account-info">
+                        <img src="imgs/chef.png" alt="Avatar" class="avatar">
+                        <div class="account-text">
+                            <p class="name">PeiTzu Chang</p>
+                            <p class="sub-text">個人資料</p>
+                        </div>
+                        <button class="arrow-btn" onclick="toggleProfileModal()">➜</button>
+                    </div>
+                </div>
+
+                <!-- 其他 -->
+                <div class="section2">
+                    <h3>其他</h3>
+                    <button class="logout-btn">
+                        <span>↩️ 登出</span>
+                    </button>
+                    <button class="delete-btn">
+                        🗑️ 刪除帳號
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 第二個個人資料視窗 -->
+        <div class="settings-modal" id="profile-modal">
+            <div class="modal-content profile-content">
+                <h2 class="title">個人資料編輯</h2>
+
+                <div class="profile-container">
+                    <!-- 頭像區塊 -->
+                    <div class="avatar-section">
+                        <img id="profile-avatar" class="profile-avatar" src="imgs/chef.png" alt="個人頭像">
+                        <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                        <button class="edit-avatar-btn">個人頭像編輯</button>
+                    </div>
+
+                    <!-- 輸入表單 -->
+                    <div class="form-section">
+                        <label>姓名：</label> <input type="text" placeholder="請輸入姓名">
+                        <label>電子郵件：</label> <input type="email" placeholder="請輸入電子郵件">
+                        <label>電話：</label> <input type="tel" placeholder="請輸入電話">
+                        <label>密碼：</label> <input type="password" placeholder="請輸入密碼">
+                    </div>
+                </div>
+
+                <!-- 儲存按鈕 -->
+                <button class="save-btn">儲存變更</button>
+                <button class="close-btn" onclick="toggleProfileModal()">返回</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+            }
+        }
+
+        // 定義 MessageBoard 類
+        class MessageBoard {
+            constructor(messageModal) {
+                this.messageModal = messageModal;
+                this.orderId = messageModal.getAttribute('data-order-id');
+                this.messageList = messageModal.querySelector('.message-list');
+                this.textarea = messageModal.querySelector('.message-input textarea');
+                this.sendBtn = messageModal.querySelector('.message-input .send-btn');
+
+                this.messages = this.loadMessages();
+                this.initializeEventListeners();
+                this.renderMessages();
+            }
+
+            loadMessages() {
+                const stored = localStorage.getItem(`messages_${this.orderId}`);
+                return stored ? JSON.parse(stored) : [];
+            }
+
+            saveMessages() {
+                localStorage.setItem(`messages_${this.orderId}`, JSON.stringify(this.messages));
+            }
+
+            addMessage(content, sender, isCustomer) {
+                const message = {
+                    content,
+                    sender,
+                    isCustomer,
+                    time: new Date().toISOString(),
+                };
+                this.messages.push(message);
+                this.saveMessages();
+                this.renderMessage(message);
+            }
+
+            renderMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${message.isCustomer ? 'customer' : 'chef'}`;
+
+                const time = new Date(message.time).toLocaleTimeString('zh-TW', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                messageDiv.innerHTML = `
+                    <div class="sender">${message.sender}</div>
+                    <div class="content">${message.content}</div>
+                    <div class="time">${time}</div>
+                `;
+
+                this.messageList.appendChild(messageDiv);
+                this.messageList.scrollTop = this.messageList.scrollHeight;
+            }
+
+            renderMessages() {
+                this.messageList.innerHTML = '';
+                this.messages.forEach(message => this.renderMessage(message));
+            }
+
+            initializeEventListeners() {
+                // 移除舊的事件監聽器
+                const newSendBtn = this.sendBtn.cloneNode(true);
+                this.sendBtn.parentNode.replaceChild(newSendBtn, this.sendBtn);
+                this.sendBtn = newSendBtn;
+
+                const newTextarea = this.textarea.cloneNode(true);
+                this.textarea.parentNode.replaceChild(newTextarea, this.textarea);
+                this.textarea = newTextarea;
+
+                // 添加新的事件監聽器
+                this.sendBtn.addEventListener('click', () => {
+                    const message = this.textarea.value.trim();
+                    if (message) {
+                        this.addMessage(message, '顧客', true);
+                        this.textarea.value = '';
+                    }
+                });
+
+                this.textarea.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendBtn.click();
+                    }
+                });
+            }
+        }
+
+        // 打開留言板視窗
+        function openMessageBoard(button) {
+            const orderCard = button.closest('.order-card');
+            const orderId = orderCard.querySelector('.order-num').textContent.split('#')[1].trim();
+            const messageModal = document.querySelector('.message-modal');
+
+            // 設置當前訂單ID到留言板
+            messageModal.setAttribute('data-order-id', orderId);
+
+            // 顯示留言板視窗
+            messageModal.style.display = 'flex';
+
+            // 載入該訂單的留言
+            const messageBoard = new MessageBoard(messageModal);
+        }
+
+        // 關閉留言板視窗
+        function closeMessageBoard(button) {
+            const messageModal = button.closest('.message-modal');
+            messageModal.style.display = 'none';
+        }
+
+        // 新增按鈕切換功能
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const orderCards = document.querySelectorAll('.order-card');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // 移除所有按鈕的 active 類別
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // 為被點擊的按鈕添加 active 類別
+                    this.classList.add('active');
+
+                    // 獲取選中的狀態
+                    const selectedStatus = this.getAttribute('data-status');
+
+                    // 顯示/隱藏對應的卡片
+                    orderCards.forEach(card => {
+                        if (selectedStatus === 'all' || card.getAttribute('data-status') === selectedStatus) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // 點擊視窗外關閉留言板
+            document.querySelector('.message-modal').addEventListener('click', (e) => {
+                if (e.target.classList.contains('message-modal')) {
+                    closeMessageBoard(e.target.querySelector('.close-message-btn'));
+                }
+            });
+
+            // 如果是第一次訪問，添加示範留言
+            document.querySelectorAll('.order-card').forEach(orderCard => {
+                const orderId = orderCard.querySelector('.order-num').textContent.split('#')[1].trim();
+                const storageKey = `messages_${orderId}`;
+
+                if (!localStorage.getItem(storageKey)) {
+                    const messages = [
+                        {
+                            content: '請問這道菜可以少放辣嗎？',
+                            sender: '顧客',
+                            isCustomer: true,
+                            time: new Date().toISOString()
+                        },
+                        {
+                            content: '沒問題，我會依照您的要求調整。',
+                            sender: '廚師',
+                            isCustomer: false,
+                            time: new Date(Date.now() + 1000).toISOString()
+                        }
+                    ];
+                    localStorage.setItem(storageKey, JSON.stringify(messages));
+                }
+            });
+        });
+        // 切換設定視窗
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+
+            if (modal.classList.contains('show')) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300); // 等動畫結束再隱藏
+            } else {
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+            }
+        }
+
+        // 切換個人資料視窗
+        function toggleProfileModal() {
+            const profileModal = document.getElementById('profile-modal');
+
+            if (profileModal.classList.contains('show')) {
+                profileModal.classList.remove('show');
+                setTimeout(() => {
+                    profileModal.style.display = 'none';
+                }, 300);
+            } else {
+                profileModal.style.display = 'flex';
+                setTimeout(() => {
+                    profileModal.classList.add('show');
+                }, 10);
+            }
+        }
+
+        // 點擊視窗外部關閉
+        window.onclick = function (event) {
+            const settingsModal = document.getElementById('settings-modal');
+            const profileModal = document.getElementById('profile-modal');
+
+            // 如果點擊的目標是 `settingsModal` 本身，則關閉它
+            if (event.target === settingsModal) {
+                toggleSettingsModal();
+            }
+
+            // 如果點擊的目標是 `profileModal` 本身，則關閉它
+            if (event.target === profileModal) {
+                toggleProfileModal();
+            }
+        };
+
+        // 處理頭像上傳
+        document.addEventListener("DOMContentLoaded", function () {
+            const avatarInput = document.getElementById("avatar-input");
+            const profileAvatar = document.getElementById("profile-avatar");
+            const editAvatarBtn = document.querySelector(".edit-avatar-btn");
+
+            // 點擊按鈕時，打開文件選擇視窗
+            editAvatarBtn.addEventListener("click", function () {
+                avatarInput.click();
+            });
+
+            // 當用戶選擇圖片時
+            avatarInput.addEventListener("change", function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        profileAvatar.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const viewOrderBtns = document.querySelectorAll(".order-btn");
+            const agreeButtons = document.querySelectorAll(".btn-agree"); // 選取所有「同意」按鈕
+
+            // 監聽「同意」按鈕的點擊事件
+            agreeButtons.forEach(button => {
+                button.addEventListener("click", function (event) {
+                    event.preventDefault(); // 防止預設行為
+
+                    Swal.fire({
+                        title: "訂單成立",
+                        icon: "success",
+                        confirmButtonText: "確認"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            localStorage.setItem("orderConfirmed", "true"); // 設定 localStorage
+                            window.location.href = "my-order.html"; // 跳轉回 my-order.html
+                        }
+                    });
+                });
+            });
+
+            // 在 my-order.html 設定「查看詳細訂單資訊」按鈕的跳轉目標
+
+
+            //if (viewOrderBtn) {
+                if (localStorage.getItem("orderConfirmed") === "true") {
+                    viewOrderBtns.forEach(btn => {
+                        btn.href = "orderDetail3.html"; // 若從 orderDetail3.html 來，跳轉到 orderDetail2.html
+                    });
+                    //viewOrderBtn.href = "orderDetail3.html"; // 若從 orderDetail2.html / orderDetail.html 來，跳轉到 orderDetail3.html
+                } else {
+                    viewOrderBtns.forEach(btn => {
+                        btn.href = "orderDetail.html"; // 否則跳轉到 orderDetail.html
+                    });
+                    //viewOrderBtn.href = "orderDetail.html"; // 否則跳轉到 orderDetail.html
+                }
+
+                // 清除記錄，避免影響下一次點擊
+                localStorage.removeItem("orderConfirmed");
+            //}
+        });
+
+
+
+
+    </script>
+    <script src="js/notification.js"></script>
+</body>
+
+</html>

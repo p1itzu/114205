@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代做菜媒合平台</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+
+    <!-- 連結 CSS -->
+    <link href="css/NLogin.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">網站名稱</div>
+       
+        <!-- 使用者資訊區域，內含「註冊/登入」按鈕 -->
+        <div class="user-info">
+            <button class="login-button" onclick="toggleLoginModal()">註冊/登入</button>
+        </div>
+    </div>
+
+    <!-- 遮罩層 -->
+    <div class="modal-overlay" id="modal-overlay" onclick="toggleLoginModal()"></div>
+
+    <div class="content">
+        <h1>歡迎來到我們的網站</h1>
+        <p>這是一個代做菜的媒合平台。</p>
+    </div>
+    <div class="content">
+        <div class="section">
+            <h3>平台簡介</h3>
+            <p>
+                平台旨在為忙碌的現代人提供便捷的餐食解決方案。無論是因工作繁忙、聚會需要，或是單純想享受家常美味卻無暇下廚，平台都能幫助用戶快速找到合適的代做菜服務。
+                <br><br>
+                使用者只需透過簡單的操作，即可瀏覽多樣菜單、預約代做菜服務，並選擇自取或外送。平台同時提供代做菜師傅資訊與評價，保障用戶的選擇品質與餐食安全。
+                <br><br>
+                我們致力於打造一個 <strong>方便、快速、安全</strong> 的用餐媒合體驗，讓每一位用戶都能輕鬆享受美味料理，減少生活煩惱。
+            </p>
+        </div>
+        <div class="section">
+            <h3>流程介紹</h3>
+            <p>1. 選擇角色（廚師 / 顧客）</p>
+            <p>2. 瀏覽或上架菜單</p>
+            <p>3. 下單或接單</p>
+            <p>4. 完成訂單並留下評價</p>
+        </div>
+        <div class="section">
+            <h3>最新公告</h3>
+            <p>春節期間訂單調整時間請提前查詢！</p>
+        </div>
+    </div>
+
+    <!-- 選擇身分小視窗 -->
+    <div class="login-modal" id="login-modal">
+        <div class="modal-content">
+            <h2>請選擇身分</h2>
+            <div class="button-group">
+                <button class="role-button" onclick="location.href='ChefRegister.html'">廚師</button>
+            <button class="role-button" onclick="location.href='CusRegister.html'">顧客</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2025 網站名稱. All rights reserved.<br>
+        聯絡我們：official@example.com | 電話：02-12345678900
+    </div>
+
+    <script>
+        function toggleLoginModal() {
+            const modal = document.getElementById("login-modal");
+            const overlay = document.getElementById("modal-overlay");
+
+            // 如果 modal 隱藏或尚未設定 display
+            if (modal.style.display === "none" || modal.style.display === "") {
+                modal.style.display = "block"; // 顯示小視窗
+                overlay.style.display = "block"; // 顯示遮罩層
+            } else {
+                modal.style.display = "none"; // 隱藏小視窗
+                overlay.style.display = "none"; // 隱藏遮罩層
+            }
+        }
+    </script>
+</body>
+
+</html>

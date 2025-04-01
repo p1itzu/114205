@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>已取消訂單</title>
+    <link rel="stylesheet" href="css/CancelOrder.css">
+</head>
+<script>
+    function toggleDropdown() {
+        document.getElementById("orderDropdown").classList.toggle("show");
+    }
+
+    // 點擊其他地方時關閉下拉選單
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropdown-btn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
+
+<body>
+
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="ChefAfterLogin.html">首頁</a>
+            <a href="ChefMain.html">我的頁面</a>
+            <a href="ChefUnOrder.html">待接單訂單</a>
+
+            <!-- 新增下拉選單 -->
+            <div class="dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                <div class="dropdown-content" id="orderDropdown">
+                    <a href="ChefOrder.html">待完成訂單</a>
+                    <a href="OrderDone.html">已完成訂單</a>
+                    <a href="Charging.html">議價中訂單</a>
+                    <a href="CancelOrder.html">已取消訂單</a>
+                </div>
+            </div>
+
+            <a href="#">客服聯絡</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+    <div class="search-bar">
+        <input type="text" placeholder="搜尋訂單">
+    </div>
+    <div class="maintext">已取消訂單</div>
+    <div class="container">
+        <!-- 訂單卡片 -->
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250126001</p>
+            <p>預定日期：2025/03/10<br>地區：台北市<br>地址：信義區松高路19號<br>預估價格：NT$3,500</p>
+            <button class="order-btn" onclick="window.location.href='Order.html'">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250126002</p>
+            <p>預定日期：2025/03/15<br>地區：高雄市<br>地址：鼓山區蓮海路70號<br>預估價格：NT$4,200</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250126003</p>
+            <p>預定日期：2025/03/20<br>地區：台中市<br>地址：西屯區市政路99號<br>預估價格：NT$3,800</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250125060</p>
+            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250125061</p>
+            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250125062</p>
+            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250125063</p>
+            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250126001</p>
+            <p>預定日期：2025/03/10<br>地區：台北市<br>地址：信義區松高路19號<br>預估價格：NT$3,500</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250125065</p>
+            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250125066</p>
+            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250125067</p>
+            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+        <div class="order-card">
+            <p><strong>訂單編號</strong><br>#20250125068</p>
+            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <button class="order-btn">查看詳細訂單資訊</button>
+        </div>
+    </div>
+</body>
+
+</html>

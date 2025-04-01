@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用戶註冊</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/CusRegister.css') }}">
+</head>
+
+<body>
+    <div class="left-section"></div>
+    <div class="right-section">
+        <div class="top-right-link">
+            已經有帳號？<a href="/CusLogin" class="login-button">登入</a>
+        </div>
+        <div class="form-container">
+            <h2>Welcome to [系統名稱]！</h2>
+            <form id="registerForm" action="/api/register_customer" method="POST">
+                <input type="text" id="name" name="username" placeholder="Name" required>
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" placeholder="密碼 (8位數字+字母)" required>
+                    <button type="button" id="togglePassword">顯示</button>
+                </div>
+                <input type="tel" id="phone" name="phone" placeholder="Phone" required>
+                <button type="submit" class="button">註冊</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("togglePassword").addEventListener("click", function () {
+            const passwordField = document.getElementById("password");
+            const type = passwordField.type === "password" ? "text" : "password";
+            passwordField.type = type;
+            this.textContent = type === "password" ? "顯示" : "隱藏";
+        });
+
+        document.getElementById("registerForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(result.message || "註冊成功！");
+                    window.location.href = result.redirect_url; // 跳轉到登入頁面
+                } else {
+                    alert(result.error || "註冊失敗，請檢查輸入內容！");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("伺服器發生錯誤，請稍後再試！");
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/reserve4.css" rel="stylesheet" />
+    <link href="css/notification.css" rel="stylesheet" />
+    <title>代做菜媒合平台</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="AfterLogin.html">首頁</a>
+            <a href="#">料理方式建議</a>
+            <a href="SearchChef.html">發送訂單</a>
+            <a href="my-order.html">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <div class="section2">
+                <h3>Step4 - 訂單確認</h3>
+                <br>
+            </div>
+
+            <table>
+
+                <div>
+                    <label class="order-time"><strong>預約日期/時間:</strong> 2025.03.10/17:30</label>
+                    <br>
+                    <br>
+                    <label class="order-time"><strong>取餐方式:</strong> 自取</label>
+                    <br>
+                    <br>
+                    <label class="order-time"><strong>聯絡人資訊:</strong> 0912345678</label>
+                    <br>
+                    <br>
+
+                </div>
+
+                <tr>
+                    <label class="order-time"><strong>菜單列表:</strong></label>
+                    <br>
+                    <br>
+                    <div class="meal-container">
+                        <ul class="meal-list" id="mealList">
+                            <li>
+                                香煎奶油鱸魚 - <span class="price">200</span> 元
+                            </li>
+                            <li>
+                                蒜香白酒蛤蜊義大利麵 - <span class="price">250</span> 元
+                            </li>
+                            <li>
+                                泰式打拋豬飯 - <span class="price">180</span> 元
+                            </li>
+                            <li>
+                                麻辣鴨血臭豆腐 - <span class="price">150</span> 元
+                            </li>
+                            <li>
+                                韓式部隊鍋 - <span class="price">300</span> 元
+                            </li>
+                            <li>
+                                照燒雞腿丼飯 - <span class="price">220</span> 元
+                            </li>
+                            <li>
+                                酥炸金沙豆腐 - <span class="price">120</span> 元
+                            </li>
+                            <li>
+                                香草奶油燉飯 - <span class="price">200</span> 元
+                            </li>
+                            <li>
+                                蒙古烤肉拼盤 - <span class="price">350</span> 元
+                            </li>
+                            <li>
+                                起司瀑布漢堡 - <span class="price">280</span> 元
+                            </li>
+                        </ul>
+                    </div>
+                    <br>
+                    <label class="order-time"><strong>系統預估價格:</strong> <span id="totalPrice">0</span> 元</label>
+                    <br>
+                    <button class="save-button" type="button" onclick="submitOrder()">確認送出</button>
+                    <button class="next-button" type="submit" onclick="location.href='reserve2.html'">上一步</button>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="step">第1步</div>
+        <div class="line"></div>
+        <div class="step">第2步</div>
+        <div class="line"></div>
+        <div class="step">第3步</div>
+        <div class="line"></div>
+        <div class="step active">第4步</div>
+    </div>
+
+
+    <!-- 設定小視窗 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2>設定</h2>
+            <p>帳號</p>
+            <p>其他</p>
+            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+        </div>
+    </div>
+
+    <!-- 引入 SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function selectDelivery(type) {
+            const pickupBtn = document.getElementById('pickup');
+            const deliveryBtn = document.getElementById('delivery');
+            const addressField = document.getElementById('address-field');
+
+            if (type === 'pickup') {
+                pickupBtn.classList.add('active');
+                deliveryBtn.classList.remove('active');
+                addressField.classList.add('hidden');
+            } else {
+                deliveryBtn.classList.add('active');
+                pickupBtn.classList.remove('active');
+                addressField.classList.remove('hidden');
+            }
+        }
+
+        function selectDelivery(type) {
+            // 移除所有按鈕的 active 類別
+            document.getElementById('pickup').classList.remove('active');
+            document.getElementById('delivery').classList.remove('active');
+
+            // 根據選擇的類型為相應按鈕添加 active 類別
+            if (type === 'pickup') {
+                document.getElementById('pickup').classList.add('active');
+            } else if (type === 'delivery') {
+                document.getElementById('delivery').classList.add('active');
+            }
+        }
+
+        function setNumber(value) {
+            document.getElementById("custom-number").value = value;
+        }
+
+        // 計算總價格
+        document.addEventListener("DOMContentLoaded", function () {
+            const prices = document.querySelectorAll(".price");
+            const totalPriceElement = document.getElementById("totalPrice");
+            let total = 0;
+
+            prices.forEach(priceElement => {
+                total += parseInt(priceElement.textContent, 10);
+            });
+
+            totalPriceElement.textContent = total;
+        });
+
+        function submitOrder() {
+            Swal.fire({
+                title: "訂單送出成功！",
+                text: `總金額為 ${document.getElementById("totalPrice").textContent} 元`,
+                icon: "success",
+                confirmButtonText: "立即前往 我的訂單",
+                customClass: {
+                    confirmButton: "swal-custom-button"
+                }
+            }).then(() => {
+                window.location.href = "my-order.html"; // 只有「確認送出」才跳轉
+            });
+        }
+
+    </script>
+    <script src="js/notification.js"></script>
+</body>
+
+</html>
