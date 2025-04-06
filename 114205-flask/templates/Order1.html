@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
+    <title>訂單確認</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Order1.css') }}">
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="/ChefAfterLogin">首頁</a>
+            <a href="/ChefMain">我的頁面</a>
+            <a href="/ChefUnOrder">待接單訂單</a>
+            <a href="/ChefOrder">待完成訂單</a>
+            <a href="/OrderDone">已完成訂單</a>
+            <a href="/Charging">議價中訂單</a>
+            <a href="/CancelOrder">已取消訂單</a>
+            <a href="#">客服聯絡</a>
+        </div>
+        <div class="user-info">
+            <div class="username">{{ username }}</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="back-button" onclick="goBack()">← 返回</div>
+        <div class="title">訂單編號 #{{ order.id }}</div>
+        <div class="content">
+            <p><strong>預約日期與時間：{{ order.date }} {{ order.time }}</strong></p>
+            <p><strong>取餐方式：{{ order.delivery_method }}</strong></p>
+            <p><strong>地址：{{ order.address }}</strong></p>
+            <p><strong>聯絡人資訊：{{ order.contact }}</strong></p>
+            <p><strong>Line ID：{{ order.line_id }}</strong></p>
+            <hr>
+            <p><strong>菜單列表：</strong></p>
+            {% for dish in order.dishes %}
+            <p><strong>{{ loop.index }}. {{ dish.name }} {{ dish.portion }}</strong></p>
+            <p>（鹹度:{{ dish.salt }} 辣度:{{ dish.spicy }} 油度:{{ dish.oil }} 辛香料:{{ dish.spice }}）</p>
+            <p>食材：{{ dish.ingredients }}</p>
+            {% if dish.customization %}
+            <p>客製化補充：{{ dish.customization }}</p>
+            {% endif %}
+            {% if dish.cooking_method %}
+            <p>做法：{{ dish.cooking_method }}</p>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="button-container">
+            <button class="complete-button" onclick="showCompletionOptions()">完成製作</button>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function toggleSettingsModal() {
+            // 設定選單的邏輯
+        }
+
+        function showCompletionOptions() {
+            Swal.fire({
+                title: '完成製作',
+                text: '確定要完成製作嗎？',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#F9C765',
+                cancelButtonColor: '#B3811C',
+                confirmButtonText: '確定',
+                cancelButtonText: '取消',
+                background: '#fff',
+                customClass: {
+                    confirmButton: 'swal-custom-button',
+                    cancelButton: 'swal-custom-cancel'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: '完成！',
+                        text: '訂單已完成製作',
+                        icon: 'success',
+                        confirmButtonColor: '#F9C765',
+                        confirmButtonText: '確定',
+                        background: '#fff',
+                        customClass: {
+                            confirmButton: 'swal-custom-button'
+                        }
+                    }).then(() => {
+                        window.location.href = '/OrderDone';
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

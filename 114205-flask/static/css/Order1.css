@@ -1,0 +1,146 @@
+body {
+    background-color: #F3EBDD;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background-color: #F9C765;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.navbar .site-name {
+    font-size: 25px;
+    font-weight: bold;
+    padding-left: 20px;
+    color: #B3811C;
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 15px;
+    margin: 0 auto;
+}
+
+.navbar a {
+    color: #B3811C;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    background-color: #f9e4ba;
+    border-radius: 5px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
+}
+
+.user-info .username {
+    color: #B3811C;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 800px;
+    margin: 100px auto 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.back-button {
+    color: #B3811C;
+    cursor: pointer;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #B3811C;
+    margin-bottom: 20px;
+}
+
+.content {
+    line-height: 1.6;
+}
+
+.content p {
+    margin: 10px 0;
+}
+
+.content strong {
+    color: #B3811C;
+}
+
+hr {
+    border: none;
+    border-top: 2px solid #F9C765;
+    margin: 20px 0;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.complete-button {
+    background-color: #F9C765;
+    color: #B3811C;
+    border: none;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.complete-button:hover {
+    background-color: #f0d090;
+}
+
+/* SweetAlert2 自定義樣式 */
+.swal-custom-button {
+    background-color: #F9C765 !important;
+    color: #B3811C !important;
+    font-weight: bold !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+}
+
+.swal-custom-button:hover {
+    background-color: #f0d090 !important;
+}
+
+.swal-custom-cancel {
+    background-color: #ffffff !important;
+    color: #B3811C !important;
+    font-weight: bold !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    border: 2px solid #F9C765 !important;
+}
+
+.swal-custom-cancel:hover {
+    background-color: #f9e4ba !important;
+} 
