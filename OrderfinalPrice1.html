@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>最終定價</title>
-    <link rel="stylesheet" href="css/OrderfinalPrice.css">
+    <link rel="stylesheet" href="css/OrderfinalPrice1.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
     <script>
@@ -140,10 +140,11 @@
                     <!-- 右欄：價格資訊 -->
                     <div class="right-column">
                         <div class="price-info">
-                            <div class="price-final">最終定價金額為：<span id="finalTotalPrice">0</span></div>
+                            <div class="price-final">最終定價金額為：1200</div>
+                            <div >訂單已成立，顧客已同意此價格</div>
                         </div>
                         <div style="margin-top: 10px; text-align: center;">
-                            <button class="confirm-button" style="width: 150px;">訂單成立</button>
+                            <button class="confirm-button" style="width: 150px;" onclick="confirmOrder()">前往接單區</button>
                         </div>
                     </div>
                 </div>
@@ -188,17 +189,16 @@
             }
         }
 
-        function confirmPrice() {
+        function confirmOrder() {
             Swal.fire({
-                title: "已進入議價狀態",
+                title: "訂單成立",
+                text: "您已成功接單！",
                 icon: "success",
-                confirmButtonText: "確認",
-                customClass: {
-                    confirmButton: "swal-custom-button"
-                }
+                confirmButtonText: "前往接單區"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "Charging.html";
+                    localStorage.setItem("orderConfirmed", "true"); 
+                    window.location.href = "ChefOrder.html"; 
                 }
             });
         }

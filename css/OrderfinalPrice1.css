@@ -262,6 +262,8 @@ background-color: #f9e4ba;
 .right-column {
     width: 55%;
     padding-left: 5%;
+    text-align: right;
+    padding-right: 40px;
 }
 
 .customer-remark {
@@ -284,19 +286,20 @@ background-color: #f9e4ba;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    text-align: left;
+    text-align: right;
 }
 
 .price-row {
     font-size: 18px;
     font-weight: 800;
-    color: #000;
+    color: #000000;
 }
+
 .price-final {
-    font-size: 22px;
-    font-weight: 800;
-    color:#cc6300;
-    margin-bottom: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #9f5d1b;
 }
 
 .bottom-section {
@@ -313,14 +316,13 @@ background-color: #f9e4ba;
     background-color: #FFB347;
     color: #000;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 40px;
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
-    display: inline-block;
-    margin: 0;
-    white-space: nowrap;
-    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-top: 10px;
 }
 .show {
 display: block;

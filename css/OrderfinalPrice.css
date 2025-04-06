@@ -292,14 +292,12 @@ background-color: #f9e4ba;
     font-weight: 800;
     color: #000;
 }
+
 .price-final {
     font-size: 22px;
     font-weight: 800;
     color:#cc6300;
-}
-
-.bottom-section {
-    text-align: right;
+    margin-bottom: 5px;
 }
 
 .price-note {
@@ -312,12 +310,14 @@ background-color: #f9e4ba;
     background-color: #FFB347;
     color: #000;
     border: none;
-    padding: 10px 40px;
+    padding: 10px 20px;
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
     display: inline-block;
-    margin: 0 0 0 170px;
+    margin: 0;
+    white-space: nowrap;
+    text-align: center;
 }
 .show {
 display: block;

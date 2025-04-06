@@ -79,38 +79,13 @@ body {
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     margin-top: 85px;
+    /* 避免與導覽列重疊 */
     display: flex;
     flex-direction: column;
     height: calc(100vh - 120px);
+    /* 讓 container 根據螢幕高度變化 */
     max-height: 80vh;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.back-button {
-    background-color: transparent;
-    color: #B3811C;
-    cursor: pointer;
-    font-size: 24px;
-    font-weight: bold;
-    padding: 0;
-    border: none;
-}
-
-.back-button:hover {
-    color: #8a6314;
-}
-
-.title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #666;
-    margin: 0;
+    /* 避免過長 */
 }
 
 .content {
@@ -141,6 +116,40 @@ body {
     background-color: #f1f1f1;
     /* 滾動條背景 */
     border-radius: 10px;
+}
+
+.back-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #B3811C;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background-color: #8a6314;
+}
+
+/*.content {
+    background-color: #EDE3D1;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    flex-grow: 1;
+     讓 content 佔滿可用空間 
+    overflow-y: auto;
+     內部滾動 
+}*/
+
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
 }
 
 .buttons {
@@ -178,4 +187,85 @@ button {
     background-color: #888 !important;
     /* 變綠色 */
     color: white !important;
+}
+
+/* 按鈕組樣式 */
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+/* 確認對話框樣式 */
+.confirm-dialog {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 10px;
+}
+
+.confirm-dialog p {
+    margin: 0 0 10px 0;
+    color: #B3811C;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.confirm-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.confirm-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    min-width: 80px;
+}
+
+.confirm-btn.yes {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.confirm-btn.no {
+    background-color: #FF4B4B;
+    color: white;
+}
+
+.confirm-btn:hover {
+    opacity: 0.9;
+}
+
+/* 修正按鈕樣式 */
+.order-btn {
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.order-btn:first-child {
+    background-color: #888;
+    color: white;
+}
+
+.order-btn:last-child {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.order-btn:hover {
+    opacity: 0.9;
 }

@@ -29,15 +29,13 @@
         </div>
     </div>
     <div class="container">
-        <div class="header">
-            <div class="title">訂單編號 #20250125059</div>
-            <div class="back-button" onclick="goBack()">×</div>
-        </div>
+        <div class="back-button" onclick="goBack()">← 返回</div>
+        <div class="title">訂單編號 #20250125059</div>
         <div class="content">
             <p><strong>預約日期與時間：2025/03/10 17:00</strong></p>
-            <p><strong>總金額: NT$3,500</strong></p>
             <p><strong>取餐方式：外送</strong></p>
             <p><strong>地址：台北市信義區松高路19號</strong></p>
+            <p><strong>聯絡人資訊：0936562142</strong></p>
             <p><strong>Line ID：0936562142</strong></p>
             <hr>
             <p><strong>菜單列表：</strong></p>
@@ -70,12 +68,91 @@
             <p>食材：白蘿蔔*1條 排骨*300g 枸杞*適量</p>
             <p>客製化補充：想要湯頭更鮮甜，可以加紅棗</p>
             <p>做法：排骨先汆燙，再與白蘿蔔一起熬煮至軟爛</p>
+
+        </div>
+        <div class="button-group">
+            <button class="order-btn" onclick="window.location.href='ChefOrder.html'">返回訂單列表</button>
+            <button class="order-btn" onclick="showConfirmDialog(this)">完成製作</button>
         </div>
     </div>
     <script>
         function goBack() {
-            window.location.href = 'ChefOrder.html';
+            window.history.back();
         }
+        function showConfirmDialog(button) {
+            const buttonGroup = button.parentElement;
+            const originalContent = buttonGroup.innerHTML;
+            
+            buttonGroup.innerHTML = `
+                <div class="confirm-dialog">
+                    <p>確定完成製作？</p>
+                    <div class="confirm-buttons">
+                        <button class="confirm-btn yes" onclick="handleConfirm(this, true)">是</button>
+                        <button class="confirm-btn no" onclick="handleConfirm(this, false)">否</button>
+                    </div>
+                </div>
+            `;
+        }
+        function handleConfirm(button, confirmed) {
+            const buttonGroup = button.closest('.button-group');
+            if (confirmed) {
+                // 這裡可以添加完成製作的邏輯
+                alert('訂單已完成製作！');
+            }
+            // 恢復原始按鈕
+            buttonGroup.innerHTML = `
+                <button class="order-btn" onclick="window.location.href='ChefOrder.html'">返回訂單列表</button>
+                <button class="order-btn" onclick="showConfirmDialog(this)">完成製作</button>
+            `;
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector(".reject").addEventListener("click", function () {
+                Swal.fire({
+                    title: "確定拒絕此單",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "否",  // 這裡交換位置
+                    cancelButtonText: "是",
+                    reverseButtons: true, // 這行讓按鈕左右對調
+                    customClass: {
+                        confirmButton: "swal-custom-cancel",
+                        cancelButton: "swal-custom-button"
+                    }
+                }).then((result) => {
+                    if (!result.isConfirmed) { // 按下「是」進入下一步
+                        Swal.fire({
+                            title: "拒絕原因",
+                            icon: "question",
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            html: `
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                            <button class="swal2-confirm reason-button" data-reason="菜單">菜單</button>
+                            <button class="swal2-confirm reason-button" data-reason="時間">時間</button>
+                            <button class="swal2-confirm reason-button" data-reason="地區">地區</button>
+                            <button class="swal2-confirm reason-button" data-reason="其他">其他</button>
+                        </div>
+                    `,
+                            didOpen: () => {
+                                document.querySelectorAll(".reason-button").forEach(button => {
+                                    button.addEventListener("click", function () {
+                                        let reason = this.getAttribute("data-reason");
+                                        Swal.fire({
+                                            title: `訂單已拒絕`,
+                                            text: `原因：${reason}`,
+                                            icon: "success",
+                                            confirmButtonText: "確認"
+                                        }).then(() => {
+                                            window.location.href = "ChefUnOrder.html"; // 按下確認後跳轉
+                                        });
+                                    });
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
     </script>
 </body>
 

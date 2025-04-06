@@ -148,7 +148,7 @@
                             <div class="price-final">最終定價金額為：<span id="finalTotalPrice">0</span></div>
                             <div class="price-row">原定價：1500</div>
                         </div>
-                        <button class="confirm-button">確認送出</button>
+                        <button class="confirm-button" onclick="confirmPrice()">確認送出</button>
                     </div>
                 </div>
                 
@@ -200,7 +200,7 @@
 
         function confirmPrice() {
             Swal.fire({
-                title: "已進入議價狀態",
+                title: "已通知顧客查看定價",
                 icon: "success",
                 confirmButtonText: "確認",
                 customClass: {
