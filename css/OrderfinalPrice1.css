@@ -242,7 +242,7 @@ background-color: #f9e4ba;
     padding: 10px;
     max-width: 100%;
     overflow-x: hidden;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .price-content {
@@ -296,7 +296,7 @@ background-color: #f9e4ba;
     font-size: 22px;
     font-weight: 800;
     color:#cc6300;
-    margin-bottom: 100px;
+    margin-bottom: 20px;
 }
 
 .bottom-section {
@@ -313,12 +313,14 @@ background-color: #f9e4ba;
     background-color: #FFB347;
     color: #000;
     border: none;
-    padding: 10px 40px;
+    padding: 10px 20px;
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
     display: inline-block;
-    margin: 200px 0 0 170px;
+    margin: 0;
+    white-space: nowrap;
+    text-align: center;
 }
 .show {
 display: block;
