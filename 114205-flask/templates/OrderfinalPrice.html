@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最終定價</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/OrderfinalPrice.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
+    <script>
+        function toggleDropdown() {
+            document.getElementById("orderDropdown").classList.toggle("show");
+        }
+
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="/ChefAfterLogin">首頁</a>
+            <a href="/ChefMain">我的頁面</a>
+            <a href="/ChefUnOrder">待接單訂單</a>
+
+            <!-- 新增下拉選單 -->
+            <div class="dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                <div class="dropdown-content" id="orderDropdown">
+                    <a href="/ChefOrder">待完成訂單</a>
+                    <a href="/OrderDone">已完成訂單</a>
+                    <a href="/Charging">議價中訂單</a>
+                    <a href="/CancelOrder">已取消訂單</a>
+                </div>
+            </div>
+
+            <a href="#">客服聯絡</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+
+    <!-- 新的彈窗設計 -->
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 class="modal-title">訂單編號 #2025012059</h2>
+            <span class="close-button" onclick="window.location.href='/Charging'">×</span>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-label">預約時間：<span class="info-value">2025/03/18 12:30</span></div>
+            <div class="info-label">地址：<span class="info-value">台北市中山區</span></div>
+            <div class="info-label">取餐方式：<span class="info-value">外帶</span></div>
+            <div class="info-label">聯絡人資訊：<span class="info-value">王小明 0912345678</span></div>
+        </div>
+
+        <div class="menu-list">
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>1. 番茄炒蛋 3人份</div>
+                    <div>
+                        <span>第一道價格</span>
+                        <input type="number" class="price-input" value="200" onchange="calculateTotal()">
+                    </div>
+                </div>
+                <div>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</div>
+                <div class="system-price">系統評估價: 200</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>2. 番茄炒蛋 3人份</div>
+                    <div>
+                        <span>第二道價格</span>
+                        <input type="number" class="price-input" value="200" onchange="calculateTotal()">
+                    </div>
+                </div>
+                <div>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</div>
+                <div class="system-price">系統評估價: 350</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>3. 清蒸魚 2人份</div>
+                    <div>
+                        <span>第三道價格</span>
+                        <input type="number" class="price-input" value="200" onchange="calculateTotal()">
+                    </div>
+                </div>
+                <div>（鹹度:正常 辣度:不辣 油度:少油 辛香料:薑）</div>
+                <div class="system-price">系統評估：450</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>4. 炒青菜 4人份</div>
+                    <div>
+                        <span>第四道價格</span>
+                        <input type="number" class="price-input" value="200" onchange="calculateTotal()">
+                    </div>
+                </div>
+                <div>（鹹度:正常 辣度:不辣 油度:正常 辛香料:蒜）</div>
+                <div class="system-price">系統評估：180</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>5. 紅燒豆腐 3人份</div>
+                    <div>
+                        <span>第五道價格</span>
+                        <input type="number" class="price-input" value="200" onchange="calculateTotal()">
+                    </div>
+                </div>
+                <div>（鹹度:正常 辣度:微辣 油度:正常 辛香料:蔥、薑）</div>
+                <div class="system-price">系統評估：250</div>
+            </div>
+        </div>
+
+        <div class="price-section">
+            <div class="price-content">
+                <div class="two-column-layout">
+                    <!-- 左欄：備註 -->
+                    <div class="left-column">
+                        <div class="customer-remark">
+                            <div class="price-row">顧客議價金額：1000</div>
+                            <div class="remark-label">備註原因：</div>
+                            <div class="remark-text">我覺得番茄炒蛋的價格太過高價了 如果但少一顆 便宜50元可以嗎</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右欄：價格資訊 -->
+                    <div class="right-column">
+                        <div class="price-info">
+                            <div class="price-final">最終定價金額為：<span id="finalTotalPrice">0</span></div>
+                            <div class="price-row">原定價：1500</div>
+                        </div>
+                        <button class="confirm-button" onclick="confirmPrice()">確認送出</button>
+                    </div>
+                </div>
+                
+                <!-- 底部提示和按鈕 -->
+                <div class="bottom-section">
+                    <div class="price-note">
+                        *提醒最後一次議價，若顧客依然不同意此價格，此訂單將不成立
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function calculateTotal() {
+            const inputs = document.querySelectorAll('.price-input');
+            let total = 0;
+
+            // 只計算前五道菜的價格
+            for (let i = 0; i < Math.min(5, inputs.length); i++) {
+                const value = parseFloat(inputs[i].value) || 0;
+                total += value;
+            }
+
+            document.getElementById('finalTotalPrice').textContent = total;
+        }
+
+        // 頁面載入時計算總價
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateTotal();
+        });
+
+        function showRulesModal() {
+            document.getElementById('rulesModal').style.display = 'block';
+        }
+
+        function closeRulesModal() {
+            document.getElementById('rulesModal').style.display = 'none';
+        }
+
+        // 點擊模態框外部時關閉
+        window.onclick = function (event) {
+            const modal = document.getElementById('rulesModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function confirmPrice() {
+            Swal.fire({
+                title: "已通知顧客查看定價",
+                icon: "success",
+                confirmButtonText: "確認",
+                customClass: {
+                    confirmButton: "swal-custom-button"
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/Charging";
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

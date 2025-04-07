@@ -57,69 +57,163 @@
         <input type="text" placeholder="搜尋訂單">
     </div>
     <div class="maintext">已完成訂單</div>
+    <div class="filter-buttons">
+        <button class="filter-btn active" onclick="filterOrders('newest')">近到遠</button>
+        <button class="filter-btn" onclick="filterOrders('oldest')">遠到近</button>
+    </div>
     <div class="container">
         <!-- 訂單卡片 -->
         <div class="order-card">
+            <div class="status-tag-not-rated">尚未評價</div>
             <p><strong>訂單編號</strong><br>#20250126001</p>
-            <p>預定日期：2025/03/10<br>地區：台北市<br>地址：信義區松高路19號<br>預估價格：NT$3,500</p>
+            <p>預定日期：2025/03/25<br>地區：台北市<br>地址：信義區松高路19號<br>預估價格：NT$3,500</p>
             <button class="order-btn" onclick="window.location.href='/Order'">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <div class="rating-stars">
+                ★★★★☆
+            </div>
             <p><strong>訂單編號</strong><br>#20250126002</p>
-            <p>預定日期：2025/03/15<br>地區：高雄市<br>地址：鼓山區蓮海路70號<br>預估價格：NT$4,200</p>
+            <p>預定日期：2025/03/20<br>地區：高雄市<br>地址：鼓山區蓮海路70號<br>預估價格：NT$4,200</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <div class="status-tag-not-rated">尚未評價</div>
             <p><strong>訂單編號</strong><br>#20250126003</p>
-            <p>預定日期：2025/03/20<br>地區：台中市<br>地址：西屯區市政路99號<br>預估價格：NT$3,800</p>
+            <p>預定日期：2025/03/15<br>地區：台中市<br>地址：西屯區市政路99號<br>預估價格：NT$3,800</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <div class="rating-stars">
+                ★★★★★
+            </div>
             <p><strong>訂單編號</strong><br>#20250125060</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/03/10<br>地區：台北市<br>地址：大安區忠孝東路四段169號<br>預估價格：NT$2,800</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <div class="status-tag-not-rated">尚未評價</div>
             <p><strong>訂單編號</strong><br>#20250125061</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/03/05<br>地區：新北市<br>地址：板橋區文化路一段266號<br>預估價格：NT$3,200</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <div class="rating-stars">
+                ★★★☆☆
+            </div>
             <p><strong>訂單編號</strong><br>#20250125062</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/03/01<br>地區：桃園市<br>地址：中壢區中央西路二段30號<br>預估價格：NT$2,500</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <div class="status-tag-not-rated">尚未評價</div>
             <p><strong>訂單編號</strong><br>#20250125063</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/02/28<br>地區：新竹市<br>地址：東區光復路二段101號<br>預估價格：NT$3,600</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
-            <p><strong>訂單編號</strong><br>#20250126001</p>
-            <p>預定日期：2025/03/10<br>地區：台北市<br>地址：信義區松高路19號<br>預估價格：NT$3,500</p>
+            <div class="rating-stars">
+                ★★★★☆
+            </div>
+            <p><strong>訂單編號</strong><br>#20250126004</p>
+            <p>預定日期：2025/02/25<br>地區：台北市<br>地址：中山區南京東路二段88號<br>預估價格：NT$4,000</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <div class="status-tag-not-rated">尚未評價</div>
             <p><strong>訂單編號</strong><br>#20250125065</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/02/20<br>地區：台中市<br>地址：北屯區文心路四段955號<br>預估價格：NT$3,300</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <div class="rating-stars">
+                ★★★★☆
+            </div>
             <p><strong>訂單編號</strong><br>#20250125066</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/02/15<br>地區：高雄市<br>地址：前鎮區中山二路91號<br>預估價格：NT$3,700</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <div class="status-tag-not-rated">尚未評價</div>
             <p><strong>訂單編號</strong><br>#20250125067</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/02/10<br>地區：台南市<br>地址：中西區中正路220號<br>預估價格：NT$2,900</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <div class="rating-stars">
+                ★★★☆☆
+            </div>
             <p><strong>訂單編號</strong><br>#20250125068</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/02/05<br>地區：台北市<br>地址：松山區敦化北路155號<br>預估價格：NT$3,100</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
     </div>
+
+    <script>
+        // 等待 DOM 加載完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化時設置默認排序
+            filterOrders('newest');
+        });
+
+        function filterOrders(type) {
+            console.log('開始排序，類型：', type);
+            
+            const container = document.querySelector('.container');
+            const cards = Array.from(container.getElementsByClassName('order-card'));
+            
+            // 更新按鈕狀態
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === (type === 'newest' ? '近到遠' : '遠到近')) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // 創建一個包含日期和卡片的數組
+            const cardsWithDates = cards.map(card => {
+                const paragraphs = card.querySelectorAll('p');
+                let dateStr = '';
+                paragraphs.forEach(p => {
+                    if (p.textContent.includes('預定日期')) {
+                        dateStr = p.textContent.split('預定日期：')[1].split('地區：')[0].trim();
+                    }
+                });
+                console.log('找到日期：', dateStr);
+                
+                // 將日期轉換為時間戳
+                const [year, month, day] = dateStr.split('/');
+                const date = new Date(year, parseInt(month) - 1, day).getTime();
+                
+                return {
+                    element: card,
+                    timestamp: date
+                };
+            });
+
+            // 根據時間戳排序
+            cardsWithDates.sort((a, b) => {
+                if (type === 'newest') {
+                    return b.timestamp - a.timestamp;
+                } else {
+                    return a.timestamp - b.timestamp;
+                }
+            });
+
+            // 移除所有卡片
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+
+            // 重新插入排序後的卡片
+            cardsWithDates.forEach(item => {
+                container.appendChild(item.element);
+            });
+
+            console.log('排序完成');
+        }
+    </script>
 </body>
 
 </html>
