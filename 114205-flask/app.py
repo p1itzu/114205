@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import mysql.connector
 import json
 import os
+import secrets  # 用於生成安全的 secret key
+from functools import wraps
 
 app = Flask(__name__)
+app.secret_key = secrets.token_hex(16)  # 設定安全的 secret key
 
 UPLOAD_FOLDER = 'uploads/'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -30,6 +33,49 @@ def get_db_connection():
     )
 
 # ----------------------------------------------
+# 登入檢查裝飾器
+# ----------------------------------------------
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_email' not in session:
+            return redirect(url_for('route_not_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# ----------------------------------------------
+# 獲取當前登入用戶的資訊
+# ----------------------------------------------
+
+def get_user_info():
+    """獲取當前登入用戶的資訊"""
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        if session.get('user_type') == 'customer':
+            cursor.execute("SELECT username, phone FROM Customer WHERE email = %s", (session.get('user_email'),))
+        else:  # chef
+            cursor.execute("SELECT username, phone FROM Chef WHERE email = %s", (session.get('user_email'),))
+            
+        result = cursor.fetchone()
+        return {
+            'username': result['username'] if result else '',
+            'phone': result['phone'] if result else ''
+        }
+    except Exception as e:
+        print(f"Error getting user info: {str(e)}")
+        return {'username': '', 'phone': ''}
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# ----------------------------------------------
 # 頁面路由 (渲染 HTML)
 # ----------------------------------------------
 
@@ -42,32 +88,47 @@ def route_not_login():
     return render_template('NotLogin.html')
 
 @app.route('/AfterLogin')
+@login_required
 def route_after_login():
-    return render_template('AfterLogin.html')
+    user_info = get_user_info()
+    return render_template('AfterLogin.html', 
+                         user_email=session.get('user_email'),
+                         username=user_info['username'],
+                         phone=user_info['phone'])
 
 @app.route('/CancelOrder')
+@login_required
 def route_cancel_order():
-    return render_template('CancelOrder.html')
+    username = get_user_info()['username']
+    return render_template('CancelOrder.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/Charging')
+@login_required
 def route_charging():
-    return render_template('Charging.html')
+    username = get_user_info()['username']
+    return render_template('Charging.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/ChefAfterLogin')
+@login_required
 def route_chef_after_login():
-    return render_template('ChefAfterLogin.html')
+    username = get_user_info()['username']
+    return render_template('ChefAfterLogin.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/ChefLogin')
 def route_chef_login():
     return render_template('ChefLogin.html')
 
 @app.route('/ChefMain')
+@login_required
 def route_chef_main():
-    return render_template('ChefMain.html')
+    username = get_user_info()['username']
+    return render_template('ChefMain.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/ChefOrder')
+@login_required
 def route_chef_order():
-    return render_template('ChefOrder.html')
+    username = get_user_info()['username']
+    return render_template('ChefOrder.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/ChefRegister')
 def route_chef_register():
@@ -78,12 +139,16 @@ def route_chef_register2():
     return render_template('ChefRegister2.html')
 
 @app.route('/ChefUnOrder')
+@login_required
 def route_chef_unorder():
-    return render_template('ChefUnOrder.html')
+    username = get_user_info()['username']
+    return render_template('ChefUnOrder.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/CookingMethod')
+@login_required
 def route_cooking_method():
-    return render_template('CookingMethod.html')
+    username = get_user_info()['username']
+    return render_template('CookingMethod.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/CusLogin')
 def route_cus_login():
@@ -98,72 +163,95 @@ def route_customer_login():
     return render_template('CustomerLogin.html')
 
 @app.route('/evaluate')
+@login_required
 def route_evaluate():
-    return render_template('evaluate.html')
+    username = get_user_info()['username']
+    return render_template('evaluate.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/my-order')
+@login_required
 def route_my_order():
-    return render_template('my-order.html')
+    username = get_user_info()['username']
+    return render_template('my-order.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/Order')
+@login_required
 def route_order():
-    return render_template('Order.html')
+    username = get_user_info()['username']
+    return render_template('Order.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/orderDetail')
+@login_required
 def route_order_detail():
-    return render_template('orderDetail.html')
+    username = get_user_info()['username']
+    return render_template('orderDetail.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/orderDetail2')
+@login_required
 def route_order_detail2():
-    return render_template('orderDetail2.html')
+    username = get_user_info()['username']
+    return render_template('orderDetail2.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/orderDetail3')
+@login_required
 def route_order_detail3():
-    return render_template('orderDetail3.html')
+    username = get_user_info()['username']
+    return render_template('orderDetail3.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/OrderDone')
+@login_required
 def route_order_done():
-    return render_template('OrderDone.html')
+    username = get_user_info()['username']
+    return render_template('OrderDone.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/OrderPrice')
+@login_required
 def route_order_price():
-    return render_template('OrderPrice.html')
+    username = get_user_info()['username']
+    return render_template('OrderPrice.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/reserve')
+@login_required
 def route_reserve():
-    return render_template('reserve.html')
+    username = get_user_info()['username']
+    return render_template('reserve.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/reserve2_change')
+@login_required
 def route_reserve2_change():
-    return render_template('reserve2-change.html')
+    username = get_user_info()['username']
+    return render_template('reserve2-change.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/reserve2')
+@login_required
 def route_reserve2():
-    return render_template('reserve2.html')
+    username = get_user_info()['username']
+    return render_template('reserve2.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/reserve3')
+@login_required
 def route_reserve3():
-    return render_template('reserve3.html')
+    username = get_user_info()['username']
+    return render_template('reserve3.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/reserve4')
+@login_required
 def route_reserve4():
-    return render_template('reserve4.html')
+    username = get_user_info()['username']
+    return render_template('reserve4.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/SearchChef')
+@login_required
 def route_search_chef():
-    return render_template('SearchChef.html')
-
+    username = get_user_info()['username']
+    return render_template('SearchChef.html', user_email=session.get('user_email'), username=username)
 
 # ----------------------------------------------
-# API (GET/POST), 後續可再擴充
+# API (GET/POST)
 # ----------------------------------------------
-# Chef 註冊 API
+#  廚師註冊 API
 @app.route('/api/register_chef', methods=['POST'])
 def register_chef():
-    """
-    廚師註冊 API
-    支援即時檢查 Email 和電話是否已被註冊，並處理完整的註冊流程
-    """
     conn = None
     cursor = None
     try:
@@ -269,10 +357,6 @@ def register_chef():
 # 顧客註冊 API
 @app.route('/api/register_customer', methods=['POST'])
 def register_customer():
-    """
-    顧客註冊 API
-    接收表單資料，將顧客資訊存入資料庫
-    """
     conn = None
     cursor = None
     try:
@@ -321,56 +405,9 @@ def register_customer():
         if conn:
             conn.close()
 
-# 廚師登入 API
-@app.route('/api/login_chef', methods=['POST'])
-def login_chef():
-    """
-    廚師登入 API
-    驗證 Email 和密碼，成功後返回登入狀態
-    """
-    conn = None
-    cursor = None
-    try:
-        # 從請求中獲取資料
-        data = request.form
-        email = data.get('email')  # 使用 Email 作為登入帳號
-        password = data.get('password')  # 密碼比對
-
-        # 驗證輸入資料
-        if not email or not password:
-            return jsonify({'error': 'Email 和密碼都是必填的，請檢查輸入內容！'}), 400
-
-        # 查詢資料庫
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        sql = "SELECT * FROM Chef WHERE email = %s"
-        cursor.execute(sql, (email,))
-        chef = cursor.fetchone()
-
-        # 檢查 Email 是否存在
-        if not chef:
-            return jsonify({'error': '此 Email 尚未註冊，請確認輸入的 Email 是否正確！'}), 404
-
-        # 驗證密碼
-        if chef['password'] != password:
-            return jsonify({'error': '密碼錯誤，請重新輸入！'}), 401
-
-        return jsonify({'message': '登入成功！', 'id': chef['id']}), 200
-    except Exception as e:
-        return jsonify({'error': f'伺服器內部錯誤：{str(e)}，請稍後再試！'}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-
 # 顧客登入 API
 @app.route('/api/login_customer', methods=['POST'])
 def login_customer():
-    """
-    顧客登入 API
-    驗證 Email 和密碼，成功後返回登入狀態
-    """
     conn = None
     cursor = None
     try:
@@ -398,9 +435,200 @@ def login_customer():
         if customer['password'] != password:
             return jsonify({'error': '密碼錯誤，請重新輸入！'}), 401
 
+        # 儲存用戶資訊到 session
+        session['user_type'] = 'customer'
+        session['user_email'] = customer['email']
+        session['user_id'] = customer['id']
+
         return jsonify({'message': '登入成功！', 'id': customer['id']}), 200
     except Exception as e:
         return jsonify({'error': f'伺服器內部錯誤：{str(e)}，請稍後再試！'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# 廚師登入 API
+@app.route('/api/login_chef', methods=['POST'])
+def login_chef():
+    conn = None
+    cursor = None
+    try:
+        # 從請求中獲取資料
+        data = request.form
+        email = data.get('email')  # 使用 Email 作為登入帳號
+        password = data.get('password')  # 密碼比對
+
+        # 驗證輸入資料
+        if not email or not password:
+            return jsonify({'error': 'Email 和密碼都是必填的，請檢查輸入內容！'}), 400
+
+        # 查詢資料庫
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        sql = "SELECT * FROM Chef WHERE email = %s"
+        cursor.execute(sql, (email,))
+        chef = cursor.fetchone()
+
+        # 檢查 Email 是否存在
+        if not chef:
+            return jsonify({'error': '此 Email 尚未註冊，請確認輸入的 Email 是否正確！'}), 404
+
+        # 驗證密碼
+        if chef['password'] != password:
+            return jsonify({'error': '密碼錯誤，請重新輸入！'}), 401
+
+        # 儲存用戶資訊到 session
+        session['user_type'] = 'chef'
+        session['user_email'] = chef['email']
+        session['user_id'] = chef['id']
+
+        return jsonify({'message': '登入成功！', 'id': chef['id']}), 200
+    except Exception as e:
+        return jsonify({'error': f'伺服器內部錯誤：{str(e)}，請稍後再試！'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# 登出 API
+@app.route('/api/logout', methods=['POST'])
+def logout(): 
+    session.clear()
+    return jsonify({'message': '登出成功！', 'redirect_url': url_for('route_not_login')}), 200
+
+# 刪除帳號 API 
+@app.route('/api/delete_account', methods=['POST'])
+@login_required
+def delete_account():
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        user_type = session.get('user_type')
+        user_email = session.get('user_email')
+        
+        if user_type == 'customer':
+            # 檢查是否有未完成的訂單
+            # cursor.execute("SELECT COUNT(*) as count FROM Orders WHERE customer_email = %s AND status != 'completed'", (user_email,))
+            # result = cursor.fetchone()
+            # if result and result['count'] > 0:
+            #     return jsonify({'error': '您有未完成的訂單，無法刪除帳號！'}), 400
+                
+            # 刪除顧客資料
+            cursor.execute("DELETE FROM Customer WHERE email = %s", (user_email,))
+            
+        else:  # chef
+            # 檢查是否有未完成的訂單
+            # cursor.execute("SELECT COUNT(*) as count FROM Orders WHERE chef_email = %s AND status != 'completed'", (user_email,))
+            # result = cursor.fetchone()
+            # if result and result['count'] > 0:
+            #     return jsonify({'error': '您有未完成的訂單，無法刪除帳號！'}), 400
+                
+            # 刪除廚師資料
+            cursor.execute("DELETE FROM Chef WHERE email = %s", (user_email,))
+        
+        conn.commit()
+        session.clear()
+        
+        return jsonify({
+            'message': '帳號已成功刪除！',
+            'redirect_url': url_for('route_not_login')
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'刪除帳號時發生錯誤：{str(e)}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# 更新個人資料 API
+@app.route('/api/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    conn = None
+    cursor = None
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        email = data.get('email')
+        phone = data.get('phone')
+        password = data.get('password')
+        
+        # 驗證必填欄位
+        if not all([username, email, phone]):
+            return jsonify({'error': '姓名、電子郵件和電話都是必填欄位！'}), 400
+            
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        user_type = session.get('user_type')
+        current_email = session.get('user_email')
+        
+        # 檢查新的 email 是否已被其他用戶使用
+        if email != current_email:
+            if user_type == 'customer':
+                cursor.execute("SELECT id FROM Customer WHERE email = %s AND email != %s", (email, current_email))
+            else:
+                cursor.execute("SELECT id FROM Chef WHERE email = %s AND email != %s", (email, current_email))
+            if cursor.fetchone():
+                return jsonify({'error': '此電子郵件已被使用！'}), 400
+        
+        # 檢查新的電話是否已被其他用戶使用
+        if user_type == 'customer':
+            cursor.execute("SELECT id FROM Customer WHERE phone = %s AND email != %s", (phone, current_email))
+        else:
+            cursor.execute("SELECT id FROM Chef WHERE phone = %s AND email != %s", (phone, current_email))
+        if cursor.fetchone():
+            return jsonify({'error': '此電話號碼已被使用！'}), 400
+            
+        # 更新資料
+        if user_type == 'customer':
+            if password:
+                cursor.execute("""
+                    UPDATE Customer 
+                    SET username = %s, email = %s, phone = %s, password = %s 
+                    WHERE email = %s
+                """, (username, email, phone, password, current_email))
+            else:
+                cursor.execute("""
+                    UPDATE Customer 
+                    SET username = %s, email = %s, phone = %s 
+                    WHERE email = %s
+                """, (username, email, phone, current_email))
+        else:  # chef
+            if password:
+                cursor.execute("""
+                    UPDATE Chef 
+                    SET username = %s, email = %s, phone = %s, password = %s 
+                    WHERE email = %s
+                """, (username, email, phone, password, current_email))
+            else:
+                cursor.execute("""
+                    UPDATE Chef 
+                    SET username = %s, email = %s, phone = %s 
+                    WHERE email = %s
+                """, (username, email, phone, current_email))
+        
+        conn.commit()
+        
+        # 更新 session 中的 email
+        if email != current_email:
+            session['user_email'] = email
+            
+        return jsonify({
+            'message': '個人資料更新成功！',
+            'new_email': email
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'更新個人資料時發生錯誤：{str(e)}'}), 500
     finally:
         if cursor:
             cursor.close()
