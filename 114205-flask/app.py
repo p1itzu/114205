@@ -158,10 +158,6 @@ def route_cus_login():
 def route_cus_register():
     return render_template('CusRegister.html')
 
-@app.route('/CustomerLogin')
-def route_customer_login():
-    return render_template('CustomerLogin.html')
-
 @app.route('/evaluate')
 @login_required
 def route_evaluate():
@@ -179,6 +175,30 @@ def route_my_order():
 def route_order():
     username = get_user_info()['username']
     return render_template('Order.html', user_email=session.get('user_email'), username=username)
+
+@app.route('/Order1')
+@login_required
+def route_order1():
+    username = get_user_info()['username']
+    return render_template('Order1.html', user_email=session.get('user_email'), username=username)
+
+@app.route('/OrderfinalPrice')
+@login_required
+def route_order_final_price():
+    username = get_user_info()['username']
+    return render_template('OrderfinalPrice.html', user_email=session.get('user_email'), username=username)
+
+@app.route('/OrderfinalPrice1')
+@login_required
+def route_order_final_price1():
+    username = get_user_info()['username']
+    return render_template('OrderfinalPrice1.html', user_email=session.get('user_email'), username=username)
+
+@app.route('/PriceRules')
+@login_required
+def route_price_rules():
+    username = get_user_info()['username']
+    return render_template('PriceRules.html', user_email=session.get('user_email'), username=username)
 
 @app.route('/orderDetail')
 @login_required
