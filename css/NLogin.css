@@ -257,9 +257,40 @@ h3, p {
     background-color: #f9e4ba;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.navbar,
+.footer,
+.content {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* 主內容調整 */
+.content .section {
+    margin: 20px auto;
+    padding: 20px;
+    width: 80%;
+}
+
+/* 響應式：平板與手機 */
 @media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+
     .navbar .site-name {
         font-size: 18px;
+        word-break: break-word;
     }
 
     .navbar .user-info .login-button {
@@ -268,7 +299,7 @@ h3, p {
     }
 
     .content .section {
-        margin: 10px;
+        margin: 10px auto;
         padding: 15px;
         width: 90%;
     }
@@ -285,13 +316,25 @@ h3, p {
         height: auto;
         padding: 20px 0;
         line-height: 1.5;
+        text-align: center;
     }
 }
 
+/* 響應式：小手機 */
 @media (max-width: 480px) {
+    .navbar .site-name {
+        font-size: 16px;
+    }
+
+    .navbar .user-info .login-button {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
     .content .section {
-        margin: 5px;
+        margin: 5px auto;
         padding: 10px;
+        width: 95%;
     }
 
     .content .section h3 {
@@ -302,17 +345,9 @@ h3, p {
         font-size: 13px;
     }
 
-    .navbar .site-name {
-        font-size: 16px;
-    }
-
-    .navbar .user-info .login-button {
-        font-size: 12px;
-        padding: 6px 12px;
-    }
-
     .footer {
         font-size: 12px;
         padding: 15px 0;
+        text-align: center;
     }
 }
