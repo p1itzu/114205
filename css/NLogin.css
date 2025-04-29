@@ -137,6 +137,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: left;  /* 區塊內文字左對齊 */
+    width: 90%;
 }
 
 .section h3 {
@@ -161,8 +162,13 @@ html, body {
 }
 
 .content {
-    flex: 1; /* 讓內容區自動撐開 */
+    padding: 20px;
+    text-align: center;
+    max-width: 1200px; /* 限制內容最大寬度 */
+    margin: 0 auto;    /* 置中 */
+    width: 100%;
 }
+
 
 div.footer {
     height: 120px;
@@ -211,8 +217,8 @@ h3, p {
     box-shadow: 0 0 10px rgba(0,0,0,0.3);
     z-index: 1000;
     border-radius: 10px;
-    width: 400px;       /* 依喜好調整 */
-    max-width: 90%;     /* 手機上自適應 */
+    width: 90%;       /* 改成百分比，讓手機也能縮小 */
+    max-width: 400px; /* 桌機上不要太大 */
     text-align: center;
 }
 
@@ -249,4 +255,64 @@ h3, p {
 
 .login-modal .role-button:hover {
     background-color: #f9e4ba;
+}
+
+@media (max-width: 768px) {
+    .navbar .site-name {
+        font-size: 18px;
+    }
+
+    .navbar .user-info .login-button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    .content .section {
+        margin: 10px;
+        padding: 15px;
+        width: 90%;
+    }
+
+    .content .section h3 {
+        font-size: 20px;
+    }
+
+    .content .section p {
+        font-size: 14px;
+    }
+
+    .footer {
+        height: auto;
+        padding: 20px 0;
+        line-height: 1.5;
+    }
+}
+
+@media (max-width: 480px) {
+    .content .section {
+        margin: 5px;
+        padding: 10px;
+    }
+
+    .content .section h3 {
+        font-size: 18px;
+    }
+
+    .content .section p {
+        font-size: 13px;
+    }
+
+    .navbar .site-name {
+        font-size: 16px;
+    }
+
+    .navbar .user-info .login-button {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .footer {
+        font-size: 12px;
+        padding: 15px 0;
+    }
 }
