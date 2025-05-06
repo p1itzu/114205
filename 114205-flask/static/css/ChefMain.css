@@ -7,8 +7,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    overflow-y: auto;
 }
 
 .container {
@@ -333,13 +331,12 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
+    margin: 5% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
@@ -358,7 +355,38 @@ body {
 
 .close:hover,
 .close:focus {
-    color: black;
+    color: #000;
     text-decoration: none;
     cursor: pointer;
+}
+
+.view-photos-btn {
+    background-color: #F9C765;
+    color: #B3811C;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+}
+
+.view-photos-btn:hover {
+    background-color: #f9e4ba;
+}
+
+.food-photos-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.food-photos-container img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

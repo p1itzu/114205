@@ -4,7 +4,9 @@ body {
     padding: 0;
     background-color: #FFE7B7;
     color: #B3811C;
+    height: 100%;
 }
+
 
 .navbar {
     background-color: #F9C765;
@@ -56,11 +58,14 @@ body {
 .user-info .settings-icon {
     width: 20px;
     height: 20px;
-    background-image: url('../imgs/settings.png'); /* 確保圖片路徑正確 */
-    background-size: cover;  /* 確保圖片完全覆蓋容器 */
+    background-image: url('../imgs/settings.png');
+    /* 確保圖片路徑正確 */
+    background-size: cover;
+    /* 確保圖片完全覆蓋容器 */
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 0%; /* 去除圓形邊框 */
+    border-radius: 0%;
+    /* 去除圓形邊框 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -74,20 +79,31 @@ body {
 }
 
 .navbar .user-info .login-button {
-    background-color: #fff9ec;  /* 與導航條一致的背景顏色 */
-    color: #B3811C;             /* 與導航欄一致的文字顏色 */
-    padding: 10px 20px;         /* 內邊距 */
-    font-size: 16px;            /* 字體大小 */
-    font-weight: bold;          /* 字體加粗 */
-    border: none;               /* 去除邊框 */
-    border-radius: 5px;         /* 圓角 */
-    cursor: pointer;            /* 游標變為手形 */
-    transition: background-color 0.3s ease, transform 0.3s ease;  /* 過渡效果 */
+    background-color: #fff9ec;
+    /* 與導航條一致的背景顏色 */
+    color: #B3811C;
+    /* 與導航欄一致的文字顏色 */
+    padding: 10px 20px;
+    /* 內邊距 */
+    font-size: 16px;
+    /* 字體大小 */
+    font-weight: bold;
+    /* 字體加粗 */
+    border: none;
+    /* 去除邊框 */
+    border-radius: 5px;
+    /* 圓角 */
+    cursor: pointer;
+    /* 游標變為手形 */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    /* 過渡效果 */
 }
 
 .navbar .user-info .login-button:hover {
-    background-color: #f9e4ba;  /* 滑鼠懸停時背景顏色變化 */
-    transform: scale(1.05);     /* 滑鼠懸停時放大按鈕 */
+    background-color: #f9e4ba;
+    /* 滑鼠懸停時背景顏色變化 */
+    transform: scale(1.05);
+    /* 滑鼠懸停時放大按鈕 */
 }
 
 .content {
@@ -136,35 +152,41 @@ body {
     margin: 15px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: left;  /* 區塊內文字左對齊 */
+    text-align: left;
+    /* 區塊內文字左對齊 */
+    width: 90%;
 }
 
 .section h3 {
     font-size: 22px;
     color: #B3811C;
     margin-bottom: 10px;
-    padding: 0 20px;  /* 左右內距 */
+    padding: 0 20px;
+    /* 左右內距 */
 }
 
 .section p {
     font-size: 16px;
     color: #4b4b4b;
     margin-bottom: 10px;
-    padding: 0 20px;  /* 與標題對齊 */
+    padding: 0 20px;
+    /* 與標題對齊 */
 }
 
-html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-}
+
 
 .content {
-    flex: 1; /* 讓內容區自動撐開 */
+    padding: 20px;
+    text-align: center;
+    max-width: 1200px;
+    /* 限制內容最大寬度 */
+    margin: 0 auto;
+    /* 置中 */
+    width: 100%;
 }
 
-div.footer {
+
+.footer {
     height: 120px;
     line-height: 60px;
     text-align: center;
@@ -172,13 +194,12 @@ div.footer {
     background-color: #F9C765;
     color: #B3811C;
     font-weight: bold;
+    margin-top: auto;
+    padding: 15px 0;
 }
 
-.footer br {
-    margin-bottom: 5px;  /* 讓 <br> 標籤間的間距更小 */
-}
-
-h3, p {
+h3,
+p {
     margin: 0;
     padding: 0;
 }
@@ -195,7 +216,8 @@ h3, p {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* 半透明灰色 */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 半透明灰色 */
     z-index: 900;
 }
 
@@ -207,12 +229,15 @@ h3, p {
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #fff;
-    padding: 30px 20px; /* 依喜好調整 */
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    padding: 30px 20px;
+    /* 依喜好調整 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     z-index: 1000;
     border-radius: 10px;
-    width: 400px;       /* 依喜好調整 */
-    max-width: 90%;     /* 手機上自適應 */
+    width: 90%;
+    /* 改成百分比，讓手機也能縮小 */
+    max-width: 400px;
+    /* 桌機上不要太大 */
     text-align: center;
 }
 
@@ -249,4 +274,120 @@ h3, p {
 
 .login-modal .role-button:hover {
     background-color: #f9e4ba;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.navbar,
+.footer,
+.content {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* 主內容調整 */
+.content .section {
+    margin: 20px auto;
+    padding: 20px;
+    width: 80%;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main {
+    flex: 1;
+    /* 讓 main 填滿中間區域 */
+}
+
+
+/* 響應式：平板與手機 */
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+
+    .navbar .site-name {
+        font-size: 18px;
+        word-break: break-word;
+    }
+
+    .navbar .user-info .login-button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    .content .section {
+        margin: 10px auto;
+        padding: 15px;
+        width: 90%;
+    }
+
+    .content .section h3 {
+        font-size: 20px;
+    }
+
+    .content .section p {
+        font-size: 14px;
+    }
+
+    .footer {
+        height: auto;
+        padding: 20px 0;
+        line-height: 1.5;
+        text-align: center;
+    }
+}
+
+/* 響應式：小手機 */
+@media (max-width: 480px) {
+    .navbar .site-name {
+        font-size: 16px;
+    }
+
+    .navbar .user-info .login-button {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .content .section {
+        margin: 5px auto;
+        padding: 10px;
+        width: 95%;
+    }
+
+    .content .section h3 {
+        font-size: 18px;
+    }
+
+    .content .section p {
+        font-size: 13px;
+    }
+
+    .footer {
+        padding: 15px 0;
+        text-align: center;
+        margin-top: auto;
+        font-size: 14px;
+        /* 或其他調整 */
+    }
 }

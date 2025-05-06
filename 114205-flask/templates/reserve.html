@@ -25,7 +25,7 @@
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
         </div>
         <div class="user-info">
-            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="username">{{ user_email }}</div>
             <div class="settings-icon" onclick="toggleSettingsModal()"></div>
         </div>
     </div>
@@ -62,6 +62,7 @@
                     <button class="button" type="button" id="pickup" onclick="selectDelivery('pickup')">自取</button>
                     <button class="button" type="button" id="delivery" onclick="selectDelivery('delivery')">外送</button>
                 </div>
+
 
                 <div>
                     <label for="address">地址</label>
@@ -129,6 +130,32 @@
                 document.getElementById('delivery').classList.add('active');
             }
         }
+
+        function selectDelivery(type) {
+            // 取得按鈕元素
+            const pickupBtn = document.getElementById('pickup');
+            const deliveryBtn = document.getElementById('delivery');
+
+            // 先移除所有按鈕的 active 類別
+            pickupBtn.classList.remove('active');
+            deliveryBtn.classList.remove('active');
+
+            // 為點擊的按鈕加上 active 類別
+            document.getElementById(type).classList.add('active');
+
+            // 存入 localStorage
+            localStorage.setItem('selectedDelivery', type);
+        }
+
+        // 當頁面載入時，恢復上次的選擇
+        window.onload = function () {
+            const savedDelivery = localStorage.getItem('selectedDelivery');
+            if (savedDelivery) {
+                document.getElementById(savedDelivery).classList.add('active');
+            }
+        };
+
+
     </script>
     <script src="{{ url_for('static', filename='js/notification.js') }}"></script>
 </body>

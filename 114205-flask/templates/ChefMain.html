@@ -31,6 +31,12 @@
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
         }
+        function showFoodPhotos() {
+            document.getElementById('foodPhotosModal').style.display = 'block';
+        }
+        function closeFoodPhotosModal() {
+            document.getElementById('foodPhotosModal').style.display = 'none';
+        }
         window.onload = function () {
             generateCalendar();
         };
@@ -76,7 +82,7 @@
                 <a href="#">客服聯絡</a>
             </div>
             <div class="user-info">
-                <div class="username">11336012@ntub.edu.tw</div>
+                <div class="username">{{ user_email }}</div>
                 <div class="settings-icon" onclick="toggleSettingsModal()"></div>
             </div>
         </div>
@@ -96,9 +102,7 @@
                         <p><strong>料理專長：</strong>中式川菜</p>
                         <p><strong>招牌菜：</strong>麻婆豆腐</p>
                         <p><strong>食物照：</strong></p>
-                        <img src="{{ url_for('static', filename='imgs/food1.png') }}" alt="食物照片1"
-                            style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
-                        <img src="{{ url_for('static', filename='imgs/food2.png') }}" alt="食物照片2" style="width: 100%; border-radius: 8px;">
+                        <button class="view-photos-btn" onclick="showFoodPhotos()">查看上傳照片</button>
                     </div>
                 </div>
             </div>
@@ -153,6 +157,18 @@
                         <input type="file" id="certificatePhoto" name="certificatePhoto"><br><br>
                         <input type="submit" value="保存">
                     </form>
+                </div>
+            </div>
+
+            <!-- 食物照片模態框 -->
+            <div id="foodPhotosModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeFoodPhotosModal()">&times;</span>
+                    <h2>食物照片</h2>
+                    <div class="food-photos-container">
+                        <img src="{{ url_for('static', filename='imgs/food1.png') }}" alt="食物照片1" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+                        <img src="{{ url_for('static', filename='imgs/food2.png') }}" alt="食物照片2" style="width: 100%; border-radius: 8px;">
+                    </div>
                 </div>
             </div>
         </div>

@@ -49,7 +49,7 @@
             <a href="#">客服聯絡</a>
         </div>
         <div class="user-info">
-            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="username">{{ user_email }}</div>
             <div class="settings-icon" onclick="toggleSettingsModal()"></div>
         </div>
     </div>
@@ -57,69 +57,121 @@
         <input type="text" placeholder="搜尋訂單">
     </div>
     <div class="maintext">議價中訂單</div>
+    <div class="filter-buttons">
+        <button class="filter-btn active" data-status="all">全部</button>
+        <button class="filter-btn" data-status="first">第一次議價</button>
+        <button class="filter-btn" data-status="final">最終議價結果結果</button>
+    </div>
     <div class="container">
-        <!-- 訂單卡片 -->
-        <div class="order-card">
+        <!-- 第一次議價的訂單卡片們 -->
+        <div class="order-card" data-status="first">
+            <span class="status-tag-first-negotiating">第一次議價</span>
             <p><strong>訂單編號</strong><br>#20250126001</p>
             <p>預定日期：2025/03/10<br>地區：台北市<br>地址：信義區松高路19號<br>預估價格：NT$3,500</p>
-            <button class="order-btn" onclick="window.location.href='/Order'">查看詳細訂單資訊</button>
+            <button class="order-btn" onclick="window.location.href='/OrderfinalPrice'">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
+
+        <!-- 最終議價結果的訂單卡片們 -->
+        <div class="order-card" data-status="final">
+            <span class="status-tag-final-negotiating">最終議價結果</span>
             <p><strong>訂單編號</strong><br>#20250126002</p>
             <p>預定日期：2025/03/15<br>地區：高雄市<br>地址：鼓山區蓮海路70號<br>預估價格：NT$4,200</p>
-            <button class="order-btn">查看詳細訂單資訊</button>
+            <button class="order-btn" onclick="window.location.href='/OrderfinalPrice1'">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
+
+        <div class="order-card" data-status="first">
+            <span class="status-tag-first-negotiating">第一次議價</span>
             <p><strong>訂單編號</strong><br>#20250126003</p>
             <p>預定日期：2025/03/20<br>地區：台中市<br>地址：西屯區市政路99號<br>預估價格：NT$3,800</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
+
+        <div class="order-card" data-status="final">
+            <span class="status-tag-final-negotiating">最終議價結果</span>
             <p><strong>訂單編號</strong><br>#20250125060</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/03/25<br>地區：新北市<br>地址：板橋區文化路一段XXX號<br>預估價格：NT$4,500</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
+
+        <div class="order-card" data-status="final">
+            <span class="status-tag-final-negotiating">最終議價結果</span>
             <p><strong>訂單編號</strong><br>#20250125061</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/03/28<br>地區：台北市<br>地址：大安區復興南路XXX號<br>預估價格：NT$3,900</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
+
+        <div class="order-card" data-status="first">
+            <span class="status-tag-first-negotiating">第一次議價</span>
             <p><strong>訂單編號</strong><br>#20250125062</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/04/01<br>地區：台北市<br>地址：信義區松仁路XXX號<br>預估價格：NT$4,100</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
+
+        <div class="order-card" data-status="final">
+            <span class="status-tag-final-negotiating">最終議價結果</span>
             <p><strong>訂單編號</strong><br>#20250125063</p>
-            <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
+            <p>預定日期：2025/04/05<br>地區：台北市<br>地址：中山區南京東路XXX號<br>預估價格：NT$4,300</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
-        <div class="order-card">
-            <p><strong>訂單編號</strong><br>#20250126001</p>
-            <p>預定日期：2025/03/10<br>地區：台北市<br>地址：信義區松高路19號<br>預估價格：NT$3,500</p>
+
+        <div class="order-card" data-status="final">
+            <span class="status-tag-final-negotiating">最終議價結果</span>
+            <p><strong>訂單編號</strong><br>#20250125064</p>
+            <p>預定日期：2025/04/08<br>地區：台北市<br>地址：內湖區成功路XXX號<br>預估價格：NT$3,700</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
+
         <div class="order-card">
+            <span class="status-tag-negotiating">第一次議價</span>
             <p><strong>訂單編號</strong><br>#20250125065</p>
             <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <span class="status-tag-negotiating">第一次議價</span>
             <p><strong>訂單編號</strong><br>#20250125066</p>
             <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <span class="status-tag-negotiating">第一次議價</span>
             <p><strong>訂單編號</strong><br>#20250125067</p>
             <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
         <div class="order-card">
+            <span class="status-tag-negotiating">最終議價結果結果</span>
             <p><strong>訂單編號</strong><br>#20250125068</p>
             <p>預定日期：<br>地區：<br>地址：<br>預估價格：</p>
             <button class="order-btn">查看詳細訂單資訊</button>
         </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const orderCards = document.querySelectorAll('.order-card');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // 移除所有按鈕的 active 類
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // 添加當前按鈕的 active 類
+                button.classList.add('active');
+
+                const status = button.getAttribute('data-status');
+                
+                orderCards.forEach(card => {
+                    if (status === 'all' || card.getAttribute('data-status') === status) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
+    </script>
 </body>
 
 </html>

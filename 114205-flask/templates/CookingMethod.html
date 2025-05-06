@@ -25,7 +25,7 @@
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
         </div>
         <div class="user-info">
-            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="username">{{ user_email }}</div>
             <div class="settings-icon" onclick="toggleSettingsModal()"></div>
         </div>
     </div>
@@ -126,7 +126,7 @@
                 <div class="account-info">
                     <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="Avatar" class="avatar">
                     <div class="account-text">
-                        <p class="name">PeiTzu Chang</p>
+                        <p class="name">{{ username }}</p>
                         <p class="sub-text">個人資料</p>
                     </div>
                     <button class="arrow-btn" onclick="toggleProfileModal()">➜</button>
