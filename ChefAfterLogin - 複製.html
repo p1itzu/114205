@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/ALmenu - 複製.css" rel="stylesheet" />
+    <title>代做菜媒合平台</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links" id="navLinks">
+            <a href="ChefAfterLogin.html">首頁</a>
+            <a href="ChefMain.html">我的頁面</a>
+            <a href="ChefUnOrder.html">待接單訂單</a>
+            <div class="dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                <div class="dropdown-content" id="orderDropdown">
+                    <a href="ChefOrder.html">待完成訂單</a>
+                    <a href="OrderDone.html">已完成訂單</a>
+                    <a href="Charging.html">議價中訂單</a>
+                    <a href="CancelOrder.html">已取消訂單</a>
+                </div>
+            </div>
+            <a href="#">客服聯絡</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+        <!-- 菜單開關按鈕 -->
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </div>
+    <div class="content">
+        <h1>歡迎來到我們的網站</h1>
+        <p>這是一個代做菜的媒合平台。</p>
+    </div>
+
+    <div class="footer">
+        © 2025 網站名稱. All rights reserved.<br>
+        聯絡我們：official@example.com | 電話：02-12345678900
+    </div>
+
+    <script>
+        // 設置下拉選單顯示隱藏
+        function toggleDropdown() {
+            document.getElementById("orderDropdown").classList.toggle("show");
+        }
+
+        // 菜單開關功能
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // 點擊外部關閉下拉選單
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
