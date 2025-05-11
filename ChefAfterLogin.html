@@ -20,7 +20,16 @@
             <a href="ChefAfterLogin.html">首頁</a>
             <a href="ChefMain.html">我的頁面</a>
             <a href="ChefUnOrder.html">待接單訂單</a>
-            <a href="#">我的訂單</a>
+            <!-- 新增下拉選單 -->
+            <div class="dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                <div class="dropdown-content" id="orderDropdown">
+                    <a href="ChefOrder.html">待完成訂單</a>
+                    <a href="OrderDone.html">已完成訂單</a>
+                    <a href="Charging.html">議價中訂單</a>
+                    <a href="CancelOrder.html">已取消訂單</a>
+                </div>
+            </div>
             <a href="#">客服聯絡</a>
         </div>
         <div class="user-info">
@@ -61,27 +70,136 @@
         聯絡我們：official@example.com | 電話：02-12345678900
     </div>
 
-    <!-- 設定小視窗 -->
-    <div class="settings-modal" id="settings-modal">
-        <div class="modal-content">
-            <h2>設定</h2>
-            <p>帳號</p>
-            <p>其他</p>
+ <!-- 設定小視窗 -->
+ <div class="settings-modal" id="settings-modal">
+    <div class="modal-content">
+        <h2 class="title">設定</h2>
 
-            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+        <!-- 帳號區塊 -->
+        <div class="section2">
+            <h3>帳號</h3>
+            <div class="account-info">
+                <img src="imgs/chef.png" alt="Avatar" class="avatar">
+                <div class="account-text">
+                    <p class="name">Mugin Wu</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 其他 -->
+        <div class="section2">
+            <button class="logout-btn">
+                <span>↩️ 登出</span>
+            </button>
+            <button class="delete-btn">
+                🗑️ 刪除帳號
+            </button>
         </div>
     </div>
+</div>
 
-    <script>
-        function toggleSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            if (modal.style.display === 'flex') {
-                modal.style.display = 'none';
-            } else {
-                modal.style.display = 'flex';
+<!-- 通知中心視窗 -->
+<div class="notification-center" id="notificationCenter">
+    <div class="notification-header">
+        <span>通知中心</span>
+        <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+    </div>
+    <ul class="notification-list" id="notificationList">
+        <!-- 通知項目會動態添加在這裡 -->
+    </ul>
+</div>
+
+<script>
+     function toggleDropdown() {
+        document.getElementById("orderDropdown").classList.toggle("show");
+    }
+
+    // 點擊其他地方時關閉下拉選單
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropdown-btn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
             }
         }
-    </script>
-</body>
+    }
+    // 切換設定視窗
+    function toggleSettingsModal() {
+        const modal = document.getElementById('settings-modal');
 
+        if (modal.classList.contains('show')) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300); // 等動畫結束再隱藏
+        } else {
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+    }
+
+    // 切換個人資料視窗
+    function toggleProfileModal() {
+        const profileModal = document.getElementById('profile-modal');
+
+        if (profileModal.classList.contains('show')) {
+            profileModal.classList.remove('show');
+            setTimeout(() => {
+                profileModal.style.display = 'none';
+            }, 300);
+        } else {
+            profileModal.style.display = 'flex';
+            setTimeout(() => {
+                profileModal.classList.add('show');
+            }, 10);
+        }
+    }
+
+    // 點擊視窗外部關閉
+    window.onclick = function (event) {
+        const settingsModal = document.getElementById('settings-modal');
+        const profileModal = document.getElementById('profile-modal');
+
+        // 如果點擊的目標是 `settingsModal` 本身，則關閉它
+        if (event.target === settingsModal) {
+            toggleSettingsModal();
+        }
+
+        // 如果點擊的目標是 `profileModal` 本身，則關閉它
+        if (event.target === profileModal) {
+            toggleProfileModal();
+        }
+    };
+
+    // 處理頭像上傳
+    document.addEventListener("DOMContentLoaded", function () {
+        const avatarInput = document.getElementById("avatar-input");
+        const profileAvatar = document.getElementById("profile-avatar");
+        const editAvatarBtn = document.querySelector(".edit-avatar-btn");
+
+        // 點擊按鈕時，打開文件選擇視窗
+        editAvatarBtn.addEventListener("click", function () {
+            avatarInput.click();
+        });
+
+        // 當用戶選擇圖片時
+        avatarInput.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    profileAvatar.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+<script src="js/notification.js"></script>
+</body>
 </html>
