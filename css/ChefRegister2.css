@@ -1,23 +1,32 @@
-body {
-    display: flex;
-    height: 100vh;
+html, body {
     margin: 0;
+    padding: 0;
+    min-height: 100vh;
     font-family: Arial, sans-serif;
 }
 
+body {
+    display: flex;
+}
+
+/* 左邊黃色區 */
 .left-section {
     width: 35%;
     background-color: #F9C765;
 }
 
+/* 右邊表單區 */
 .right-section {
     width: 75%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     background-color: #fdf7ec;
-
+    padding: 40px 20px;
+    box-sizing: border-box;
 }
+
+
 
 .form-container {
     width: 80%;
@@ -67,4 +76,80 @@ button {
 h2 {
     text-align: center;
     font-size: 30px;
+}
+/* 手機裝置：最大寬度 768px */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        height: auto;
+    }
+    
+
+    .left-section {
+        display: none; /* 手機版不顯示左側 */
+    }
+
+    .right-section {
+        width: 100%;
+        padding: 30px 20px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .form-container {
+        width: 100%;
+        max-width: 100%;
+        padding-top: 40px;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    button {
+        width: 100%;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    .checkbox-group {
+        grid-template-columns: repeat(2, 1fr); /* 保持兩欄排列 */
+    }
+
+    .main {
+        font-size: 18px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    button {
+        font-size: 16px;
+        padding: 12px;
+        width: 100%; /* 手機版按鈕寬度 100% */
+    }
+}
+
+/* 平板裝置：最大寬度 1024px */
+@media (max-width: 1024px) {
+    .left-section {
+        width: 100%;
+        height: 200px;
+    }
+
+    .right-section {
+        width: 100%;
+        padding: 40px 20px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .form-container {
+        width: 90%;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    button {
+        font-size: 16px;
+    }
 }
