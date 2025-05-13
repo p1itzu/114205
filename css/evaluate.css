@@ -4,6 +4,7 @@ body {
     padding: 0;
     background-color: #FFE7B7;
     color: #B3811C;
+    overflow-y: auto; 
 }
 
 /* 導覽列樣式 */
@@ -101,6 +102,7 @@ body {
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s ease;
+    width: 100px; /* Set a fixed width to prevent changes in RWD */
 }
 
 .rating-btn:hover {
@@ -559,4 +561,132 @@ body {
 .star p {
     color:#f2ac32;
     font-size: 28px;
+}
+
+/*RWD*/
+/*導覽列*/
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .navbar .site-name {
+        padding-left: 0;
+    }
+
+    .navbar .nav-links {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .user-info {
+        padding-right: 0;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .main-content {
+        padding: 15px;
+        max-height: none;
+    }
+
+    .fixed-sidebar {
+        padding: 15px;
+    }
+
+    .profile-content, .settings-modal .modal-content {
+        width: 90% !important;
+    }
+
+    .profile-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-section input {
+        width: 100%;
+    }
+
+    .close-btn {
+        position: static;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar a {
+        font-size: 16px;
+        padding: 8px 15px;
+    }
+
+    .main-content h2, .fixed-sidebar h3 {
+        font-size: 20px;
+    }
+
+    .form-section input {
+        font-size: 14px;
+    }
+
+    .save-btn, .edit-avatar-btn, .arrow-btn {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar .nav-links {
+        flex-direction: row;
+        overflow-x: auto;
+        white-space: nowrap;
+        width: 100%;
+        gap: 10px;
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .navbar .nav-links::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+    }
+
+    .navbar a {
+        flex: 0 0 auto; /* 不要換行，固定寬度 */
+        padding: 5px 10px;
+        background-color: #e4b455;
+        border-radius: 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-container {
+        flex-direction: column;
+    }
+
+    .fixed-sidebar {
+        display: none; /* Hide the chef information block on mobile */
+    }
+
+    .main-content {
+        width: 100%; /* Ensure the review section takes full width */
+        max-height: none;
+    }
+
+    .chef-card {
+        flex: 1 1 100%; /* Each card spans full width */
+    }
+
+    .chef-list {
+        flex-direction: column;
+    }
+}
+
+/* 防止頁面橫向滾動條 */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden; /* 隱藏橫向滾動條 */
+    box-sizing: border-box; /* 確保 padding 和 border 包含在元素的寬度和高度內 */
 }
