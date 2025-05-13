@@ -414,3 +414,63 @@ div.footer {
 .show {
     display: block;
 }
+.menu-toggle {
+    display: none;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+/* 小於 768px：導覽列變成下拉選單 */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #B3811C;
+        cursor: pointer;
+        margin-right: 20px;
+    }
+
+    .nav-links {
+        display: none; /* 預設隱藏 */
+        flex-direction: column;
+        background-color: #F9C765;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        z-index: 999;
+        padding: 10px 0;
+    }
+
+    .nav-links a,
+    .dropdown-btn {
+        padding: 10px 20px;
+        font-size: 18px;
+    }
+    /* 預設隱藏 */
+#navLinks,
+#orderDropdown {
+    display: none;
+}
+
+/* 加上 .show 時垂直展開 */
+#navLinks.show,
+#orderDropdown.show {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 每個選單項目 */
+#navLinks a,
+#orderDropdown a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #B3811C;
+}
+
+
+}

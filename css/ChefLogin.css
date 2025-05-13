@@ -149,3 +149,75 @@ input[type="password"] {
 .modal button:hover {
     background-color: #e0a93d;
 }
+#successModal {
+    display: none;
+}
+/* 手機與小尺寸螢幕：最大寬度 768px */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .left-section {
+        display: none; /* 手機版不顯示左側區塊 */
+    }
+
+    .right-section {
+        width: 100%;
+        padding: 30px 20px;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .form-container {
+        max-width: 100%;
+        width: 100%;
+        padding-top: 80px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        width: 100%;
+        font-size: 16px;
+    }
+
+    .button {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    .divider span {
+        font-size: 13px;
+    }
+
+    .top-right-link {
+        top: 80px;
+        right: 30px;
+        font-size: 12px;
+        position: absolute;
+    }
+
+    .login-button {
+        font-size: 12px;
+        padding: 5px 12px;
+    }
+}
+
+/* 平板裝置：最大寬度 1024px */
+@media (max-width: 1024px) {
+    .left-section {
+        width: 100%;
+        height: 200px;
+    }
+
+    .right-section {
+        width: 100%;
+    }
+
+    .form-container {
+        padding: 0 20px;
+    }
+}

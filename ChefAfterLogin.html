@@ -15,12 +15,13 @@
 
 <body>
     <div class="navbar">
-        <div class="site-name">[網站名稱]</div>
-        <div class="nav-links">
+        <div class="site-name">味你而煮</div>
+        <!-- 可折疊的導航連結 -->
+        <div class="nav-links" id="navLinks">
             <a href="ChefAfterLogin.html">首頁</a>
             <a href="ChefMain.html">我的頁面</a>
             <a href="ChefUnOrder.html">待接單訂單</a>
-            <!-- 新增下拉選單 -->
+    
             <div class="dropdown">
                 <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
                 <div class="dropdown-content" id="orderDropdown">
@@ -32,11 +33,15 @@
             </div>
             <a href="#">客服聯絡</a>
         </div>
+    
         <div class="user-info">
             <div class="username">11336012@ntub.edu.tw</div>
             <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            <button class="menu-toggle" onclick="toggleMobileMenu()">☰</button>
+
         </div>
     </div>
+    
     <div class="content">
         <h1>歡迎來到我們的網站</h1>
         <p>這是一個代做菜的媒合平台。</p>
@@ -98,18 +103,12 @@
     </div>
 </div>
 
-<!-- 通知中心視窗 -->
-<div class="notification-center" id="notificationCenter">
-    <div class="notification-header">
-        <span>通知中心</span>
-        <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
-    </div>
-    <ul class="notification-list" id="notificationList">
-        <!-- 通知項目會動態添加在這裡 -->
-    </ul>
-</div>
 
 <script>
+    function toggleMobileMenu() {
+    const navLinks = document.getElementById("navLinks");
+    navLinks.classList.toggle("show");
+    }
      function toggleDropdown() {
         document.getElementById("orderDropdown").classList.toggle("show");
     }
@@ -199,6 +198,7 @@
             }
         });
     });
+    
 </script>
 <script src="js/notification.js"></script>
 </body>
