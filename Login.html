@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>廚師註冊</title>
-    <link rel="stylesheet" href="css/ChefRegister.css">
+    <title>廚師登入</title>
+    <link rel="stylesheet" href="css/Login.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
@@ -13,19 +13,14 @@
     <div class="left-section"></div>
     <div class="right-section">
         <div class="top-right-link">
-            已經有帳號？<a href="ChefLogin.html" class="login-button">登入</a>
+            尚未註冊帳號？<a href="ChefRegister.html" class="login-button">註冊</a>
         </div>
         <div class="form-container">
-            <h2>Welcome to 味你而煮！</h2>
-            <div class="button-group">
-                <button class="role-button" >廚師</button>
-                <button class="role-button" >顧客</button>
-                </div>
+            <h2>Welcome to [系統名稱]！</h2>
             <form onsubmit="validateForm(event)">
-                <input type="text" id="name" placeholder="Name" required>
                 <input type="email" id="email" placeholder="Email" required>
                 <input type="password" id="password" placeholder="密碼 (8位數字+字母)" required>
-                <button type="submit" class="button" onclick="window.location.href='ChefRegister2.html'">註冊</button>
+                <button type="submit" class="button">登入</button>
             </form>
 
             <div class="divider"><span>or</span></div>
@@ -45,17 +40,26 @@
     <script>
         function validateForm(event) {
             event.preventDefault();
-            const name = document.getElementById("name").value.trim();
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value;
             let errorMessage = "";
 
-            if (!name) errorMessage += "姓名不能為空\n";
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errorMessage += "請輸入有效的電子郵件\n";
-            if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)) errorMessage += "密碼需包含至少8個字元，且至少包含1個字母與1個數字\n";
+            // 驗證 Email 格式
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                errorMessage += "請輸入有效的電子郵件\n";
+            }
 
-            if (errorMessage) alert(errorMessage);
-            else document.getElementById("successModal").style.display = "block";
+            // 驗證密碼是否有輸入
+            if (!password) {
+                errorMessage += "請輸入密碼\n";
+            }
+
+            if (errorMessage) {
+                alert(errorMessage);
+            } else {
+                // ✅ 登入成功後立即跳轉
+                window.location.href = "AfterLogin.html";
+            }
         }
 
         function closeModal() {
@@ -64,9 +68,12 @@
 
         function handleCredentialResponse(response) {
             console.log("Google 登入成功", response);
-            alert("Google 登入成功！");
+            // ✅ Google 登入成功後立即跳轉
+            window.location.href = "AfterLogin.html";
         }
     </script>
+
+
 </body>
 
 </html>

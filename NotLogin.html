@@ -24,12 +24,9 @@
        
         <!-- 使用者資訊區域，內含「註冊/登入」按鈕 -->
         <div class="user-info">
-            <button class="login-button" onclick="toggleLoginModal()">註冊/登入</button>
+            <button class="login-button" onclick="location.href='Register.html'">註冊/登入</button>
         </div>
     </div>
-
-    <!-- 遮罩層 -->
-    <div class="modal-overlay" id="modal-overlay" onclick="toggleLoginModal()"></div>
 
     <div class="content">
         <h1>歡迎來到我們的網站</h1>
@@ -59,36 +56,11 @@
         </div>
     </div>
 
-    <!-- 選擇身分小視窗 -->
-    <div class="login-modal" id="login-modal">
-        <div class="modal-content">
-            <h2>請選擇身分</h2>
-            <div class="button-group">
-            <button class="role-button" onclick="location.href='ChefRegister.html'">廚師</button>
-            <button class="role-button" onclick="location.href='CusRegister.html'">顧客</button>
-            </div>
-        </div>
-    </div>
 
     <div class="footer">
         © 2025 網站名稱. All rights reserved. | 聯絡我們：official@example.com | 電話：02-12345678900
     </div>
 
-    <script>
-        function toggleLoginModal() {
-            const modal = document.getElementById("login-modal");
-            const overlay = document.getElementById("modal-overlay");
-
-            // 如果 modal 隱藏或尚未設定 display
-            if (modal.style.display === "none" || modal.style.display === "") {
-                modal.style.display = "block"; // 顯示小視窗
-                overlay.style.display = "block"; // 顯示遮罩層
-            } else {
-                modal.style.display = "none"; // 隱藏小視窗
-                overlay.style.display = "none"; // 隱藏遮罩層
-            }
-        }
-    </script>
     </div>
 </body>
 
