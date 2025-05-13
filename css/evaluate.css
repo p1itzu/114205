@@ -102,7 +102,6 @@ body {
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s ease;
-    width: 100px; /* Set a fixed width to prevent changes in RWD */
 }
 
 .rating-btn:hover {
