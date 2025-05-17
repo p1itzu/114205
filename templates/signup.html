@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用戶註冊</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/signup.css') }}">
+</head>
+<body>
+  <div class="left-section"></div>
+  <div class="right-section">
+    <div class="top-right-link">
+      已經有帳號？<a href="{{ url_for('login') }}" class="login-button">登入</a>
+    </div>
+    <div class="form-container">
+      <h2>Welcome to Foods！</h2>
+      <form action="{{ url_for('signup') }}" method="post">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="密碼 (8位數字+字母)" required>
+        <button type="submit" class="button">註冊</button>
+      </form>
+      {% if error %}
+        <p class="error">{{ error }}</p>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

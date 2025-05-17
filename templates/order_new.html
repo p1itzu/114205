@@ -1,0 +1,186 @@
+<!-- <!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新增訂單</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/reserve.css') }}">
+</head>
+<body>
+  <div class="navbar"></div>
+  <form action="{{ url_for('customer_order_create') }}" method="post">
+    <label>日期：<input type="date" name="order_date" required></label><br>
+    <label>時間：<input type="time" name="order_time" required></label><br>
+    <label>方式：
+      <input type="radio" name="pickup_method" value="自取" required>自取
+      <input type="radio" name="pickup_method" value="外送">外送
+    </label><br>
+    <label>地址：<input type="text" name="address"></label><br>
+    <button type="submit">提交訂單</button>
+  </form>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/reserve.css" rel="stylesheet" />
+    <link href="/static/css/notification.css" rel="stylesheet" />
+    <title>代做菜媒合平台</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">[網站名稱]</div>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">首頁</a>
+            <a href="{{ url_for('index') }}">料理方式建議</a>
+            <a href="{{ url_for('index') }}">發送訂單</a>
+            <a href="{{ url_for('index') }}">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+        </div>
+        <div class="user-info">
+            <div class="username">11336012@ntub.edu.tw</div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <div class="section2">
+                <h3>Step1 - 預訂資訊</h3>
+                <br>
+            </div>
+            <form class="order-form">
+                <label for="date">日期 (需提早三天以上)</label>
+                <input type="date" id="date" required>
+                <br>
+                <br>
+
+                <label for="time">時間</label>
+                <input type="time" id="time" required>
+                <br>
+                <br>
+
+                <label>取餐方式</label>
+                <div>
+                    <button class="button" type="button" id="pickup" onclick="selectDelivery('pickup')">自取</button>
+                    <button class="button" type="button" id="delivery" onclick="selectDelivery('delivery')">外送</button>
+                </div>
+
+
+                <div>
+                    <label for="address">地址</label>
+                    <input type="text" id="address" placeholder="請填寫完整外送地址">
+                </div>
+                <br>
+
+                <button class="save-button" type="submit" onclick="location.href='reserve2.html'">儲存！</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="step active">第1步</div>
+        <div class="line"></div>
+        <div class="step">第2步</div>
+        <div class="line"></div>
+        <div class="step">第3步</div>
+        <div class="line"></div>
+        <div class="step">第4步</div>
+    </div>
+
+
+    <!-- 設定小視窗 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2>設定</h2>
+            <p>帳號</p>
+            <p>其他</p>
+            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function selectDelivery(type) {
+            const pickupBtn = document.getElementById('pickup');
+            const deliveryBtn = document.getElementById('delivery');
+            const addressField = document.getElementById('address-field');
+
+            if (type === 'pickup') {
+                pickupBtn.classList.add('active');
+                deliveryBtn.classList.remove('active');
+                addressField.classList.add('hidden');
+            } else {
+                deliveryBtn.classList.add('active');
+                pickupBtn.classList.remove('active');
+                addressField.classList.remove('hidden');
+            }
+        }
+
+        function selectDelivery(type) {
+            // 移除所有按鈕的 active 類別
+            document.getElementById('pickup').classList.remove('active');
+            document.getElementById('delivery').classList.remove('active');
+
+            // 根據選擇的類型為相應按鈕添加 active 類別
+            if (type === 'pickup') {
+                document.getElementById('pickup').classList.add('active');
+            } else if (type === 'delivery') {
+                document.getElementById('delivery').classList.add('active');
+            }
+        }
+
+        function selectDelivery(type) {
+            // 取得按鈕元素
+            const pickupBtn = document.getElementById('pickup');
+            const deliveryBtn = document.getElementById('delivery');
+
+            // 先移除所有按鈕的 active 類別
+            pickupBtn.classList.remove('active');
+            deliveryBtn.classList.remove('active');
+
+            // 為點擊的按鈕加上 active 類別
+            document.getElementById(type).classList.add('active');
+
+            // 存入 localStorage
+            localStorage.setItem('selectedDelivery', type);
+        }
+
+        // 當頁面載入時，恢復上次的選擇
+        window.onload = function () {
+            const savedDelivery = localStorage.getItem('selectedDelivery');
+            if (savedDelivery) {
+                document.getElementById(savedDelivery).classList.add('active');
+            }
+        };
+
+
+    </script>
+    <script src="js/notification.js"></script>
+</body>
+
+</html>

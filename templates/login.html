@@ -1,0 +1,62 @@
+<!-- <!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>登入</title></head>
+<body>
+  <h1>登入</h1>
+  {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+  <form action="/auth/login" method="post">
+    <label>Email: <input name="username" type="email"/></label><br/>
+    <label>Password: <input name="password" type="password"/></label><br/>
+    <button type="submit">登入</button>
+  </form>
+  <p><a href="/auth/login/google">使用 Google 登入</a></p>
+  <p><a href="/auth/signup">還沒有帳號？註冊</a></p>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用戶登入</title>
+  <link rel="stylesheet" href="/static/css/login.css">
+  <style>
+    #successModal { display: none; }
+  </style>
+</head>
+<body>
+  <div class="left-section"></div>
+  <div class="right-section">
+    <div class="top-right-link">
+      尚未註冊帳號？<a href="{{ url_for('signup_page') }}" class="login-button">註冊</a>
+    </div>
+    <div class="form-container">
+      <h2>Welcome to Foods！</h2>
+
+      <form action="{{ url_for('login') }}" method="post">
+        <input type="email" name="username" placeholder="Email" required>
+        <input type="password" name="password" placeholder="密碼 (8位數字+字母)" required>
+        <button type="submit" class="button">登入</button>
+      </form>
+
+      <div class="divider"><span>or</span></div>
+      <a href="{{ url_for('login_google') }}" class="button google-button">
+        <img src="/static/imgs/google-logo.webp" alt="Google Logo" width="20" style="vertical-align:middle;margin-right:8px;">
+        使用 Google 登入
+      </a>
+      
+</div>
+
+    </div>
+  </div>
+
+  <div id="successModal" class="modal">
+    <p>註冊成功！</p>
+    <button onclick="closeModal()">關閉</button>
+  </div>
+
+  <script src="/static/js/notification.js"></script>
+</body>
+</html>
+

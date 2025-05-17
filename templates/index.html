@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/css/index.css" rel="stylesheet" />
+    <link href="static/css/notification.css" rel="stylesheet" />
+    <title>代做菜媒合平台</title>
+</head>
+<body>
+    <div class="navbar">
+        <div class="site-name">Foods</div>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">首頁</a>
+            {% if user %}
+            <a href="CookingMethod.html">料理方式建議</a>
+            <a href="SearchChef.html">發送訂單</a>
+            <a href="my-order.html">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+            {% else %}
+            <a href="{{ url_for('index') }}">關於我們</a>
+            <a href="{{ url_for('index') }}">料理方式建議</a>
+            <a href="{{ url_for('index') }}">常見問題</a>
+            {% endif %}
+        </div>
+        <div class="user-info">
+            {% if user %}
+            <img
+                src="{{ avatar_url }}"
+                alt="頭像"
+                class="avatar"
+            />
+            <div class="user-text">
+                <div class="name">{{ user.name }}</div>
+                <div class="email">{{ user.email }}</div>
+            </div>
+            
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            {% else %}
+            <a href="{{ url_for('login') }}">登入/註冊</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="content">
+        <h1>歡迎來到我們的網站</h1>
+        <p>這是一個代做菜的媒合平台。</p>
+    </div>
+    <div class="content">
+        <div class="section">
+            <h3>平台簡介</h3>
+            <p>
+                平台旨在為忙碌的現代人提供便捷的餐食解決方案。無論是因工作繁忙、聚會需要，或是單純想享受家常美味卻無暇下廚，平台都能幫助用戶快速找到合適的代做菜服務。
+                <br><br>
+                使用者只需透過簡單的操作，即可瀏覽多樣菜單、預約代做菜服務，並選擇自取或外送。平台同時提供代做菜師傅資訊與評價，保障用戶的選擇品質與餐食安全。
+                <br><br>
+                我們致力於打造一個 <strong>方便、快速、安全</strong> 的用餐媒合體驗，讓每一位用戶都能輕鬆享受美味料理，減少生活煩惱。
+            </p>
+        </div>
+        <div class="section">
+            <h3>流程介紹</h3>
+            <p>1. 選擇角色（廚師 / 顧客）</p>
+            <p>2. 瀏覽或上架菜單</p>
+            <p>3. 下單或接單</p>
+            <p>4. 完成訂單並留下評價</p>
+        </div>
+        <div class="section">
+            <h3>最新公告</h3>
+            <p>春節期間訂單調整時間請提前查詢！</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2025 網站名稱. All rights reserved.<br>
+        聯絡我們：official@example.com | 電話：02-12345678900
+    </div>
+
+     <!-- 設定小視窗 -->
+     <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2 class="title">設定</h2>
+
+            <!-- 帳號區塊 -->
+            <div class="section2">
+                <h3>帳號</h3>
+                <div class="account-info">
+                    <img src="static/imgs/chef.png" alt="Avatar" class="avatar">
+                    <div class="account-text">
+                        <p class="name">PeiTzu Chang</p>
+                        <p class="sub-text">個人資料</p>
+                    </div>
+                    <button class="arrow-btn" onclick="toggleProfileModal()">➜</button>
+                </div>
+            </div>
+
+            <!-- 其他 -->
+            <div class="section2">
+                <h3>其他</h3>
+                <form action="{{ url_for('logout') }}" method="get" style="display:inline">
+                <button class="logout-btn">
+                    <span>↩️ 登出</span>
+                </button>
+                </form>
+                <button class="delete-btn">
+                    🗑️ 刪除帳號
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- 第二個個人資料視窗 -->
+    <div class="settings-modal" id="profile-modal">
+        <div class="modal-content profile-content">
+            <h2 class="title">個人資料編輯</h2>
+
+            <div class="profile-container">
+                <!-- 頭像區塊 -->
+                <div class="avatar-section">
+                    <img id="profile-avatar" class="profile-avatar" src="static/imgs/chef.png" alt="個人頭像">
+                    <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                    <button class="edit-avatar-btn">個人頭像編輯</button>
+                </div>
+
+                <!-- 輸入表單 -->
+                <div class="form-section">
+                    <label>姓名：</label> <input type="text" placeholder="請輸入姓名">
+                    <label>電子郵件：</label> <input type="email" placeholder="請輸入電子郵件">
+                    <label>電話：</label> <input type="tel" placeholder="請輸入電話">
+                    <label>密碼：</label> <input type="password" placeholder="請輸入密碼">
+                </div>
+            </div>
+
+            <!-- 儲存按鈕 -->
+            <button class="save-btn">儲存變更</button>
+            <button class="close-btn" onclick="toggleProfileModal()">返回</button>
+        </div>
+    </div>
+
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
+    </div>
+
+    <script>
+        // 切換設定視窗
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+
+            if (modal.classList.contains('show')) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300); // 等動畫結束再隱藏
+            } else {
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+            }
+        }
+
+        // 切換個人資料視窗
+        function toggleProfileModal() {
+            const profileModal = document.getElementById('profile-modal');
+
+            if (profileModal.classList.contains('show')) {
+                profileModal.classList.remove('show');
+                setTimeout(() => {
+                    profileModal.style.display = 'none';
+                }, 300);
+            } else {
+                profileModal.style.display = 'flex';
+                setTimeout(() => {
+                    profileModal.classList.add('show');
+                }, 10);
+            }
+        }
+
+        // 點擊視窗外部關閉
+        window.onclick = function (event) {
+            const settingsModal = document.getElementById('settings-modal');
+            const profileModal = document.getElementById('profile-modal');
+
+            // 如果點擊的目標是 `settingsModal` 本身，則關閉它
+            if (event.target === settingsModal) {
+                toggleSettingsModal();
+            }
+
+            // 如果點擊的目標是 `profileModal` 本身，則關閉它
+            if (event.target === profileModal) {
+                toggleProfileModal();
+            }
+        };
+
+        // 處理頭像上傳
+        document.addEventListener("DOMContentLoaded", function () {
+            const avatarInput = document.getElementById("avatar-input");
+            const profileAvatar = document.getElementById("profile-avatar");
+            const editAvatarBtn = document.querySelector(".edit-avatar-btn");
+
+            // 點擊按鈕時，打開文件選擇視窗
+            editAvatarBtn.addEventListener("click", function () {
+                avatarInput.click();
+            });
+
+            // 當用戶選擇圖片時
+            avatarInput.addEventListener("change", function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        profileAvatar.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+    <script src="static/js/notification.js"></script>
+</body>
+</html>
