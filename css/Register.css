@@ -34,9 +34,15 @@ body {
     cursor: pointer;
     transition: background-color 0.2s;
 }
+.role-button:hover{
+    background-color: rgb(127, 91, 14);
+    color: #ffffff;
+    transform: translateY(-1px); 
+}
 .role-button:active {
-    background-color: #ae7423; 
-    color: #ffffff;           
+    background-color: rgb(127, 91, 14);
+    color: #ffffff;
+    transform: translateY(-1px);       
 }
 .form-container {
     width: 100%;
