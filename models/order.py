@@ -10,7 +10,6 @@ class Order(Base):
     pickup_method = Column(String(50), nullable=False)
     address = Column(String(255), nullable=True)
 
-    # Relationship to dishes
     dishes = relationship(
         "Dish",
         back_populates="order",
@@ -30,7 +29,6 @@ class Dish(Base):
     oiliness = Column(Integer, CheckConstraint("oiliness BETWEEN 0 AND 10"), nullable=True)
     aroma = Column(Integer, CheckConstraint("aroma BETWEEN 0 AND 10"), nullable=True)
 
-    # Relationships
     order = relationship("Order", back_populates="dishes")
     ingredients = relationship(
         "DishIngredient",
@@ -44,5 +42,4 @@ class DishIngredient(Base):
     dish_id = Column(Integer, ForeignKey("dishes.id"), nullable=False)
     ingredient_name = Column(String(100), nullable=False)
 
-    # Relationship
     dish = relationship("Dish", back_populates="ingredients")

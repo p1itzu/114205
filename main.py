@@ -3,8 +3,11 @@ from starlette.middleware.sessions import SessionMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from database import Base, engine, get_db
+
 from routers.auth import router as auth_router
 from routers.customer import router as customer_router
+from routers.chef import router as chef_router
+
 from config import settings
 
 from utils.security import decode_access_token
@@ -30,6 +33,7 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(auth_router, prefix="/auth")
 app.include_router(customer_router, prefix="/customer")
+app.include_router(chef_router, prefix="/chef")
 
 # @app.get("/")
 # def index(request: Request, db=Depends(get_db)):
