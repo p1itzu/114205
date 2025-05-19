@@ -1,0 +1,476 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #FFE7B7;
+    color: #B3811C;
+}
+
+.navbar {
+    background-color: #F9C765;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar .site-name {
+    font-size: 20px;
+    font-weight: bold;
+    padding-left: 20px;
+    color: #B3811C;
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 15px;
+    margin: 0 auto;
+}
+
+.navbar a {
+    color: #B3811C;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    background-color: #f9e4ba;
+    border-radius: 5px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
+}
+
+.user-info .username {
+    font-size: 18px;
+    color: #B3811C;
+    font-weight: bold;
+}
+
+.user-info .settings-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url('../imgs/settings.png');
+    /* 確保圖片路徑正確 */
+    background-size: cover;
+    /* 確保圖片完全覆蓋容器 */
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 0%;
+    /* 去除圓形邊框 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.user-info .settings-icon:before {
+    background-image: url('../imgs/settings.png');
+    color: white;
+    font-size: 14px;
+}
+
+.navbar .user-info .login-button {
+    background-color: #fff9ec;
+    /* 與導航條一致的背景顏色 */
+    color: #B3811C;
+    /* 與導航欄一致的文字顏色 */
+    padding: 10px 20px;
+    /* 內邊距 */
+    font-size: 16px;
+    /* 字體大小 */
+    font-weight: bold;
+    /* 字體加粗 */
+    border: none;
+    /* 去除邊框 */
+    border-radius: 5px;
+    /* 圓角 */
+    cursor: pointer;
+    /* 游標變為手形 */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    /* 過渡效果 */
+}
+
+.navbar .user-info .login-button:hover {
+    background-color: #f9e4ba;
+    /* 滑鼠懸停時背景顏色變化 */
+    transform: scale(1.05);
+    /* 滑鼠懸停時放大按鈕 */
+}
+
+.content {
+    padding: 20px;
+    text-align: left;
+}
+
+/* 設定視窗 */
+.settings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.settings-modal .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    padding-left: 40px;
+    line-height: 1.4;
+}
+
+.settings-modal .close-btn {
+    background-color: #F9C765;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px;
+    height: 500px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/*step1*/
+.section2 h3 {
+    background-color: #D9A43B;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.order-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #F4B400;
+    color: white;
+    cursor: pointer;
+    width: 100px;
+    font-size: 16px;
+}
+
+.hidden {
+    display: none;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    /* 讓內容區自動撐開 */
+}
+
+
+h3,
+p {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    text-align: left;
+}
+
+/* 遮罩層（顯示/隱藏選擇身分小視窗時使用） */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 半透明灰色 */
+    z-index: 900;
+}
+
+.login-modal h2 {
+    margin: 0 0 20px;
+    font-size: 24px;
+    color: #B3811C;
+}
+
+
+/* 美化日期選擇框 */
+input[type="date"] {
+    font-family: 'Noto Sans HK', sans-serif;
+    /* 設定字體 */
+    font-size: 16px;
+    /* 調整字型大小 */
+    padding: 10px;
+    /* 調整內邊距 */
+    border: 3px solid #ccc;
+    /* 邊框顏色 */
+    border-radius: 8px;
+    /* 圓角邊框 */
+    transition: border-color 0.3s;
+    /* 邊框顏色過渡效果 */
+    width: 375px;
+}
+
+
+input[type="date"]:focus {
+    border-color: #F9C765;
+    /* 當元素獲得焦點時，變更邊框顏色 */
+    outline: none;
+    /* 去除瀏覽器默認的藍色輪廓 */
+}
+
+
+.button {
+    width: 80px;
+    height: 40px;
+    padding: 10px;
+    background-color: #F9C765;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    margin: 10px;
+}
+
+.button:hover {
+    background-color: #e3ab3b;
+}
+
+/* 限制 meal-list 的最大高度，超出則滾動 */
+.meal-container {
+    width: 480px; /* 設定區塊寬度 */
+    max-height: 338px; /* 限制最大高度 */
+    overflow-y: auto; /* 內容超過時出現垂直滾動條 */
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #fff3e0; /* 背景色 */
+}
+
+/* 自訂滾動條樣式 */
+.meal-container::-webkit-scrollbar {
+    width: 8px; /* 設定滾動條寬度 */
+}
+
+.meal-container::-webkit-scrollbar-thumb {
+    background-color: #d1d1d1; /* 滾動條顏色 */
+    border-radius: 10px; /* 滾動條圓角 */
+}
+
+.meal-container::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* 滾動條背景 */
+    border-radius: 10px;
+}
+
+/* 保持清單項目背景 */
+ul.meal-list {
+    padding: 0;
+    margin: 0;
+    list-style: none; /* 先移除預設點點 */
+}
+
+/* 讓 <li> 內的內容排成水平 */
+ul.meal-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 文字靠左，按鈕靠右 */
+    background-color: #ffebcc;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 8px;
+}
+
+/* 讓點點正常顯示 */
+ul.meal-list li::before {
+    content: "•";  
+    font-size: 1.2em;
+    color: #b18732;
+    margin-right: 8px;
+}
+
+/* 讓所有按鈕組合靠右 */
+ul.meal-list li button {
+    margin-left: 5px; /* 按鈕之間的間距 */
+}
+
+/* 讓按鈕組合自動靠右 */
+ul.meal-list li > button:first-of-type {
+    margin-left: auto;
+}
+
+
+
+/* 按鈕樣式 */
+button {
+    margin-left: 5px;
+    padding: 5px 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.edit-btn {
+    background-color: #b18732;
+    color: white;
+    width: 65px;
+}
+
+.delete-btn {
+    background-color: #9b3e29;
+    color: white;
+    width: 65px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+
+/*儲存按鈕*/
+.save-button {
+    width: 80px;
+    height: 40px;
+    padding: 10px;
+    background-color: #84A176;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease; /* 過渡效果 */
+    margin: 10px;
+    float: right; /* 靠右 */
+}
+
+.save-button:hover {
+    background-color: #638253;
+    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
+}
+
+
+.next-button {
+    width: 100px;
+    height: 40px;
+    padding: 10px;
+    background-color: #949494;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease; /* 過渡效果 */
+    margin: 10px;
+    float: right; /* 靠右 */
+}
+
+.next-button:hover {
+    background-color: #727272;
+    transform: translateY(-3px); /* 滑鼠移入時上升 3px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加陰影讓它更有浮起的感覺 */
+}
+
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 35px; 
+}
+
+
+
+.step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 40px;
+    background-color: #fff9ec;
+    color: #e2a93b;
+    font-weight: bold;
+    border-radius: 20px;
+    border: 2px solid #e2a93b;
+    transition: all 0.3s ease-in-out;
+}
+
+.line {
+    width: 40px;
+    height: 4px;
+    background-color: #e2a93b;
+}
+
+.step.active {
+    background-color: #e2a93b;
+    color: white;
+}
+
+.custom-number-input {
+    display: flex;
+    align-items: center; /* 確保垂直對齊 */
+    gap: 5px; /* 設定 `input` 和文字之間的距離 */
+}
+
+input[type="number"] {
+    width: 50px;
+    padding: 5px;
+    font-size: 16px;
+    text-align: center;
+    border: 3px solid #ccc;
+    border-radius: 8px;
+}
+
+.custom-number-input label {
+    display: block;  
+    margin-bottom: 1px !important; /* 加上 !important 確保作用 */
+}
+
+.custom-number-input input {
+    margin-top: 2px;
+}
+
+

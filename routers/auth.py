@@ -53,6 +53,7 @@ def signup(
     name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
+    role: str = Form(...),
     db: Session = Depends(get_db)
     ):
     if db.query(User).filter(User.email == email).first():
@@ -62,7 +63,13 @@ def signup(
         )
 
     hashed = get_password_hash(password)
-    user = User(email=email, hashed_password=hashed, name=name)
+    user = User(
+        email=email,
+        hashed_password=hashed,
+        name=name,
+        role=role
+    )
+    
     db.add(user)
     db.commit()
     db.refresh(user)

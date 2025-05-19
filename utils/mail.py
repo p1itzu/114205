@@ -2,17 +2,20 @@ from smtplib import SMTP
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+from config import settings
+
 def sendmail(email, url):
+    baseurl = settings.BASE_URL
     from_addr = '11336017@ntub.edu.tw'
     to_addr = email
 
-    with open('templates/verify.html', 'r') as file:
+    with open('/templates/verify.html', 'r') as file:
         file_data = ''
         content = file.readlines()
 
         for line in content:
             if '<p></p>' in line:
-                line = line.replace('<p></p>', f"<p><a href=\"https://kuohao.wtf/verify/{url}\">認證</a></p>")
+                line = line.replace('<p></p>', f"<p><a href=\"{baseurl}/{url}\">認證</a></p>")
             file_data += line
 
     # print(content)

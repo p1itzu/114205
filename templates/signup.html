@@ -18,6 +18,11 @@
         <input type="text" name="name" placeholder="Name" required>
         <input type="email" name="email" placeholder="Email" required>
         <input type="password" name="password" placeholder="密碼 (8位數字+字母)" required>
+        <div class="button-group">
+          <span class="role-label">請選擇身分：</span>
+          <button class="role-button" name="role" value="chef" required>廚師</button>
+          <button class="role-button" name="role" value="customer" required>顧客</button>
+        </div>
         <button type="submit" class="button">註冊</button>
       </form>
       {% if error %}

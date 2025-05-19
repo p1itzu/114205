@@ -8,11 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="css/reserve.css" />
-    <link rel="stylesheet" href="css/reserve2.css" />
-    <link rel="stylesheet" href="css/reserve3.css" />
-    <link rel="stylesheet" href="css/reserve4.css" />
-    <link rel="stylesheet" href="css/notification.css" />
+    <link rel="stylesheet" href="/static/css/reserve.css" />
+    <link rel="stylesheet" href="/static/css/reserve2.css" />
+    <link rel="stylesheet" href="/static/css/reserve3.css" />
+    <link rel="stylesheet" href="/static/css/reserve4.css" />
+    <link rel="stylesheet" href="/static/css/notification.css" />
 
     <title>新增訂單</title>
 
@@ -197,18 +197,78 @@
             </div>
         </section>
 
-        <!-- ========= Step 3 ========= -->
         <section class="wizard-step" id="step-3">
-            <!-- ↓↓ 將原 reserve3.html <div class="content">…</div> 貼進來 ↓↓ -->
             <div class="content">
                 <div class="section">
-                    <div class="section2"><h3>Step3 - 廚師選擇</h3><br></div>
-                    <!-- 原本 step 3 的卡片清單 / 篩選…（直接搬過來） -->
-                    <!-- 省略 … -->
-                    <div class="button-area">
-                        <button class="prev-btn" type="button">← 上一步</button>
-                        <button class="next-btn" type="button">下一步 →</button>
+                    <div class="section2">
+                        <h3>Step3 - 總菜單確認</h3>
+                        <br>
                     </div>
+
+                    <table>
+                        <tr>
+                            <div class="meal-container">
+                                <ul class="meal-list">
+                                    <li>
+                                        香煎奶油鱸魚
+                                        <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                        <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                                    </li>
+                                    <li>
+                                        蒜香白酒蛤蜊義大利麵
+                                        <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                        <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                                    </li>
+                                    <li>
+                                        泰式打拋豬飯
+                                        <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                        <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                                    </li>
+                                    <li>
+                                        麻辣鴨血臭豆腐
+                                        <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                        <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                                    </li>
+                                    <li>
+                                        韓式部隊鍋
+                                        <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                        <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                                    </li>
+                                    <li>
+                                        照燒雞腿丼飯
+                                        <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                        <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                                    </li>
+                                    <li>
+                                        酥炸金沙豆腐
+                                        <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                        <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                                    </li>
+                                    <li>
+                                        香草奶油燉飯
+                                        <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                        <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                                    </li>
+                                    <li>
+                                        蒙古烤肉拼盤
+                                        <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                        <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                                    </li>
+                                    <li>
+                                        起司瀑布漢堡
+                                        <button class="edit-btn" onclick="location.href='reserve2-change.html'">修改</button>
+                                        <button class="delete-btn" onclick="deleteDish()">刪除</button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <br>
+                            <button class="prev-btn" type="button">上一步</button>
+                            <button class="next-btn" type="button">下一步</button>
+                            </td>
+                        </tr>
+                    </table>
+                    </form>
                 </div>
             </div>
         </section>
@@ -240,7 +300,7 @@
         <div class="step" data-step="4">第4步</div>
     </div>
 
-    <script src="js/notification.js"></script>
+    <script src="/static/js/notification.js"></script>
     <script>
         const wizard       = document.getElementById('wizard');
         const steps        = Array.from(document.querySelectorAll('.wizard-step'));
