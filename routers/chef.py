@@ -7,7 +7,9 @@ from datetime import date, time
 from database import get_db
 from models.order import Order, Dish, DishIngredient
 
-router = APIRouter()
+from utils.dependencies import require_chef
+
+router = APIRouter(dependencies=[Depends(require_chef)])
 templates = Jinja2Templates(directory="templates")
 
 @router.get("/", name="chef")

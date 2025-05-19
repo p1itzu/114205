@@ -12,6 +12,17 @@ from utils.security import verify_password, get_password_hash, create_access_tok
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
+def issue_login_cookie_and_redirect(user: User):
+    token = create_access_token({"user_id": user.id})
+    resp = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    resp.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    )
+    return resp
+
 oauth = OAuth()
 oauth.register(
     name="google",
@@ -134,15 +145,14 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
 
-    access_token = create_access_token({"user_id": user.id})
-    resp = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-    resp.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-
+    if not user.role:
+        request.session["pending_user_id"] = user.id
+        return RedirectResponse(
+            url="/auth/select-role",
+            status_code=status.HTTP_302_FOUND
+        )
+    
+    resp = issue_login_cookie_and_redirect(user)
     if avatar:
         resp.set_cookie(
             key="avatar_url",
@@ -150,5 +160,32 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
             httponly=False,
             max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
         )
-    
+        
     return resp
+
+
+@router.get("/select-role", name="select_role_page")
+def select_role_page(request: Request):
+    if 'pending_user_id' not in request.session:
+        return RedirectResponse(url="/auth/login", status_code=302)
+    return templates.TemplateResponse(
+        "select_role.html",
+        {"request": request}
+    )
+
+@router.post("/select-role", name="select_role")
+def select_role(
+    request: Request,
+    role: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user_id = request.session.pop('pending_user_id', None)
+    if not user_id or role not in ('customer', 'chef'):
+        raise HTTPException(400, "無效的操作，請重新登入後再試。")
+    user = db.query(User).get(user_id)
+    if not user:
+        raise HTTPException(404, "找不到使用者。")
+    user.role = role
+    db.commit(); db.refresh(user)
+
+    return issue_login_cookie_and_redirect(user)
