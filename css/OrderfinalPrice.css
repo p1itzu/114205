@@ -288,7 +288,7 @@ background-color: #f9e4ba;
 }
 
 .price-row {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 800;
     color: #000;
 }
@@ -315,7 +315,7 @@ background-color: #f9e4ba;
     font-size: 14px;
     cursor: pointer;
     display: inline-block;
-    margin: 0;
+    margin-left: 150px;
     white-space: nowrap;
 }
 .show {
