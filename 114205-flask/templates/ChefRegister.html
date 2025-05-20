@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>廚師註冊</title>
+    <title>廚師註冊基本資料填寫</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/ChefRegister.css') }}">
 </head>
 
@@ -15,7 +15,7 @@
             已經有帳號？<a href="/ChefLogin" class="login-button">登入</a>
         </div>
         <div class="form-container">
-            <h2>Welcome to [系統名稱]！</h2>
+            <h2>請輸入基本資料</h2>
             <h3>註冊廚師帳號</h3>
             <form action="/ChefRegister2" method="GET" id="registerForm">
                 <input type="text" name="name" id="username" placeholder="Name" required>
