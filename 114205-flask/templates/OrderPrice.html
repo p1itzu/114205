@@ -364,98 +364,56 @@
     <!-- 新的彈窗設計 -->
     <div class="modal-container">
         <div class="modal-header">
-            <h2 class="modal-title">訂單編號 #2025012059</h2>
+            <h2 class="modal-title">訂單編號 #{{ order.order_id }}</h2>
             <span class="close-button">×</span>
         </div>
 
         <div class="info-grid">
-            <div class="info-label">預約時間：<span class="info-value">2025/03/18 12:30</span></div>
-            <div class="info-label">地址：<span class="info-value">台北市中山區</span></div>
-            <div class="info-label">取餐方式：<span class="info-value">外帶</span></div>
-            <div class="info-label">聯絡人資訊：<span class="info-value">王小明 0912345678</span></div>
+            <div class="info-label">預約時間：<span class="info-value">{{ order.service_date }} {{ order.service_time }}</span></div>
+            <div class="info-label">地址：<span class="info-value">{{ order.delivery_address }}</span></div>
+            <div class="info-label">取餐方式：<span class="info-value">{{ order.pickup_method }}</span></div>
+            <div class="info-label">聯絡人資訊：<span class="info-value">{{ order.customer_name }} {{ order.customer_phone }}</span></div>
         </div>
 
-        <div class="menu-list">
-            <div class="menu-item">
-                <div class="menu-item-header">
-                    <div>1. 番茄炒蛋 3人份</div>
-                    <div>
-                        <span>第一道價格</span>
-                        <input type="number" class="price-input" onchange="calculateTotal()">
+        <form method="POST" action="{{ url_for('api_submit_chef_pricing', order_id=order_id) }}">
+            {% if items_to_price %}
+            <div class="menu-list">
+                {% for item in items_to_price %}
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <div><strong>{{ item.dish_name }}</strong> {{ item.quantity }}人份</div>
+                        <div>
+                            <span>價格</span>
+                        <input type="number" class="price-input" name="price_{{ item.order_item_id }}" placeholder="請輸入價格">
+                        </div>
                     </div>
+                        <div>調味: {{ item.seasoning_preferences if item.seasoning_preferences else '無' }}</div>
+                <!-- <div class="system-price">系統評估：200</div> -->
                 </div>
-                <div>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</div>
-                <div class="system-price">系統評估：200</div>
+            {% endfor %}
             </div>
 
-            <div class="menu-item">
-                <div class="menu-item-header">
-                    <div>2. 番茄炒蛋 3人份</div>
-                    <div>
-                        <span>第二道價格</span>
-                        <input type="number" class="price-input" onchange="calculateTotal()">
+            <div class="footer">
+                <div class="remark-section">
+                    <div>備註：</div>
+                    <textarea class="remark-input" placeholder="特殊料理價格理由或其他特殊原因"></textarea>
+                </div>
+                <div class="price-section">
+                    <div class="price-info">
+                        <div class="price-info-row">
+                            <button type="button" class="rules-button">價格計算規則</button>
+                        <div>系統估價為：2000</div>
+                        </div>
+                        <div>最高上限價格：3000</div>
+                        <div class="price-section-bottom">
+                            <div class="total-price-display">總金額：0 元</div>
+                            <button type="submit" class="confirm-button">確認送出</button>
+                        </div>
                     </div>
                 </div>
-                <div>（鹹度:清淡 辣度:微辣 油度:正常 辛香料:蔥）</div>
-                <div class="system-price">系統評估：350</div>
             </div>
-
-            <div class="menu-item">
-                <div class="menu-item-header">
-                    <div>3. 清蒸魚 2人份</div>
-                    <div>
-                        <span>第三道價格</span>
-                        <input type="number" class="price-input" onchange="calculateTotal()">
-                    </div>
-                </div>
-                <div>（鹹度:正常 辣度:不辣 油度:少油 辛香料:薑）</div>
-                <div class="system-price">系統評估：450</div>
-            </div>
-
-            <div class="menu-item">
-                <div class="menu-item-header">
-                    <div>4. 炒青菜 4人份</div>
-                    <div>
-                        <span>第四道價格</span>
-                        <input type="number" class="price-input" onchange="calculateTotal()">
-                    </div>
-                </div>
-                <div>（鹹度:正常 辣度:不辣 油度:正常 辛香料:蒜）</div>
-                <div class="system-price">系統評估：180</div>
-            </div>
-
-            <div class="menu-item">
-                <div class="menu-item-header">
-                    <div>5. 紅燒豆腐 3人份</div>
-                    <div>
-                        <span>第五道價格</span>
-                        <input type="number" class="price-input" onchange="calculateTotal()">
-                    </div>
-                </div>
-                <div>（鹹度:正常 辣度:微辣 油度:正常 辛香料:蔥、薑）</div>
-                <div class="system-price">系統評估：250</div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <div class="remark-section">
-                <div>備註：</div>
-                <textarea class="remark-input" placeholder="特殊料理價格理由或其他特殊原因"></textarea>
-            </div>
-            <div class="price-section">
-                <div class="price-info">
-                    <div class="price-info-row">
-                        <button class="rules-button" onclick="showRulesModal()">價格計算規則</button>
-                <div>系統估價為：2000</div>
-                    </div>
-                    <div>最高上限價格：3000</div>
-                    <div class="price-section-bottom">
-                        <div class="total-price-display">總金額：0 元</div>
-                        <button class="confirm-button" onclick="confirmPrice()">確認送出</button>
-            </div>
-        </div>
-    </div>
-        </div>
+            {% endif %}
+        </form>
     </div>
 
     <!-- 添加價格規則模態框 -->
@@ -463,7 +421,7 @@
         <div class="rules-content">
             <div class="rules-header">
                 <h2 class="rules-title">菜單價格規則</h2>
-                <span class="close-rules" onclick="closeRulesModal()">&times;</span>
+                <span class="close-rules">&times;</span>
             </div>
             <div class="rule-section">
                 <h3>1. 系統評估價格</h3>
@@ -488,50 +446,118 @@
             </div>
         </div>
     </div>
-
+    
     <script>
-        function calculateTotal() {
-            const inputs = document.querySelectorAll('.price-input');
-            let total = 0;
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- 計算總金額邏輯 ---
+            const priceInputs = document.querySelectorAll('input.price-input[name^="price_"]'); // 選取所有價格輸入框
+            const totalEstimatedPriceSpan = document.querySelector('.total-price-display'); // 選取顯示總金額的元素
 
-            inputs.forEach(input => {
-                const value = parseFloat(input.value) || 0;
-                total += value;
-            });
-
-            document.querySelector('.total-price-display').textContent = `總金額：${total} 元`;
-        }
-
-        function showRulesModal() {
-            document.getElementById('rulesModal').style.display = 'block';
-        }
-
-        function closeRulesModal() {
-            document.getElementById('rulesModal').style.display = 'none';
-        }
-
-        // 點擊模態框外部時關閉
-        window.onclick = function (event) {
-            const modal = document.getElementById('rulesModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
+            function calculateTotal() {
+                let total = 0;
+                priceInputs.forEach(input => {
+                    if (input.value) {
+                        total += parseInt(input.value);
+                    }
+                });
+                if (totalEstimatedPriceSpan) {
+                     totalEstimatedPriceSpan.textContent = `總金額：${total} 元`; // 更新總金額顯示
+                }
             }
-        }
 
-        function confirmPrice() {
-            Swal.fire({
-                title: "已進入議價狀態",
-                icon: "success",
-                confirmButtonText: "確認",
-                customClass: {
-                    confirmButton: "swal-custom-button"
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "/Charging";
-                }
+            priceInputs.forEach(input => {
+                input.addEventListener('input', calculateTotal); // 為每個價格輸入框添加事件監聽，輸入時觸發計算
             });
-        }
+            calculateTotal(); // 頁面載入時進行初次計算
+
+            // --- 價格規則彈窗邏輯 ---
+            const rulesModal = document.getElementById('rulesModal'); // 價格規則彈窗元素
+            const rulesButton = document.querySelector('.rules-button'); // 打開規則彈窗的按鈕
+            const closeRulesButton = document.querySelector('.close-rules'); // 關閉規則彈窗的按鈕 (X)
+
+            if (rulesButton && rulesModal) {
+                rulesButton.addEventListener('click', function() {
+                    rulesModal.style.display = 'block'; // 顯示彈窗
+                });
+            }
+            if (closeRulesButton && rulesModal) {
+                closeRulesButton.addEventListener('click', function() {
+                    rulesModal.style.display = 'none'; // 隱藏彈窗
+                });
+            }
+            if (rulesModal) {
+                window.addEventListener('click', function(event) { // 點擊彈窗外部區域關閉
+                    if (event.target == rulesModal) {
+                        rulesModal.style.display = 'none';
+                    }
+                });
+            }
+
+            // --- 表單提交邏輯 ---
+            const pricingForm = document.querySelector('form[action*="/api/chef/order/"]'); // 選取估價表單
+            // const currentPricingOrderId = "{{ order_id }}"; // order_id 已包含在表單的 action URL 中
+
+            if (pricingForm) {
+                pricingForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); // 阻止表單的默認提交行為 (避免頁面刷新)
+
+                    const formData = new FormData(pricingForm); // 收集表單數據
+                    
+                    // 從 Jinja 獲取待估價項目數量 (避免 linter 問題的寫法)
+                    const itemsToPriceCountString = '{{ items_to_price|length if items_to_price else 0 }}';
+                    const itemsToPriceCount = parseInt(itemsToPriceCountString, 10);
+
+                    let hasPrice = false; // 標記是否至少有一個菜品被估價
+                    for (const entry of formData.entries()) {
+                        const key = entry[0];
+                        const value = entry[1];
+                        // 檢查欄位名稱是否以 'price_' 開頭，且值為非空數字字串
+                        if (key.startsWith('price_') && typeof value === 'string' && value.trim() !== '' && !isNaN(parseFloat(value))) {
+                            hasPrice = true;
+                            break;
+                        }
+                    }
+
+                    // 如果訂單中有菜品，但廚師沒有為任何菜品輸入價格，則提示
+                    if (itemsToPriceCount > 0 && !hasPrice) {
+                         Swal.fire('提醒', '請至少為一個菜品輸入估價。', 'warning');
+                         return; // 阻止提交
+                    }
+
+                    fetch(pricingForm.action, { // 使用表單 action 中定義的 URL
+                        method: 'POST',
+                        body: formData // FormData 會被自動以合適的格式發送
+                    })
+                    .then(response => response.json()) // 解析 JSON 回應
+                    .then(data => {
+                        if (data.message) { // 如果 API 返回成功訊息
+                            Swal.fire({
+                                title: '估價成功！',
+                                text: data.message,
+                                icon: 'success',
+                                confirmButtonText: '確認',
+                                customClass: { // 如果您有自訂按鈕樣式，請在此應用
+                                    confirmButton: "swal-custom-button" 
+                                }
+                            }).then(() => {
+                                if (data.redirect_url) { // 如果 API 指定了跳轉 URL
+                                    window.location.href = data.redirect_url;
+                                } else {
+                                    // 提供一個備用的跳轉 URL (例如廚師主頁)
+                                    window.location.href = "{{ url_for('route_chef_main') }}"; 
+                                }
+                            });
+                        } else { // 如果 API 返回錯誤訊息
+                            Swal.fire('估價失敗', data.error || '提交估價時發生未知錯誤。', 'error');
+                        }
+                    })
+                    .catch(error => { // 處理網路請求錯誤
+                        console.error('提交估價時發生錯誤:', error);
+                        Swal.fire('提交錯誤', '網路請求失敗，請稍後再試。', 'error');
+                    });
+                });
+            }
+        });
     </script>
 </body>
 
