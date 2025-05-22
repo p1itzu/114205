@@ -1,8 +1,12 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request, Depends, status
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from database import Base, engine, get_db
+
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.exception_handlers import http_exception_handler as default_http_handler
+from fastapi.responses import Response
 
 from routers.auth import router as auth_router
 from routers.customer import router as customer_router
@@ -10,8 +14,8 @@ from routers.chef import router as chef_router
 
 from config import settings
 
+from utils.dependencies import common_template_params
 from utils.security import decode_access_token
-from models.user import User
 
 import models.user
 import models.order
@@ -48,17 +52,17 @@ app.include_router(chef_router, prefix="/chef")
 #         return templates.TemplateResponse("login.html", {"request": request})
 #     return templates.TemplateResponse("index.html", {"request": request, "user": user, "avatar_url": avatar_url})
 
-@app.get("/")
-def index(request: Request, db=Depends(get_db)):
-    token = request.cookies.get("access_token")
-    user = None
-    if token:
-        payload = decode_access_token(token)
-        if payload:
-            user = db.query(User).get(payload["user_id"])
+@app.get("/", name="index")
+def index(ctx: dict = Depends(common_template_params)):
+    return templates.TemplateResponse("index.html", ctx)
 
-    avatar_url = request.cookies.get("avatar_url")
-    return templates.TemplateResponse(
-       "index.html",
-       {"request": request, "user": user, "avatar_url": avatar_url}
-    )
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException) -> Response:
+    if exc.status_code == status.HTTP_404_NOT_FOUND:
+        return templates.TemplateResponse(
+            "404.html",
+            {"request": request},
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+    
+    return await default_http_handler(request, exc)

@@ -2,6 +2,36 @@ from pydantic import BaseModel, Field
 from datetime import date, time
 from typing import List, Optional
 
+class Step1(BaseModel):
+    order_date: date
+    order_time: time
+    pickup_method: str
+    address: Optional[str] = None
+
+class DishIn(BaseModel):
+    dish_name: str
+    quantity: int
+    ingredients: Optional[str]
+    special_recipe: Optional[str]
+    customer_note: Optional[str]
+    saltiness: int
+    spiciness: int
+    oiliness: int
+    aroma: int
+    dish_price: int
+
+class Step2(BaseModel):
+    dishes: List[DishIn]
+
+class Step4(BaseModel):
+    contact_phone: str
+    total_price: int
+
+class OrderCreate(BaseModel):
+    step1: Step1
+    step2: Step2
+    step4: Step4
+
 class SeasoningSchema(BaseModel):
     saltiness: int = Field(..., ge=0, le=10, description="鹹度")
     spiciness: int = Field(..., ge=0, le=10, description="辣度")
@@ -15,6 +45,7 @@ class DishSchema(BaseModel):
     customer_note: Optional[str] = Field(None, description="客製備註")
     seasoning: SeasoningSchema = Field(..., description="調味資料")
     ingredients: List[str] = Field(..., description="食材列表")
+    price: int = Field(..., description="單道菜價格")
 
 class OrderSchema(BaseModel):
     order_date: date = Field(..., description="訂單日期")
@@ -22,6 +53,8 @@ class OrderSchema(BaseModel):
     pickup_method: str = Field(..., description="取餐方式")
     address: Optional[str] = Field(None, description="取餐地址")
     dishes: List[DishSchema] = Field(..., description="訂單中包含的菜品列表")
+    contact_phone: str
+    total_price: int
 
     class Config:
         schema_extra = {

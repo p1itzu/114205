@@ -17,7 +17,7 @@
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
             <a href="CookingMethod.html">料理方式建議</a>
-            <a href="SearchChef.html">發送訂單</a>
+            <a href="{{ url_for('order_step1') }}">新增訂單</a>
             <a href="my-order.html">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
             {% else %}
@@ -86,9 +86,9 @@
             <div class="section2">
                 <h3>帳號</h3>
                 <div class="account-info">
-                    <img src="static/imgs/chef.png" alt="Avatar" class="avatar">
+                    <img src="{{ avatar_url }}" alt="Avatar" class="avatar">
                     <div class="account-text">
-                        <p class="name">PeiTzu Chang</p>
+                        <p class="name">{{ user.name }}</p>
                         <p class="sub-text">個人資料</p>
                     </div>
                     <button class="arrow-btn" onclick="toggleProfileModal()">➜</button>

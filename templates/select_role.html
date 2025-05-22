@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>選擇角色</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
+</head>
+<body>
+  <div class="select-role-container">
+    <h2>請選擇您的使用者角色</h2>
+    <form action="{{ url_for('select_role') }}" method="post">
+      <label>
+        <input type="radio" name="role" value="customer" required>
+        我是 顧客
+      </label><br>
+      <label>
+        <input type="radio" name="role" value="chef" required>
+        我是 廚師
+      </label><br>
+      <button type="submit" class="btn btn-primary">確認</button>
+    </form>
+  </div>
+</body>
+</html>

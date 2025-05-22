@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Step1 – 預訂資訊</title>
+
+  <link rel="stylesheet" href="/static/css/reserve.css">
+  <link rel="stylesheet" href="/static/css/notification.css">
+  <style>
+    #address-field.hidden { display: none; }
+    .button.active { background-color: #d19b2a; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="site-name">味你而煮</div>
+    <div class="nav-links">
+      <a href="{{ url_for('index') }}">首頁</a>
+      <a href="#">料理方式建議</a>
+      <a href="#">發送訂單</a>
+      <a href="#">我的訂單</a>
+      <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+    </div>
+    <div class="user-info">
+      {% if user %}
+        <img src="{{ avatar_url }}" class="avatar" alt="頭像">
+        <span>{{ user.name or user.email }}</span>
+      {% else %}
+        <a href="{{ url_for('login_page') }}">登入</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="notification-center" id="notificationCenter">
+    <!-- 通知內容 -->
+  </div>
+
+  <div class="content">
+    <div class="section">
+      <div class="section2">
+        <h3>Step1 – 預訂資訊</h3><br>
+      </div>
+
+      <form class="order-form"
+            action="{{ url_for('order_step1') }}"
+            method="post">
+
+        <label for="date">日期 (需提早三天以上)</label><br>
+        <input type="date"
+               id="date"
+               name="order_date"
+               required><br><br>
+
+        <label for="time">時間</label><br>
+        <input type="time"
+               id="time"
+               name="order_time"
+               required><br><br>
+
+        <label>取餐方式</label><br>
+        <button type="button"
+                class="button"
+                id="pickup"
+                onclick="selectDelivery('pickup')">
+          自取
+        </button>
+        <button type="button"
+                class="button"
+                id="delivery"
+                onclick="selectDelivery('delivery')">
+          外送
+        </button>
+        <input type="hidden"
+               name="pickup_method"
+               id="pickup_method"
+               value="">
+
+        <div id="address-field" class="hidden" style="margin-top:8px;">
+          <label for="address">地址</label><br>
+          <input type="text"
+                 id="address"
+                 name="address"
+                 placeholder="請填寫完整外送地址">
+        </div>
+        <br>
+
+        <button type="submit"
+                class="save-button">
+          儲存
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="step active">第1步</div>
+    <div class="line"></div>
+    <div class="step">第2步</div>
+    <div class="line"></div>
+    <div class="step">第3步</div>
+    <div class="line"></div>
+    <div class="step">第4步</div>
+  </div>
+
+  <script>
+    function selectDelivery(type) {
+      document.getElementById('pickup').classList.remove('active');
+      document.getElementById('delivery').classList.remove('active');
+
+      document.getElementById(type).classList.add('active');
+      document.getElementById('pickup_method').value = type === 'pickup' ? '自取' : '外送';
+
+      const addr = document.getElementById('address-field');
+      if (type === 'delivery') {
+        addr.classList.remove('hidden');
+      } else {
+        addr.classList.add('hidden');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const pm = document.getElementById('pickup_method').value;
+      if (pm === '自取' || pm === '外送') {
+        selectDelivery(pm === '自取' ? 'pickup' : 'delivery');
+      }
+    });
+  </script>
+  <script src="/static/js/notification.js"></script>
+</body>
+</html>
