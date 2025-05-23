@@ -93,8 +93,8 @@
                             <button class="btn-negotiate">再議價</button>
                             <input type="text" placeholder="請輸入理想金額" class="price-input">
                         </div>
-                        <input type="text" placeholder="請填寫需求或理由，讓廚師知道" class="text-input">
-                        <button class="submit-btn" type="submit" onclick="location.href='orderDetail2.html'">送出</button>
+                        <input type="text" placeholder="請填寫需求或理由，讓廚師知道" class="text-input"></input>
+                        <button id="btn-submit" class="submit-btn" type="submit" onclick="location.href='orderDetail2.html'">送出</button>
                         <p class="note">*注意：僅此一次議價機會</p>
                     </div>
                 </div>
@@ -163,7 +163,8 @@
             const agreeBtn = document.querySelector(".btn-agree"); // 同意按鈕
             const priceInput = document.querySelector(".price-input"); // 金額輸入欄
             const textInput = document.querySelector(".text-input"); // 理由輸入欄
-            const submitBtn = document.querySelector(".submit-btn"); // 送出按鈕
+            //const submitBtn = document.querySelector(".submit-btn"); // 送出按鈕
+            const submitBtn = document.getElementById("btn-submit"); // 送出按鈕
             const noteText = document.querySelector(".note"); // *注意：僅此一次議價機會*
 
             // 預設隱藏輸入框、送出按鈕與提示文字
@@ -177,6 +178,8 @@
                 priceInput.style.display = "block";
                 textInput.style.display = "block";
                 noteText.style.display = "block";
+                //....
+                submitBtn.style.display = "block";
             });
 
             // 當使用者輸入內容時，顯示「送出」按鈕
