@@ -15,17 +15,27 @@
 
 <body>
     <div class="navbar">
-        <div class="site-name">[網站名稱]</div>
-        <div class="nav-links">
+        <div class="site-name">味你而煮</div>
+        <!-- 可折疊的導航連結 -->
+        <div class="nav-links" id="navLinks">
             <a href="/ChefAfterLogin">首頁</a>
             <a href="/ChefMain">我的頁面</a>
             <a href="/ChefUnOrder">待接單訂單</a>
-            <a href="#">我的訂單</a>
+            <div class="dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                <div class="dropdown-content" id="orderDropdown">
+                    <a href="/ChefOrder">待完成訂單</a>
+                    <a href="/OrderDone">已完成訂單</a>
+                    <a href="/Charging">議價中訂單</a>
+                    <a href="/CancelOrder">已取消訂單</a>
+                </div>
+            </div>
             <a href="#">客服聯絡</a>
         </div>
         <div class="user-info">
             <div class="username">{{ user_email }}</div>
             <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+
         </div>
     </div>
     <div class="content">
@@ -64,24 +74,75 @@
     <!-- 設定小視窗 -->
     <div class="settings-modal" id="settings-modal">
         <div class="modal-content">
-            <h2>設定</h2>
-            <p>帳號</p>
-            <p>其他</p>
+        <h2 class="title">設定</h2>
 
-            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+        <!-- 帳號區塊 -->
+        <div class="section2">
+            <h3>帳號</h3>
+            <div class="account-info">
+                <img src="{{ url_for('static', filename='imgs/chef.png') }}" alt="Avatar" class="avatar">
+                <div class="account-text">
+                    <p class="name">{{ username }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 其他 -->
+        <div class="section2">
+            <button class="logout-btn">
+                <span>↩️ 登出</span>
+            </button>
+            <button class="delete-btn">
+                🗑️ 刪除帳號
+            </button>
         </div>
     </div>
 
     <script>
-        function toggleSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            if (modal.style.display === 'flex') {
-                modal.style.display = 'none';
-            } else {
-                modal.style.display = 'flex';
+     function toggleDropdown() {
+        document.getElementById("orderDropdown").classList.toggle("show");
+    }
+
+    // 點擊其他地方時關閉下拉選單
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropdown-btn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
             }
         }
-    </script>
-</body>
+    }
+    // 切換設定視窗
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
 
+        if (modal.classList.contains('show')) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300); // 等動畫結束再隱藏
+            } else {
+                modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+    }
+
+    // 點擊視窗外部關閉
+    window.onclick = function (event) {
+        const settingsModal = document.getElementById('settings-modal');
+
+        // 如果點擊的目標是 `settingsModal` 本身，則關閉它
+        if (event.target === settingsModal) {
+            toggleSettingsModal();
+        }
+    };
+    
+    </script>
+<script src="{{ url_for('static', filename='js/notification.js') }}"></script>
+</body>
 </html>

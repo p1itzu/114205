@@ -44,9 +44,15 @@ body {
     transition: background-color 0.2s;
     padding: 8px 40px; 
 }
+.role-button:hover{
+    background-color: rgb(127, 91, 14);
+    color: #ffffff;
+    transform: translateY(-1px); 
+}
 .role-button:active {
-    background-color: #ae7423; 
-    color: #ffffff;           
+    background-color: rgb(127, 91, 14);
+    color: #ffffff;
+    transform: translateY(-1px);       
 }
 
 .role-button.selected {
