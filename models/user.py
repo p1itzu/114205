@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy.orm import relationship
 from database import Base
 
 class User(Base):
@@ -11,3 +12,5 @@ class User(Base):
     name           = Column(String(255), nullable=True)
     role           = Column(String(20), nullable=True)
     is_active      = Column(Boolean, default=True)
+
+    orders = relationship('Order', back_populates='customer')

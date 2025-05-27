@@ -52,18 +52,50 @@ def get_step2(request: Request):
 
 
 @router.get("/orders/new/step3", name="order_step3")
-def get_step3(request: Request):
-    return templates.TemplateResponse("add_order_step3.html", {
-      "request": request
-    })
+def get_step3(request: Request, commons=Depends(common_template_params)):
+    require_step1(request.session)
+    require_step2(request.session)
+
+    step1 = request.session["step1"]
+    dishes = request.session["step2"]["dishes"]
+    return templates.TemplateResponse(
+        "add_order_step3.html",
+        {
+            **commons,
+            "request": request,
+            "step1": step1,
+            "dishes": dishes,
+        }
+    )
+
+# @router.get("/orders/new/step4", name="order_step4")
+# def get_step4(request: Request):
+#     return templates.TemplateResponse("add_order_step4.html", {
+#       "request": request,
+#     })
 
 @router.get("/orders/new/step4", name="order_step4")
-def get_step4(request: Request):
-    return templates.TemplateResponse("add_order_step4.html", {
-      "request": request,
-    })
+def get_step4(request: Request, commons=Depends(common_template_params)):
+    require_step1(request.session)
+    require_step2(request.session)
 
-# --- Step1 POST ---
+    # 從 session 拿出前面步驟的資料
+    step1 = request.session["step1"]
+    dishes = request.session["step2"]["dishes"]
+    total = sum(d["dish_price"] * d["quantity"] for d in dishes)
+
+    return templates.TemplateResponse(
+        "add_order_step4.html",
+        {
+            **commons,
+            "request": request,
+            "step1": step1,
+            "dishes": dishes,
+            "total_price": total,
+        }
+    )
+
+#Step1 POST
 @router.post("/orders/new/step1")
 def post_step1(
     request: Request,
@@ -91,7 +123,7 @@ def post_step1(
         status_code=status.HTTP_302_FOUND
     )
 
-# --- Step2 POST ---
+#Step2 POST
 @router.post("/orders/new/step2")
 def post_step2(
     request: Request,
@@ -122,16 +154,16 @@ def post_step2(
             "dish_price":     dish_price[i],
         })
     request.session["step2"] = Step2(dishes=dishes).dict()
-    return RedirectResponse(url="/orders/new/step3", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/customer/orders/new/step3", status_code=status.HTTP_302_FOUND)
 
-# --- Step3 POST ---
+#Step3 POST
 @router.post("/orders/new/step3")
 def post_step3(request: Request):
     require_step1(request.session)
     require_step2(request.session)
-    return RedirectResponse(url="/orders/new/step4", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/customer/orders/new/step4", status_code=status.HTTP_302_FOUND)
 
-# --- Step4 POST ---
+#Step4 POST
 @router.post("/orders/new/step4")
 def post_step4(
     request: Request,
@@ -163,7 +195,7 @@ def post_step4(
       address=oc.step1.address,
       contact_phone=oc.step4.contact_phone,
       total_price=oc.step4.total_price,
-      user_id=user.id if user else None
+      customer_id   = user.id if user else None
     )
     db.add(new_order); db.commit(); db.refresh(new_order)
 
@@ -190,6 +222,6 @@ def post_step4(
     for k in ("step1", "step2"):
         request.session.pop(k, None)
 
-    return RedirectResponse(url="/orders/list", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/customer/orders/list", status_code=status.HTTP_302_FOUND)
 
 

@@ -12,6 +12,9 @@ class Order(Base):
     contact_phone = Column(String(20),  nullable=True)
     total_price   = Column(Integer,    nullable=True)
 
+    customer_id    = Column(Integer, ForeignKey('users.id'), nullable=True)
+
+    customer       = relationship('User', back_populates='orders')
     dishes = relationship(
         "Dish",
         back_populates="order",

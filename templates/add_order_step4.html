@@ -42,71 +42,42 @@
 
     <div class="content">
         <div class="section">
-            <div class="section2">
-                <h3>Step4 - 訂單確認</h3>
-                <br>
+            <h3>Step4 - 訂單確認</h3>
+
+            <!-- 顯示預約資訊與靜態聯絡資訊 -->
+            <div class="order-summary">
+                <label class="order-time"><strong>預約日期/時間:</strong> {{ step1.order_date }} / {{ step1.order_time }}</label>
+                <br><br>
+                <label class="order-time"><strong>取餐方式:</strong> {{ step1.pickup_method }}</label>
+                <br><br>
+                <label class="order-time"><strong>聯絡人資訊:</strong> 0912345678</label>
+                <br><br>
             </div>
 
-            <table>
+            <!-- 菜單列表 -->
+            <label class="order-time"><strong>菜單列表:</strong></label>
+            <br><br>
+            <div class="meal-container">
+                <ul class="meal-list">
+                    {% for d in dishes %}
+                    <li>
+                        {{ d.dish_name }} - <span class="price">{{ d.dish_price }}</span> 元 × {{ d.quantity }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <br>
 
-                <div>
-                    <label class="order-time"><strong>預約日期/時間:</strong> 2025.03.10/17:30</label>
-                    <br>
-                    <br>
-                    <label class="order-time"><strong>取餐方式:</strong> 自取</label>
-                    <br>
-                    <br>
-                    <label class="order-time"><strong>聯絡人資訊:</strong> 0912345678</label>
-                    <br>
-                    <br>
+            <!-- 靜態總價 -->
+            <label class="order-time"><strong>系統預估價格:</strong> <span id="totalPrice">0</span> 元</label>
+            <br><br>
 
-                </div>
-
-                <tr>
-                    <label class="order-time"><strong>菜單列表:</strong></label>
-                    <br>
-                    <br>
-                    <div class="meal-container">
-                        <ul class="meal-list" id="mealList">
-                            <li>
-                                香煎奶油鱸魚 - <span class="price">200</span> 元
-                            </li>
-                            <li>
-                                蒜香白酒蛤蜊義大利麵 - <span class="price">250</span> 元
-                            </li>
-                            <li>
-                                泰式打拋豬飯 - <span class="price">180</span> 元
-                            </li>
-                            <li>
-                                麻辣鴨血臭豆腐 - <span class="price">150</span> 元
-                            </li>
-                            <li>
-                                韓式部隊鍋 - <span class="price">300</span> 元
-                            </li>
-                            <li>
-                                照燒雞腿丼飯 - <span class="price">220</span> 元
-                            </li>
-                            <li>
-                                酥炸金沙豆腐 - <span class="price">120</span> 元
-                            </li>
-                            <li>
-                                香草奶油燉飯 - <span class="price">200</span> 元
-                            </li>
-                            <li>
-                                蒙古烤肉拼盤 - <span class="price">350</span> 元
-                            </li>
-                            <li>
-                                起司瀑布漢堡 - <span class="price">280</span> 元
-                            </li>
-                        </ul>
-                    </div>
-                    <br>
-                    <label class="order-time"><strong>系統預估價格:</strong> <span id="totalPrice">0</span> 元</label>
-                    <br>
-                    <button class="save-button" type="button" onclick="submitOrder()">確認送出</button>
-                    <button class="next-button" type="submit" onclick="location.href='reserve2.html'">上一步</button>
-                </tr>
-            </table>
+            <!-- 按鈕 -->
+            <form id="step4-form" method="post" action="{{ url_for('order_step4') }}" style="display:flex; justify-content:flex-end; gap:10px;">
+                <input type="hidden" name="contact_phone" value="0912345678" />
+                <button class="next-button" type="button" onclick="location.href='/customer/orders/new/step3';">上一步</button>
+                <button class="save-button" type="submit">確認送出</button>
+            </form>
         </div>
     </div>
 
@@ -186,19 +157,33 @@
             totalPriceElement.textContent = total;
         });
 
-        function submitOrder() {
+        // function submitOrder() {
+        //     Swal.fire({
+        //         title: "訂單送出成功！",
+        //         text: `總金額為 ${document.getElementById("totalPrice").textContent} 元`,
+        //         icon: "success",
+        //         confirmButtonText: "立即前往 我的訂單",
+        //         customClass: {
+        //             confirmButton: "swal-custom-button"
+        //         }
+        //     }).then(() => {
+        //         window.location.href = "/customer/orders/list";
+        //     });
+        // }
+        document.getElementById('step4-form').addEventListener('submit', function(e) {
+            e.preventDefault();
             Swal.fire({
-                title: "訂單送出成功！",
-                text: `總金額為 ${document.getElementById("totalPrice").textContent} 元`,
-                icon: "success",
-                confirmButtonText: "立即前往 我的訂單",
-                customClass: {
-                    confirmButton: "swal-custom-button"
+                title: '確認送出訂單？',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '確定',
+                cancelButtonText: '取消'
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    e.target.submit();
                 }
-            }).then(() => {
-                window.location.href = "my-order.html"; // 只有「確認送出」才跳轉
             });
-        }
+        });
 
     </script>
     <script src="/static/js/notification.js"></script>
