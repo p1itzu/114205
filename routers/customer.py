@@ -19,17 +19,24 @@ from utils.dependencies import require_customer, common_template_params
 router = APIRouter(dependencies=[Depends(require_customer)])
 templates = Jinja2Templates(directory="templates")
 
-#-------------list orders-------------
+#list orders
 
 @router.get("/orders/list", name="customer_order_list")
-def order_list_page(request: Request, db: Session = Depends(get_db)):
+def order_list_page(request: Request, commons=Depends(common_template_params),db: Session = Depends(get_db)):
     orders = db.query(Order).all()
     return templates.TemplateResponse(
         "order_list.html",
-        {"request": request, "orders": orders}
+        {**commons, "request": request, "orders": orders}
     )
 
-#-------------add order-------------
+@router.get("/order/{order_id}", name="order_detail")
+def order_detail(order_id: int, request: Request, commons=Depends(common_template_params), db: Session = Depends(get_db)):
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="訂單不存在")
+    return templates.TemplateResponse("order_detail.html", {**commons, "request": request, "order": order})
+
+#add order
 
 def require_step1(session: dict):
     if "step1" not in session:
@@ -40,15 +47,15 @@ def require_step2(session: dict):
         raise HTTPException(status_code=400, detail="請先完成第2步")
 
 @router.get("/orders/new/step1", name="order_step1")
-def get_step1(request: Request):
-    return templates.TemplateResponse("add_order_step1.html", {"request": request})
+def get_step1(request: Request, commons=Depends(common_template_params)):
+    return templates.TemplateResponse("add_order_step1.html", {**commons, "request": request})
 
 
 
 @router.get("/orders/new/step2", name="order_step2")
-def get_step2(request: Request):
+def get_step2(request: Request, commons=Depends(common_template_params)):
     require_step1(request.session)
-    return templates.TemplateResponse("add_order_step2.html", {"request": request})
+    return templates.TemplateResponse("add_order_step2.html", {**commons, "request": request})
 
 
 @router.get("/orders/new/step3", name="order_step3")

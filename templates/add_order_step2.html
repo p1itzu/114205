@@ -16,15 +16,34 @@
     <div class="navbar">
         <div class="site-name">味你而煮</div>
         <div class="nav-links">
-            <a href="/customer/home">首頁</a>
-            <a href="/customer/suggestions">料理方式建議</a>
-            <a href="/customer/orders/new/step1">發送訂單</a>
-            <a href="/customer/orders/list">我的訂單</a>
+            <a href="{{ url_for('index') }}">首頁</a>
+            {% if user %}
+            <a href="CookingMethod.html">料理方式建議</a>
+            <a href="{{ url_for('order_step1') }}">新增訂單</a>
+            <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+            {% else %}
+            <a href="{{ url_for('index') }}">關於我們</a>
+            <a href="{{ url_for('index') }}">料理方式建議</a>
+            <a href="{{ url_for('index') }}">常見問題</a>
+            {% endif %}
         </div>
         <div class="user-info">
-            <div class="username"></div>
+            {% if user %}
+            <img
+                src="{{ avatar_url }}"
+                alt="頭像"
+                class="avatar"
+            />
+            <div class="user-text">
+                <div class="name">{{ user.name }}</div>
+                <div class="email">{{ user.email }}</div>
+            </div>
+            
             <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            {% else %}
+            <a href="{{ url_for('login') }}">登入/註冊</a>
+            {% endif %}
         </div>
     </div>
 

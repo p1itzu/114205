@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/orderDetail.css" rel="stylesheet" />
+    <link href="/static/css/notification.css" rel="stylesheet" />
+    <title>代做菜媒合平台</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">味你而煮</div>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">首頁</a>
+            {% if user %}
+            <a href="CookingMethod.html">料理方式建議</a>
+            <a href="{{ url_for('order_step1') }}">新增訂單</a>
+            <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+            {% else %}
+            <a href="{{ url_for('index') }}">關於我們</a>
+            <a href="{{ url_for('index') }}">料理方式建議</a>
+            <a href="{{ url_for('index') }}">常見問題</a>
+            {% endif %}
+        </div>
+        <div class="user-info">
+            {% if user %}
+            <img
+                src="{{ avatar_url }}"
+                alt="頭像"
+                class="avatar"
+            />
+            <div class="user-text">
+                <div class="name">{{ user.name }}</div>
+                <div class="email">{{ user.email }}</div>
+            </div>
+            
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            {% else %}
+            <a href="{{ url_for('login') }}">登入/註冊</a>
+            {% endif %}
+        </div>
+    </div>
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <div class="section2">
+                <h3>訂單編號 : #{{ order.id }}</h3>
+                <div class="status-bar">
+                    <!-- 假設 order.statuses 為一個字串列表或可以判斷目前進度 -->
+                    <div class="status {% if order.status == '等待回應' %}active{% endif %}">等待回應</div>
+                    <div class="status {% if order.status == '議價中' %}active{% endif %}">議價中</div>
+                    <div class="status {% if order.status == '已接單' %}active{% endif %}">已接單</div>
+                    <div class="status {% if order.status == '製作中' %}active{% endif %}">製作中</div>
+                    <div class="status {% if order.status == '製作完成' %}active{% endif %}">製作完成</div>
+                    <div class="status {% if order.status == '交付完成' %}active{% endif %}">交付完成</div>
+                </div>
+            </div>
+            <br>
+            <div class="detail">
+                <table>
+                    <tr>
+                        <td class="left">
+                            <p>預約日期 : {{ order.reservation_date }}</p>
+                            <br>
+                            <p>預約時間 : {{ order.reservation_time }}</p>
+                            <br>
+                            <p>取餐方式 : {{ order.delivery_method }}</p>
+                        </td>
+                        <td class="right">
+                            <p>聯絡人資訊 : {{ order.contact_info }}</p>
+                            <br>
+                            <p>菜單列表 :<br>
+                                {% for dish in order.dishes %}
+                                    {{ loop.index }}. {{ dish.dish_name }}<br>
+                                {% endfor %}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="extra-section">
+                <div class="extra-left">
+                    <div class="price-negotiation">
+                        <h4>廚師第一次定價：NT${{ order.initial_price }}</h4>
+                        <div class="negotiation-buttons">
+                            <button class="btn-agree">同意</button>
+                            <button class="btn-negotiate">再議價</button>
+                            <input type="text" placeholder="請輸入理想金額" class="price-input">
+                        </div>
+                        <input type="text" placeholder="請填寫需求或理由，讓廚師知道" class="text-input">
+                        <button class="submit-btn" type="submit" onclick="location.href='#'">送出</button>
+                        <p class="note">*注意：僅此一次議價機會</p>
+                    </div>
+                </div>
+                <div class="extra-right">
+                    <p>價錢明細:</p>
+                    {% for item in order.price_details %}
+                        <p>{{ loop.index }}. {{ item.dish_name }} NT$ {{ item.price }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- 設定小視窗 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2>設定</h2>
+            <p>帳號</p>
+            <p>其他</p>
+            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function selectDelivery(type) {
+            const pickupBtn = document.getElementById('pickup');
+            const deliveryBtn = document.getElementById('delivery');
+            const addressField = document.getElementById('address-field');
+
+            if (type === 'pickup') {
+                pickupBtn.classList.add('active');
+                deliveryBtn.classList.remove('active');
+                addressField.classList.add('hidden');
+            } else {
+                deliveryBtn.classList.add('active');
+                pickupBtn.classList.remove('active');
+                addressField.classList.remove('hidden');
+            }
+        }
+
+        function selectDelivery(type) {
+            // 移除所有按鈕的 active 類別
+            document.getElementById('pickup').classList.remove('active');
+            document.getElementById('delivery').classList.remove('active');
+
+            // 根據選擇的類型為相應按鈕添加 active 類別
+            if (type === 'pickup') {
+                document.getElementById('pickup').classList.add('active');
+            } else if (type === 'delivery') {
+                document.getElementById('delivery').classList.add('active');
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const negotiateBtn = document.querySelector(".btn-negotiate"); // 再議價按鈕
+            const agreeBtn = document.querySelector(".btn-agree"); // 同意按鈕
+            const priceInput = document.querySelector(".price-input"); // 金額輸入欄
+            const textInput = document.querySelector(".text-input"); // 理由輸入欄
+            const submitBtn = document.querySelector(".submit-btn"); // 送出按鈕
+            const noteText = document.querySelector(".note"); // *注意：僅此一次議價機會*
+
+            // 預設隱藏輸入框、送出按鈕與提示文字
+            priceInput.style.display = "none";
+            textInput.style.display = "none";
+            submitBtn.style.display = "none";
+            noteText.style.display = "none";
+
+            // 點擊「再議價」按鈕時，顯示輸入框與提示文字
+            negotiateBtn.addEventListener("click", function () {
+                priceInput.style.display = "block";
+                textInput.style.display = "block";
+                noteText.style.display = "block";
+            });
+
+            // 當使用者輸入內容時，顯示「送出」按鈕
+            function checkInput() {
+                if (priceInput.value.trim() !== "" || textInput.value.trim() !== "") {
+                    submitBtn.style.display = "block";
+                } else {
+                    submitBtn.style.display = "none";
+                }
+            }
+
+            // 監聽輸入框變化
+            priceInput.addEventListener("input", checkInput);
+            textInput.addEventListener("input", checkInput);
+
+            // 點擊「同意」時，隱藏所有輸入欄、送出按鈕與提示文字
+            agreeBtn.addEventListener("click", function () {
+                priceInput.style.display = "none";
+                textInput.style.display = "none";
+                submitBtn.style.display = "none";
+                noteText.style.display = "none";
+            });
+        });
+
+
+
+    </script>
+    <script src="/static/js/notification.js"></script>
+</body>
+
+</html>

@@ -1,6 +1,15 @@
-from sqlalchemy import Column, Integer, String, Date, Time, Text, ForeignKey, CheckConstraint
+import enum
+from sqlalchemy import Column, Integer, String, Enum as SQLEnum, Date, Time, Text, ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship
 from database import Base
+
+class OrderStatusEnum(str, enum.Enum):
+    waiting = "等待回應"
+    negotiating = "議價中"
+    accepted = "已接單"
+    in_production = "製作中"
+    production_completed = "製作完成"
+    delivered = "交付完成"
 
 class Order(Base):
     __tablename__ = "orders"
@@ -20,6 +29,8 @@ class Order(Base):
         back_populates="order",
         cascade="all, delete-orphan"
     )
+
+    status = Column(SQLEnum(OrderStatusEnum), default=OrderStatusEnum.waiting, nullable=False)
 
 class Dish(Base):
     __tablename__ = "dishes"

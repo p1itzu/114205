@@ -6,7 +6,37 @@ body {
     overflow-x: hidden;
 }
 
-/* 隱藏捲軸但保持滾動功能 */
+.order-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+}
+
+.order-card .button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.order-card .button-group button.message-btn,
+.order-card .button-group a.order-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 15px;
+}
+
+
 ::-webkit-scrollbar {
     display: none;
 }

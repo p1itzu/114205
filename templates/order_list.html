@@ -9,25 +9,36 @@
     <link rel="stylesheet" href="/static/css/notification.css" />
 </head>
 <body>
-    <div class="navbar">
+   <div class="navbar">
         <div class="site-name">味你而煮</div>
         <div class="nav-links">
             <a href="{{ url_for('index') }}">首頁</a>
+            {% if user %}
+            <a href="CookingMethod.html">料理方式建議</a>
+            <a href="{{ url_for('order_step1') }}">新增訂單</a>
+            <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+            {% else %}
             <a href="{{ url_for('index') }}">關於我們</a>
             <a href="{{ url_for('index') }}">料理方式建議</a>
             <a href="{{ url_for('index') }}">常見問題</a>
-            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+            {% endif %}
         </div>
         <div class="user-info">
             {% if user %}
-            <img src="{{ avatar_url }}" alt="頭像" class="avatar" width="40" height="40" style="border-radius:50%; margin-right:8px;" />
+            <img
+                src="{{ avatar_url }}"
+                alt="頭像"
+                class="avatar"
+            />
             <div class="user-text">
-                <div class="name">{{ user.name or user.email }}</div>
+                <div class="name">{{ user.name }}</div>
                 <div class="email">{{ user.email }}</div>
             </div>
+            
             <div class="settings-icon" onclick="toggleSettingsModal()"></div>
             {% else %}
-            <a href="{{ url_for('login') }}" class="login-btn">登入</a>
+            <a href="{{ url_for('login') }}">登入/註冊</a>
             {% endif %}
         </div>
     </div>
@@ -52,7 +63,7 @@
         </p>
         <div class="button-group">
             <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
-            <a href="{{ url_for('customer_order_detail', order_id=order.id) }}" class="order-btn">查看詳細訂單資訊</a>
+            <a href="{{ url_for('order_detail', order_id=order.id) }}" class="order-btn">查看詳細訂單資訊</a>
         </div>
     </div>
     {% endfor %}
