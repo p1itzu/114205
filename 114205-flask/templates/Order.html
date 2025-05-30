@@ -50,11 +50,24 @@
                 <p>此訂單沒有菜品項目。</p>
             {% endif %}
         </div>
+        {% if order and order.order_status == '等待回應中' %}
         <p style="text-align: center; margin-top: 15px; font-weight: bold;">請確認是否要接單？</p>
         <div class="buttons">
             <button class="reject">拒絕</button>
             <button class="accept" type="button" onclick="acceptOrder()">接單</button>
         </div>
+        {% elif order %}
+        {# 如果訂單存在但狀態不是 '等待回應中'，顯示當前狀態 #}
+        <p style="text-align: center; margin-top: 20px; font-size: 1.1em;"><strong>訂單目前狀態：</strong> {{ order.order_status }}</p>
+            {% if order.order_status == '待估價' %}
+            <p style="text-align: center; margin-top: 10px;">此訂單已接受，請前往估價頁面進行操作。</p>
+            <div class="buttons" style="justify-content: center;">
+                <button class="accept" onclick="window.location.href='{{ url_for('route_order_price', order_id=order.order_id) }}';">前往估價</button>
+            </div>
+            {% elif order.order_status == '已拒絕' %}
+             <p style="text-align: center; margin-top: 10px;">此訂單已被您拒絕。</p>
+            {% endif %}
+        {% endif %}
     </div>
     <script>
         function goBack() {

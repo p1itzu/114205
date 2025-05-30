@@ -96,6 +96,7 @@ CREATE TABLE `OrderItems` (
   `seasoning_preferences` text,
   `custom_notes` text,
   `chef_estimated_price_per_dish` int DEFAULT NULL,
+  `chef_final_price_per_dish` int DEFAULT NULL,
   PRIMARY KEY (`order_item_id`),
   KEY `order_id` (`order_id`),
   CONSTRAINT `OrderItems_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `Orders` (`order_id`) ON DELETE CASCADE
@@ -108,7 +109,7 @@ CREATE TABLE `OrderItems` (
 
 LOCK TABLES `OrderItems` WRITE;
 /*!40000 ALTER TABLE `OrderItems` DISABLE KEYS */;
-INSERT INTO `OrderItems` VALUES (3,'202505180001','香煎鮭魚佐蘆筍',1,'鮭魚, 蘆筍, 檸檬, 橄欖油','油煎','{\"鹹度\": \"適中\", \"辣度\": \"不辣\"}','希望鮭魚不要太熟',NULL),(4,'202505180001','奶油蘑菇濃湯',2,'蘑菇, 鮮奶油, 洋蔥, 大蒜','燉煮','{\"鹹度\": \"適中\"}',NULL,NULL),(5,'202505180002','紅燒獅子頭',4,'豬絞肉, 大白菜, 醬油, 薑','紅燒','{\"鹹度\": \"鹹一點\", \"油度\":\"少油\"}','白菜燉爛一點',NULL),(6,'202505180003','清蒸鱸魚',1,'鱸魚, 蔥, 薑, 醬油','清蒸','{\"鹹度\": \"清淡\"}','多放蔥薑',NULL);
+INSERT INTO `OrderItems` VALUES (3,'202505180001','香煎鮭魚佐蘆筍',1,'鮭魚, 蘆筍, 檸檬, 橄欖油','油煎','{\"鹹度\": \"適中\", \"辣度\": \"不辣\"}','希望鮭魚不要太熟',300,NULL),(4,'202505180001','奶油蘑菇濃湯',2,'蘑菇, 鮮奶油, 洋蔥, 大蒜','燉煮','{\"鹹度\": \"適中\"}',NULL,150,NULL),(5,'202505180002','紅燒獅子頭',4,'豬絞肉, 大白菜, 醬油, 薑','紅燒','{\"鹹度\": \"鹹一點\", \"油度\":\"少油\"}','白菜燉爛一點',400,380),(6,'202505180003','清蒸鱸魚',1,'鱸魚, 蔥, 薑, 醬油','清蒸','{\"鹹度\": \"清淡\"}','多放蔥薑',300,NULL);
 /*!40000 ALTER TABLE `OrderItems` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -133,6 +134,7 @@ CREATE TABLE `Orders` (
   `customer_counter_price` int DEFAULT NULL,
   `customer_reason` text,
   `final_price_chef` int DEFAULT NULL,
+  `chef_final_price_reason` varchar(255) DEFAULT NULL,
   `rejection_reason` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -150,7 +152,7 @@ CREATE TABLE `Orders` (
 
 LOCK TABLES `Orders` WRITE;
 /*!40000 ALTER TABLE `Orders` DISABLE KEYS */;
-INSERT INTO `Orders` VALUES ('202505180001','1001','2001','2025-05-18 15:51:05','2025-05-18','18:00:00','外送','測試路一段123號','等待回應中',NULL,NULL,NULL,NULL,NULL,'2025-05-18 15:51:05','2025-05-18 19:31:53'),('202505180002','1001','2001','2025-05-18 15:51:05','2025-05-19','19:30:00','自取',NULL,'等待回應中',NULL,NULL,NULL,NULL,NULL,'2025-05-18 15:51:05','2025-05-18 19:24:54'),('202505180003','1001','2001','2025-05-18 15:51:05','2025-05-20','12:00:00','外送','測試大道777號','等待回應中',NULL,NULL,NULL,NULL,NULL,'2025-05-18 15:51:05','2025-05-18 19:26:41');
+INSERT INTO `Orders` VALUES ('202505180001','1001','2001','2025-05-18 15:51:05','2025-05-18','18:00:00','外送','測試路一段123號','訂單已完成',450,NULL,NULL,450,NULL,NULL,'2025-05-18 15:51:05','2025-05-30 17:54:18'),('202505180002','1001','2001','2025-05-18 15:51:05','2025-05-19','19:30:00','自取',NULL,'廚師已確認，備餐中',400,350,'小刀',380,NULL,NULL,'2025-05-18 15:51:05','2025-05-30 17:24:45'),('202505180003','1001','2001','2025-05-18 15:51:05','2025-05-20','12:00:00','外送','測試大道777號','廚師已確認，備餐中',300,NULL,NULL,300,NULL,NULL,'2025-05-18 15:51:05','2025-05-30 15:54:16');
 /*!40000 ALTER TABLE `Orders` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -163,4 +165,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-19  3:35:26
+-- Dump completed on 2025-05-31  1:57:01
