@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>證照上傳成功 - 味你而煮</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/signup.css') }}">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f6c25f 0%, #e0a93d 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    
+    .success-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+    
+    .success-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      display: block;
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-10px);
+      }
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+    
+    .success-header h1 {
+      color: #4caf50;
+      font-size: 28px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    
+    .success-message {
+      color: #666;
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 20px 0 30px 0;
+    }
+    
+    .info-section {
+      background-color: #e8f5e8;
+      border: 1px solid #4caf50;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 25px 0;
+      text-align: left;
+    }
+    
+    .info-section h3 {
+      color: #2e7d32;
+      margin: 0 0 15px 0;
+      font-size: 18px;
+    }
+    
+    .info-section ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #333;
+    }
+    
+    .info-section li {
+      margin-bottom: 8px;
+    }
+    
+    .next-steps {
+      background-color: #fff3e0;
+      border: 1px solid #ff9800;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 25px 0;
+      text-align: left;
+    }
+    
+    .next-steps h3 {
+      color: #f57c00;
+      margin: 0 0 15px 0;
+      font-size: 18px;
+    }
+    
+    .action-section {
+      margin-top: 40px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #f6c25f, #e0a93d);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      margin: 10px;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(246, 194, 95, 0.3);
+    }
+    
+    .countdown {
+      color: #666;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <div class="success-icon">🎉</div>
+    
+    <div class="success-header">
+      <h1>證照上傳成功！</h1>
+    </div>
+    
+    <div class="success-message">
+      恭喜您！證照已成功上傳並保存。您現在可以開始使用味你而煮的所有廚師功能了。
+    </div>
+    
+    <div class="info-section">
+      <h3>✅ 已完成項目：</h3>
+      <ul>
+        <li>✓ 帳戶註冊完成</li>
+        <li>✓ 信箱驗證完成</li>
+        <li>✓ 角色設定完成（廚師）</li>
+        <li>✓ 專業證照上傳完成</li>
+      </ul>
+    </div>
+    
+    <div class="next-steps">
+      <h3>🚀 接下來您可以：</h3>
+      <ul>
+        <li>完善個人資料和服務介紹</li>
+        <li>瀏覽並接受顧客的訂單</li>
+        <li>設定您的服務範圍和專長</li>
+        <li>開始您的廚師服務之旅</li>
+      </ul>
+    </div>
+    
+    <div class="action-section">
+      <a href="{{ url_for('index') }}" class="btn-primary">
+        開始使用平台
+      </a>
+    </div>
+    
+    <div class="countdown">
+      <p>5秒後自動跳轉到首頁...</p>
+    </div>
+  </div>
+
+  <script>
+    // 5秒後自動跳轉
+    let countdown = 5;
+    const countdownElement = document.querySelector('.countdown p');
+    
+    const timer = setInterval(() => {
+      countdown--;
+      countdownElement.textContent = `${countdown}秒後自動跳轉到首頁...`;
+      
+      if (countdown <= 0) {
+        clearInterval(timer);
+        window.location.href = "{{ url_for('index') }}";
+      }
+    }, 1000);
+    
+    // 點擊按鈕立即跳轉
+    document.querySelector('.btn-primary').addEventListener('click', () => {
+      clearInterval(timer);
+    });
+  </script>
+</body>
+</html> 

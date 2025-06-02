@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +20,7 @@
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
             <a href="CookingMethod.html">料理方式建議</a>
-            <a href="{{ url_for('order_step1') }}">新增訂單</a>
+            <a href="{{ url_for('order_step0') }}">新增訂單</a>
             <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
             {% else %}
@@ -29,23 +30,23 @@
             {% endif %}
         </div>
         <div class="user-info">
-            {% if user %}
-            <img
-                src="{{ avatar_url }}"
-                alt="頭像"
-                class="avatar"
-            />
-            <div class="user-text">
-                <div class="name">{{ user.name }}</div>
-                <div class="email">{{ user.email }}</div>
-            </div>
-            
-            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
-            {% else %}
-            <a href="{{ url_for('login') }}">登入/註冊</a>
-            {% endif %}
-        </div>
-    </div>
+         {% if user %}
+             <img
+                 src="{{ avatar_url }}"
+                 alt="頭像"
+                 class="avatar"
+             />
+         <div class="user-text">
+           <div class="name">{{ user.name }}</div>
+           <div class="email">{{ user.email }}</div>
+         </div>
+             
+         <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+         {% else %}
+         <a href="{{ url_for('login') }}">登入/註冊</a>
+         {% endif %}
+     </div>
+   </div>
 
   <div class="notification-center" id="notificationCenter">
     <!-- 通知內容 -->
@@ -57,58 +58,39 @@
         <h3>Step1 – 預訂資訊</h3><br>
       </div>
 
-      <form class="order-form"
-            action="{{ url_for('order_step1') }}"
-            method="post">
+      <form class="order-form" action="{{ url_for('order_step1') }}" method="post">
 
-        <label for="date">日期 (需提早三天以上)</label><br>
-        <input type="date"
-               id="date"
-               name="order_date"
-               required><br><br>
+        <label for="order_date">預約日期</label><br>
+        <input type="date" id="order_date" name="order_date" required><br><br>
 
-        <label for="time">時間</label><br>
-        <input type="time"
-               id="time"
-               name="order_time"
-               required><br><br>
+        <label for="order_time">預約時間</label><br>
+        <input type="time" id="order_time" name="order_time" required><br><br>
 
         <label>取餐方式</label><br>
-        <button type="button"
-                class="button"
-                id="pickup"
-                onclick="selectDelivery('pickup')">
+        <button type="button" class="button" id="pickup" onclick="selectDelivery('自取')">
           自取
         </button>
-        <button type="button"
-                class="button"
-                id="delivery"
-                onclick="selectDelivery('delivery')">
+        <button type="button" class="button" id="delivery" onclick="selectDelivery('外送')">
           外送
         </button>
-        <input type="hidden"
-               name="pickup_method"
-               id="pickup_method"
-               value="">
+        <input type="hidden" name="pickup_method" id="pickup_method" value="" required>
 
         <div id="address-field" class="hidden" style="margin-top:8px;">
-          <label for="address">地址</label><br>
-          <input type="text"
-                 id="address"
-                 name="address"
-                 placeholder="請填寫完整外送地址">
+          <label for="address">外送地址</label><br>
+          <input type="text" id="address" name="address" placeholder="請填寫完整外送地址">
         </div>
         <br>
 
-        <button type="submit"
-                class="save-button">
-          儲存
+        <button type="submit" class="save-button">
+          下一步
         </button>
       </form>
     </div>
   </div>
 
   <div class="progress-bar">
+    <div class="step">選擇廚師</div>
+    <div class="line"></div>
     <div class="step active">第1步</div>
     <div class="line"></div>
     <div class="step">第2步</div>
@@ -118,29 +100,62 @@
     <div class="step">第4步</div>
   </div>
 
+  <!-- 設定小視窗 -->
+  <div class="settings-modal" id="settings-modal">
+    <div class="modal-content">
+      <h2>設定</h2>
+      <p>帳號：{{ user.email if user else '' }}</p>
+      <p>其他</p>
+      <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+    </div>
+  </div>
+
   <script>
     function selectDelivery(type) {
       document.getElementById('pickup').classList.remove('active');
       document.getElementById('delivery').classList.remove('active');
 
-      document.getElementById(type).classList.add('active');
-      document.getElementById('pickup_method').value = type === 'pickup' ? '自取' : '外送';
-
-      const addr = document.getElementById('address-field');
-      if (type === 'delivery') {
-        addr.classList.remove('hidden');
+      if (type === '自取') {
+        document.getElementById('pickup').classList.add('active');
+        document.getElementById('pickup_method').value = '自取';
+        document.getElementById('address-field').classList.add('hidden');
+        document.getElementById('address').required = false;
       } else {
-        addr.classList.add('hidden');
+        document.getElementById('delivery').classList.add('active');
+        document.getElementById('pickup_method').value = '外送';
+        document.getElementById('address-field').classList.remove('hidden');
+        document.getElementById('address').required = true;
       }
     }
 
+    function toggleSettingsModal() {
+      const modal = document.getElementById('settings-modal');
+      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    // 設置最小日期為今天
+    function setMinDate() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('order_date').min = today;
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      setMinDate();
+      
       const pm = document.getElementById('pickup_method').value;
       if (pm === '自取' || pm === '外送') {
-        selectDelivery(pm === '自取' ? 'pickup' : 'delivery');
+        selectDelivery(pm);
       }
     });
+
+    function toggleNotification() {
+      const modal = document.getElementById('notificationCenter');
+      if (modal) {
+        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+      }
+    }
   </script>
   <script src="/static/js/notification.js"></script>
 </body>
 </html>
+

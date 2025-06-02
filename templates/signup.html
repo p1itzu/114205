@@ -14,15 +14,16 @@
     </div>
     <div class="form-container">
       <h2>Welcome to 味你而煮！</h2>
-      <form action="{{ url_for('signup') }}" method="post">
+      <form action="{{ url_for('signup') }}" method="post" id="signup-form">
         <input type="text" name="name" placeholder="Name" required>
         <input type="email" name="email" placeholder="Email" required>
         <input type="password" name="password" placeholder="密碼 (8位數字+字母)" required>
         <div class="button-group">
           <span class="role-label">請選擇身分：</span>
-          <button class="role-button" name="role" value="chef" required>廚師</button>
-          <button class="role-button" name="role" value="customer" required>顧客</button>
+          <button type="button" class="role-button" data-role="chef" onclick="selectRole('chef')">廚師</button>
+          <button type="button" class="role-button" data-role="customer" onclick="selectRole('customer')">顧客</button>
         </div>
+        <input type="hidden" name="role" id="selected-role" required>
         <button type="submit" class="button">註冊</button>
       </form>
       {% if error %}
@@ -30,5 +31,32 @@
       {% endif %}
     </div>
   </div>
+
+  <script>
+    let selectedRole = null;
+
+    function selectRole(role) {
+      // 移除所有按鈕的選中狀態
+      document.querySelectorAll('.role-button').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      
+      // 為點擊的按鈕添加選中狀態
+      document.querySelector(`[data-role="${role}"]`).classList.add('selected');
+      
+      // 設置隱藏字段的值
+      document.getElementById('selected-role').value = role;
+      selectedRole = role;
+    }
+
+    // 表單提交前驗證
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+      if (!selectedRole) {
+        e.preventDefault();
+        alert('請選擇您的身分（廚師或顧客）');
+        return false;
+      }
+    });
+  </script>
 </body>
 </html>

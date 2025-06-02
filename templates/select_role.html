@@ -3,23 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>選擇角色</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
+  <title>選擇角色 - 味你而煮</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/signup.css') }}">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f6c25f 0%, #e0a93d 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    
+    .role-selection-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+    
+    .welcome-header {
+      margin-bottom: 30px;
+    }
+    
+    .welcome-header h1 {
+      color: #5b4636;
+      font-size: 28px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    
+    .welcome-header p {
+      color: #666;
+      font-size: 16px;
+      margin: 0;
+    }
+    
+    .role-options {
+      display: flex;
+      gap: 20px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+    
+    .role-card {
+      flex: 1;
+      min-width: 200px;
+      background: #fff;
+      border: 3px solid #f0f0f0;
+      border-radius: 15px;
+      padding: 30px 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .role-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+      border-color: #f6c25f;
+    }
+    
+    .role-card.selected {
+      border-color: #f6c25f;
+      background: linear-gradient(135deg, #fff9ec 0%, #fdf7ed 100%);
+    }
+    
+    .role-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, #f6c25f, #e0a93d);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .role-card.selected::before {
+      transform: scaleX(1);
+    }
+    
+    .role-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      display: block;
+    }
+    
+    .role-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #5b4636;
+      margin-bottom: 8px;
+    }
+    
+    .role-description {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+    
+    .hidden-radio {
+      display: none;
+    }
+    
+    .submit-section {
+      margin-top: 40px;
+    }
+    
+    .submit-btn {
+      background: linear-gradient(135deg, #f6c25f, #e0a93d);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 200px;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    
+    .submit-btn.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .submit-btn.active:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(246, 194, 95, 0.3);
+    }
+    
+    @media (max-width: 600px) {
+      .role-options {
+        flex-direction: column;
+      }
+      
+      .role-card {
+        min-width: auto;
+      }
+      
+      .role-selection-container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="select-role-container">
-    <h2>請選擇您的使用者角色</h2>
-    <form action="{{ url_for('select_role') }}" method="post">
-      <label>
-        <input type="radio" name="role" value="customer" required>
-        我是 顧客
-      </label><br>
-      <label>
-        <input type="radio" name="role" value="chef" required>
-        我是 廚師
-      </label><br>
-      <button type="submit" class="btn btn-primary">確認</button>
+  <div class="role-selection-container">
+    <div class="welcome-header">
+      <h1>🍳 歡迎加入味你而煮！</h1>
+      <p>請選擇您的使用者角色以完成設定</p>
+    </div>
+    
+    <form action="{{ url_for('select_role') }}" method="post" id="roleForm">
+      <div class="role-options">
+        <div class="role-card" onclick="selectRole('customer')">
+          <div class="role-icon">🍽️</div>
+          <div class="role-title">我是顧客</div>
+          <div class="role-description">
+            我想要尋找專業廚師<br>
+            為我製作美味料理
+          </div>
+          <input type="radio" name="role" value="customer" class="hidden-radio" required>
+        </div>
+        
+        <div class="role-card" onclick="selectRole('chef')">
+          <div class="role-icon">👨‍🍳</div>
+          <div class="role-title">我是廚師</div>
+          <div class="role-description">
+            我是專業廚師<br>
+            想要接案為顧客服務
+          </div>
+          <input type="radio" name="role" value="chef" class="hidden-radio" required>
+        </div>
+      </div>
+      
+      <div class="submit-section">
+        <button type="submit" class="submit-btn" id="submitBtn">開始使用</button>
+      </div>
     </form>
   </div>
+
+  <script>
+    let selectedRole = null;
+    
+    function selectRole(role) {
+      // 移除所有選中狀態
+      document.querySelectorAll('.role-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      
+      // 為選中的卡片添加樣式
+      event.currentTarget.classList.add('selected');
+      
+      // 設置 radio button
+      const radioButton = document.querySelector(`input[value="${role}"]`);
+      if (radioButton) {
+        radioButton.checked = true;
+      }
+      
+      // 啟用提交按鈕
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.classList.add('active');
+      
+      selectedRole = role;
+    }
+    
+    // 防止表單重複提交
+    document.getElementById('roleForm').addEventListener('submit', function(e) {
+      if (!selectedRole) {
+        e.preventDefault();
+        alert('請選擇您的角色');
+        return;
+      }
+      
+      // 禁用提交按鈕防止重複提交
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '處理中...';
+    });
+  </script>
 </body>
 </html>

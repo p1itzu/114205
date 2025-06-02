@@ -20,7 +20,7 @@
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
             <a href="CookingMethod.html">料理方式建議</a>
-            <a href="{{ url_for('order_step1') }}">新增訂單</a>
+            <a href="{{ url_for('order_step0') }}">新增訂單</a>
             <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
             {% else %}
@@ -84,6 +84,8 @@
     </div>
 
     <div class="progress-bar">
+        <div class="step">選擇廚師</div>
+        <div class="line"></div>
         <div class="step">第1步</div>
         <div class="line"></div>
         <div class="step">第2步</div>

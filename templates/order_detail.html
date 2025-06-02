@@ -64,13 +64,13 @@
             <div class="section2">
                 <h3>訂單編號 : #{{ order.id }}</h3>
                 <div class="status-bar">
-                    <!-- 假設 order.statuses 為一個字串列表或可以判斷目前進度 -->
-                    <div class="status {% if order.status == '等待回應' %}active{% endif %}">等待回應</div>
-                    <div class="status {% if order.status == '議價中' %}active{% endif %}">議價中</div>
-                    <div class="status {% if order.status == '已接單' %}active{% endif %}">已接單</div>
-                    <div class="status {% if order.status == '製作中' %}active{% endif %}">製作中</div>
-                    <div class="status {% if order.status == '製作完成' %}active{% endif %}">製作完成</div>
-                    <div class="status {% if order.status == '交付完成' %}active{% endif %}">交付完成</div>
+                    <!-- 根據訂單狀態顯示進度 -->
+                    <div class="status {% if order.status.value == 'pending' %}active{% endif %}">等待回應</div>
+                    <div class="status {% if order.status.value == 'accepted' %}active{% endif %}">已接單</div>
+                    <div class="status {% if order.status.value == 'preparing' %}active{% endif %}">製作中</div>
+                    <div class="status {% if order.status.value == 'ready' %}active{% endif %}">製作完成</div>
+                    <div class="status {% if order.status.value == 'delivering' %}active{% endif %}">配送中</div>
+                    <div class="status {% if order.status.value == 'completed' %}active{% endif %}">交付完成</div>
                 </div>
             </div>
             <br>
@@ -78,18 +78,22 @@
                 <table>
                     <tr>
                         <td class="left">
-                            <p>預約日期 : {{ order.reservation_date }}</p>
+                            <p>預約日期 : {{ order.preferred_time.strftime('%Y-%m-%d') if order.preferred_time else '未設定' }}</p>
                             <br>
-                            <p>預約時間 : {{ order.reservation_time }}</p>
+                            <p>預約時間 : {{ order.preferred_time.strftime('%H:%M') if order.preferred_time else '未設定' }}</p>
                             <br>
-                            <p>取餐方式 : {{ order.delivery_method }}</p>
+                            <p>取餐方式 : {{ '外送' if order.delivery_method.value == 'delivery' else '自取' }}</p>
+                            {% if order.delivery_method.value == 'delivery' and order.delivery_address %}
+                            <br>
+                            <p>外送地址 : {{ order.delivery_address }}</p>
+                            {% endif %}
                         </td>
                         <td class="right">
-                            <p>聯絡人資訊 : {{ order.contact_info }}</p>
+                            <p>聯絡人資訊 : {{ order.customer.phone or order.customer.email }}</p>
                             <br>
                             <p>菜單列表 :<br>
                                 {% for dish in order.dishes %}
-                                    {{ loop.index }}. {{ dish.dish_name }}<br>
+                                    {{ loop.index }}. {{ dish.dish_name }} × {{ dish.quantity }}<br>
                                 {% endfor %}
                             </p>
                         </td>
@@ -99,7 +103,7 @@
             <div class="extra-section">
                 <div class="extra-left">
                     <div class="price-negotiation">
-                        <h4>廚師第一次定價：NT${{ order.initial_price }}</h4>
+                        <h4>廚師第一次定價：NT${{ order.total_amount }}</h4>
                         <div class="negotiation-buttons">
                             <button class="btn-agree">同意</button>
                             <button class="btn-negotiate">再議價</button>
@@ -112,9 +116,14 @@
                 </div>
                 <div class="extra-right">
                     <p>價錢明細:</p>
-                    {% for item in order.price_details %}
-                        <p>{{ loop.index }}. {{ item.dish_name }} NT$ {{ item.price }}</p>
+                    {% for dish in order.dishes %}
+                        <p>{{ loop.index }}. {{ dish.dish_name }} NT$ {{ dish.unit_price }} × {{ dish.quantity }} = NT$ {{ dish.unit_price * dish.quantity }}</p>
                     {% endfor %}
+                    {% if order.delivery_fee > 0 %}
+                        <p>外送費 NT$ {{ order.delivery_fee }}</p>
+                    {% endif %}
+                    <hr>
+                    <p><strong>總計 NT$ {{ order.total_amount + order.delivery_fee }}</strong></p>
                 </div>
             </div>
         </div>

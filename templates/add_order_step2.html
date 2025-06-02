@@ -19,7 +19,7 @@
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
             <a href="CookingMethod.html">料理方式建議</a>
-            <a href="{{ url_for('order_step1') }}">新增訂單</a>
+            <a href="{{ url_for('order_step0') }}">新增訂單</a>
             <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
             {% else %}
@@ -85,17 +85,17 @@
                             </div>
                             <div class="salinity-container">
                                 <label>鹹度：</label>
-                                <button class="salinity-button" type="button" data-value="0">極淡</button>
-                                <button class="salinity-button" type="button" data-value="3">清淡</button>
-                                <button class="salinity-button" type="button" data-value="5">標準</button>
-                                <button class="salinity-button" type="button" data-value="8">濃郁</button>
+                                <button class="salinity-button" type="button" data-value="light">極淡</button>
+                                <button class="salinity-button" type="button" data-value="light">清淡</button>
+                                <button class="salinity-button active" type="button" data-value="normal">標準</button>
+                                <button class="salinity-button" type="button" data-value="heavy">濃郁</button>
                             </div>
                             <div class="spiciness-container">
                                 <label>辣度：</label>
-                                <button class="spiciness-button" type="button" data-value="0">不辣</button>
-                                <button class="spiciness-button" type="button" data-value="3">小辣</button>
-                                <button class="spiciness-button" type="button" data-value="5">中辣</button>
-                                <button class="spiciness-button" type="button" data-value="8">大辣</button>
+                                <button class="spiciness-button active" type="button" data-value="none">不辣</button>
+                                <button class="spiciness-button" type="button" data-value="mild">小辣</button>
+                                <button class="spiciness-button" type="button" data-value="medium">中辣</button>
+                                <button class="spiciness-button" type="button" data-value="spicy">大辣</button>
                             </div>
                             <div class="oillevel-container">
                                 <label>油度：</label>
@@ -107,6 +107,11 @@
                             <div>
                                 <label class="bold-text">客製備註</label><br>
                                 <input type="text" id="customized" placeholder="請填寫需要的備註事項" />
+                            </div>
+                            <br>
+                            <div>
+                                <label class="bold-text">價格</label><br>
+                                <input type="number" id="dish-price" placeholder="金額" min="0" required />
                             </div>
                             <br>
                             <div class="button-container">
@@ -124,9 +129,14 @@
     </div>
 
     <div class="progress-bar">
-        <div class="step">第1步</div><div class="line"></div>
-        <div class="step active">第2步</div><div class="line"></div>
-        <div class="step">第3步</div><div class="line"></div>
+        <div class="step">選擇廚師</div>
+        <div class="line"></div>
+        <div class="step">第1步</div>
+        <div class="line"></div>
+        <div class="step active">第2步</div>
+        <div class="line"></div>
+        <div class="step">第3步</div>
+        <div class="line"></div>
         <div class="step">第4步</div>
     </div>
 
@@ -159,8 +169,8 @@
             const ingredients = document.getElementById('ingredients').value;
             const special = document.getElementById('special').value;
             const customized = document.getElementById('customized').value;
-            const salinity = parseInt(document.querySelector('.salinity-button.active')?.dataset.value) || 0;
-            const spiciness = parseInt(document.querySelector('.spiciness-button.active')?.dataset.value) || 0;
+            const salinity = document.querySelector('.salinity-button.active')?.dataset.value || 'normal';
+            const spiciness = document.querySelector('.spiciness-button.active')?.dataset.value || 'none';
             const oilLevel = parseInt(document.querySelector('.oillevel-button.active')?.dataset.value) || 0;
             const aroma = parseInt(document.querySelector('.aroma-button.active')?.dataset.value) || 0;
             const price = parseInt(document.getElementById('dish-price')?.value) || 0;
@@ -177,6 +187,7 @@
             document.getElementById('ingredients').value = d.ingredients || '';
             document.getElementById('special').value = d.special || '';
             document.getElementById('customized').value = d.customized || '';
+            document.getElementById('dish-price').value = d.price || '';
             ['salinity','spiciness','oilLevel','aroma'].forEach(type => {
                 document.querySelectorAll(`.${type}-button`).forEach(b => b.classList.remove('active'));
                 document.querySelector(`.${type}-button[data-value='${d[type]}']`)?.classList.add('active');
@@ -190,16 +201,18 @@
             form.querySelectorAll('.dynamic-hidden').forEach(el => el.remove());
             Object.values(dishData).forEach(d => {
                 const fields = {
-                    dish_name: d.name,
-                    quantity: d.portion,
-                    ingredients: d.ingredients,
-                    special_recipe: d.special,
-                    customer_note: d.customized,
-                    saltiness: d.salinity,
-                    spiciness: d.spiciness,
-                    oiliness: d.oilLevel,
-                    aroma: d.aroma,
-                    dish_price: d.price
+                    dish_names: d.name,
+                    quantities: d.portion,
+                    unit_prices: d.price || 0,
+                    salt_levels: d.salinity,
+                    spice_levels: d.spiciness,
+                    include_onions: true,
+                    include_gingers: true,
+                    include_garlics: true,
+                    include_cilantros: true,
+                    ingredients_list: d.ingredients,
+                    special_instructions_list: d.special,
+                    custom_notes_list: d.customized
                 };
                 Object.entries(fields).forEach(([key,val]) => {
                     const input = document.createElement('input');

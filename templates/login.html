@@ -7,6 +7,88 @@
   <link rel="stylesheet" href="/static/css/login.css">
   <style>
     #successModal { display: none; }
+    .error { color: #d32f2f; margin: 10px 0; padding: 10px; background-color: #ffeaea; border-radius: 5px; }
+    .success { color: #2e7d32; margin: 10px 0; padding: 10px; background-color: #e8f5e8; border-radius: 5px; }
+    .resend-form { margin-top: 15px; padding: 15px; background-color: #fff3cd; border-radius: 5px; }
+    .resend-button { background-color: #ff9800; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+    .resend-button:hover { background-color: #f57c00; }
+    
+    /* Google 登入按鈕美化 - 恢復精美設計 */
+    .google-button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      color: #3c4043;
+      border: 1.5px solid #dadce0;
+      font-weight: 500;
+      font-size: 16px;
+      padding: 12px 24px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    
+    .google-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .google-button:hover::before {
+      left: 100%;
+    }
+    
+    .google-button:hover {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e8eaed 100%);
+      border-color: #c1c7cd;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transform: translateY(-1px);
+    }
+    
+    .google-button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    
+    .google-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 12px;
+      background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPHBhdGggZD0iTTIzLjUyIDEyLjI3MjczYzAtLjg1MDkxLS4wNzY0LTEuNjY5MS0uMjE4Mi0yLjQ1NDU1SDEydjQuNjM2MzZoNi40NTU0NmMtLjI3ODcgMS41LS45MTg5IDIuNzc3Mi0yLjE5NjQgMy42M3Y0LjI5MDkxaDMuNTQxOUM2MS4yMjI3IDQyLjc3IDQ0LjUgMGhWXDJtTy4yIDIzLjUyIDEyLjI3MjczeiIgZmlsbD0iIzQyODVGNCIvPgogICAgPHBhdGggZD0iTTEyIDI0YzMuMjQgMCA1Ljk1NjQtMS4wNzgyIDcuOTQxOC0yLjkwOTFsLTMuNTQxOC0yLjkwOTFjLTEuMDU0NS43MDkxLTIuNDEwOSAxLjExODItNC4xIDEuMTE4MmMtMy4xOTM2IDAtNS45MDU0LTIuMTU3My02Ljg1NDUtNS40Nzk5SDEuMjM2Mzd2NC4yNzI3NEZm.YgFFF3IDAgNy4xNzU2IDI0IDEyIDI0eiIgZmlsbD0iIzM0QTg1MyIvPgogICAgPHBhdGggZD0iTTUuMTQ1NDUgMTQuNTgxOGMtLjI0ODItLjcwOTEtLjM5MDktMS40NzY0LS4zOTA5LTIuMzE4MnMuMTQyNy0xLjYwOTEuMzkwOS0yLjMxODJWNy42NzI3M0gxLjIzNjM3QTExLjg4NjQgMTEuODg2NCAwIDAgMCAwIDEyLjI5MDljMCAuOTgxOC4xMzkxIDEuOTI3My4zOTA5IDIuODI0NWw0LjE1NDU1LTMuMTgxOHoiIGZpbGw9IiNGQkJDMDQiLz4KICAgIDxwYXRoIGQ9Ik0xMiA0Ljc3MjczYzEuODA1NSAwIDMuNDI3My42MjczIDQuNjkwOSAxLjg1NDU1bDMuNTE4Mi0zLjUxODIzQzIwLjU1NjQgMS41NjM2NCAxNi41NjM3IDAgMTIgMGMtNC44MjczIDAtOS4wNzI3MyAyLjkzOTkxLTExLjI3MjczIDcuNjcyNzRsNC4xNTQ1NCAzLjE4MTgxQzEuMDk0NTcgNC43MTM2OSA2LjgwNjQzIDQuNzcyNzMgMTIgNC43NzI3M3oiIGZpbGw9IiNFQTQzMzUiLz4KICA8L2c+Cjwvc3ZnPgo=') no-repeat center;
+      background-size: contain;
+      flex-shrink: 0;
+    }
+    
+    /* 確保按鈕文字不被選中 */
+    .google-button {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    /* 增強 divider 的樣式 */
+    .divider {
+      margin: 25px 0 20px 0;
+    }
+    
+    .divider span {
+      background-color: #fdf7ed;
+      padding: 0 15px;
+      color: #8b7355;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
@@ -20,18 +102,36 @@
 
       <form action="{{ url_for('login') }}" method="post">
         <input type="email" name="username" placeholder="Email" required>
-        <input type="password" name="password" placeholder="密碼 (8位數字+字母)" required>
+        <input type="password" name="password" placeholder="密碼" required>
         <button type="submit" class="button">登入</button>
       </form>
 
-      <div class="divider"><span>or</span></div>
-      <a href="{{ url_for('login_google') }}" class="button google-button">
-        <img src="/static/imgs/google-logo.webp" alt="Google Logo" width="20" style="vertical-align:middle;margin-right:8px;">
+      {% if error %}
+        <p class="error">{{ error }}</p>
+        
+        {% if show_resend %}
+        <div class="resend-form">
+          <p style="margin: 0 0 10px 0; color: #856404; font-size: 14px;">
+            <strong>沒有收到驗證郵件？</strong>
+          </p>
+          <form action="{{ url_for('resend_verification') }}" method="post" style="margin: 0;">
+            <input type="hidden" name="email" value="{{ email }}">
+            <button type="submit" class="resend-button">重新發送驗證郵件</button>
+          </form>
+        </div>
+        {% endif %}
+      {% endif %}
+      
+      {% if success %}
+        <p class="success">{{ success }}</p>
+      {% endif %}
+
+      <div class="divider"><span>或</span></div>
+      <a href="{{ url_for('login_google') }}" class="google-button">
+        <div class="google-icon"></div>
         使用 Google 登入
       </a>
       
-</div>
-
     </div>
   </div>
 

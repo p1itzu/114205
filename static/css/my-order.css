@@ -292,7 +292,20 @@ div.footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.order-num {
+    color: #B3811C;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.order-status {
+    display: flex;
+    align-items: center;
 }
 
 .order-header .close-btn {
@@ -300,13 +313,6 @@ div.footer {
     background: none;
     border: none;
     cursor: pointer;
-}
-
-.order-status {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
-    padding: 10px 0;
 }
 
 .status-item {
@@ -839,6 +845,115 @@ div.footer {
     display: inline-block;
 }
 
-.section2 {
-    margin-bottom: 20px;
+.status {
+    color: #ffffff;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+    min-width: 60px;
+}
+
+/* 訂單狀態樣式 - 提高權重 */
+.order-card .order-header .order-status .status {
+    color: #ffffff !important;
+    padding: 4px 12px !important;
+    border-radius: 15px !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    display: inline-block !important;
+    text-align: center !important;
+    min-width: 60px !important;
+}
+
+/* 訂單狀態樣式 */
+.order-card .order-header .order-status .status.pending {
+    background-color: #FF9800 !important; /* 橘色 - 等待回應 */
+}
+
+.order-card .order-header .order-status .status.accepted {
+    background-color: #4CAF50 !important; /* 綠色 - 已接單 */
+}
+
+.order-card .order-header .order-status .status.preparing {
+    background-color: #2196F3 !important; /* 藍色 - 製作中 */
+}
+
+.order-card .order-header .order-status .status.ready {
+    background-color: #9C27B0 !important; /* 紫色 - 製作完成 */
+}
+
+.order-card .order-header .order-status .status.delivering {
+    background-color: #FF5722 !important; /* 深橘色 - 配送中 */
+}
+
+.order-card .order-header .order-status .status.completed {
+    background-color: #607D8B !important; /* 灰藍色 - 交付完成 */
+}
+
+.order-card .order-header .order-status .status.cancelled {
+    background-color: #F44336 !important; /* 紅色 - 已取消 */
+}
+
+/* 通用狀態樣式作為備用 */
+.status {
+    color: #ffffff;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+    min-width: 60px;
+}
+
+.status.pending {
+    background-color: #FF9800; /* 橘色 - 等待回應 */
+}
+
+.status.accepted {
+    background-color: #4CAF50; /* 綠色 - 已接單 */
+}
+
+.status.preparing {
+    background-color: #2196F3; /* 藍色 - 製作中 */
+}
+
+.status.ready {
+    background-color: #9C27B0; /* 紫色 - 製作完成 */
+}
+
+.status.delivering {
+    background-color: #FF5722; /* 深橘色 - 配送中 */
+}
+
+.status.completed {
+    background-color: #607D8B; /* 灰藍色 - 交付完成 */
+}
+
+.status.cancelled {
+    background-color: #F44336; /* 紅色 - 已取消 */
+}
+
+/* 舊版狀態樣式保持向後兼容 */
+.status.waiting {
+    background-color: #FF9800;
+}
+
+.status.negotiating {
+    background-color: #FF5722;
+}
+
+.status.in_production {
+    background-color: #2196F3;
+}
+
+.status.production_completed {
+    background-color: #9C27B0;
+}
+
+.status.delivered {
+    background-color: #607D8B;
 }

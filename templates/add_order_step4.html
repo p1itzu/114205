@@ -21,7 +21,7 @@
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
             <a href="CookingMethod.html">料理方式建議</a>
-            <a href="{{ url_for('order_step1') }}">新增訂單</a>
+            <a href="{{ url_for('order_step0') }}">新增訂單</a>
             <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
             {% else %}
@@ -69,7 +69,11 @@
                 <br><br>
                 <label class="order-time"><strong>取餐方式:</strong> {{ step1.pickup_method }}</label>
                 <br><br>
-                <label class="order-time"><strong>聯絡人資訊:</strong> 0912345678</label>
+                {% if step1.pickup_method == '外送' and step1.address %}
+                <label class="order-time"><strong>外送地址:</strong> {{ step1.address }}</label>
+                <br><br>
+                {% endif %}
+                <label class="order-time"><strong>聯絡人資訊:</strong> {{ user.phone or '' }}</label>
                 <br><br>
             </div>
 
@@ -78,29 +82,36 @@
             <br><br>
             <div class="meal-container">
                 <ul class="meal-list">
-                    {% for d in dishes %}
+                    {% for dish in dishes %}
                     <li>
-                        {{ d.dish_name }} - <span class="price">{{ d.dish_price }}</span> 元 × {{ d.quantity }}
+                        {{ dish.dish_name }} - <span class="price" data-price="{{ dish.unit_price }}" data-quantity="{{ dish.quantity }}">{{ dish.unit_price }}</span> 元 × {{ dish.quantity }}
                     </li>
                     {% endfor %}
                 </ul>
             </div>
             <br>
 
-            <!-- 靜態總價 -->
-            <label class="order-time"><strong>系統預估價格:</strong> <span id="totalPrice">0</span> 元</label>
+            <!-- 動態總價 -->
+            {% set total_price = 0 %}
+            {% for dish in dishes %}
+                {% set total_price = total_price + (dish.unit_price * dish.quantity) %}
+            {% endfor %}
+            <label class="order-time"><strong>預估價格:</strong> <span id="totalPrice">{{ "%.0f"|format(total_price) }}</span> 元</label>
             <br><br>
 
             <!-- 按鈕 -->
-            <form id="step4-form" method="post" action="{{ url_for('order_step4') }}" style="display:flex; justify-content:flex-end; gap:10px;">
-                <input type="hidden" name="contact_phone" value="0912345678" />
+            <form id="step4-form" method="post" action="{{ url_for('order_step4') }}">
+                <input type="hidden" name="contact_phone" value="{{ user.phone or '' }}" />
                 <button class="next-button" type="button" onclick="location.href='/customer/orders/new/step3';">上一步</button>
+                
                 <button class="save-button" type="submit">確認送出</button>
             </form>
         </div>
     </div>
 
     <div class="progress-bar">
+        <div class="step">選擇廚師</div>
+        <div class="line"></div>
         <div class="step">第1步</div>
         <div class="line"></div>
         <div class="step">第2步</div>
@@ -124,71 +135,37 @@
     <!-- 引入 SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-
         function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
         }
 
-        function selectDelivery(type) {
-            const pickupBtn = document.getElementById('pickup');
-            const deliveryBtn = document.getElementById('delivery');
-            const addressField = document.getElementById('address-field');
-
-            if (type === 'pickup') {
-                pickupBtn.classList.add('active');
-                deliveryBtn.classList.remove('active');
-                addressField.classList.add('hidden');
-            } else {
-                deliveryBtn.classList.add('active');
-                pickupBtn.classList.remove('active');
-                addressField.classList.remove('hidden');
+        function toggleNotification() {
+            const modal = document.getElementById('notificationCenter');
+            if (modal) {
+                modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
             }
-        }
-
-        function selectDelivery(type) {
-            // 移除所有按鈕的 active 類別
-            document.getElementById('pickup').classList.remove('active');
-            document.getElementById('delivery').classList.remove('active');
-
-            // 根據選擇的類型為相應按鈕添加 active 類別
-            if (type === 'pickup') {
-                document.getElementById('pickup').classList.add('active');
-            } else if (type === 'delivery') {
-                document.getElementById('delivery').classList.add('active');
-            }
-        }
-
-        function setNumber(value) {
-            document.getElementById("custom-number").value = value;
         }
 
         // 計算總價格
-        document.addEventListener("DOMContentLoaded", function () {
-            const prices = document.querySelectorAll(".price");
-            const totalPriceElement = document.getElementById("totalPrice");
+        function calculateTotalPrice() {
+            const priceElements = document.querySelectorAll(".price");
             let total = 0;
 
-            prices.forEach(priceElement => {
-                total += parseInt(priceElement.textContent, 10);
+            priceElements.forEach(priceElement => {
+                const price = parseFloat(priceElement.dataset.price) || 0;
+                const quantity = parseInt(priceElement.dataset.quantity) || 1;
+                total += price * quantity;
             });
 
-            totalPriceElement.textContent = total;
+            document.getElementById("totalPrice").textContent = Math.round(total);
+        }
+
+        // 頁面載入時計算總價
+        document.addEventListener("DOMContentLoaded", function () {
+            calculateTotalPrice();
         });
 
-        // function submitOrder() {
-        //     Swal.fire({
-        //         title: "訂單送出成功！",
-        //         text: `總金額為 ${document.getElementById("totalPrice").textContent} 元`,
-        //         icon: "success",
-        //         confirmButtonText: "立即前往 我的訂單",
-        //         customClass: {
-        //             confirmButton: "swal-custom-button"
-        //         }
-        //     }).then(() => {
-        //         window.location.href = "/customer/orders/list";
-        //     });
-        // }
         document.getElementById('step4-form').addEventListener('submit', function(e) {
             e.preventDefault();
             Swal.fire({
@@ -203,7 +180,6 @@
                 }
             });
         });
-
     </script>
     <script src="/static/js/notification.js"></script>
 </body>

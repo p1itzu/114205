@@ -9,13 +9,13 @@
     <link rel="stylesheet" href="/static/css/notification.css" />
 </head>
 <body>
-   <div class="navbar">
+    <div class="navbar">
         <div class="site-name">味你而煮</div>
         <div class="nav-links">
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
             <a href="CookingMethod.html">料理方式建議</a>
-            <a href="{{ url_for('order_step1') }}">新增訂單</a>
+            <a href="{{ url_for('order_step0') }}">新增訂單</a>
             <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
             {% else %}
@@ -53,8 +53,30 @@
 </div>
 <div class="container">
     {% for order in orders %}
-    <div class="order-card" data-status="all">
-        <p class="order-num"><strong>訂單編號</strong><br>#{{ order.id }}</p>
+    <div class="order-card" data-status="
+        {%- if order.status.value in ['pending', 'accepted', 'preparing', 'ready', 'delivering'] -%}ongoing
+        {%- elif order.status.value == 'completed' -%}completed
+        {%- elif order.status.value == 'cancelled' -%}cancelled
+        {%- else -%}all
+        {%- endif -%}">
+        <div class="order-header">
+            <span class="order-num"><strong>訂單編號 #{{ order.id }}</strong></span>
+            <span class="order-status">
+                <!-- Debug: 顯示原始狀態信息 -->
+                <!-- 狀態對象: {{ order.status }}, 狀態值: {{ order.status.value }} -->
+                <span class="status {{ order.status.value }}" style="background-color: #FF9800; color: white; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: bold;">
+                    {% if order.status.value == 'pending' %}等待回應
+                    {% elif order.status.value == 'accepted' %}已接單
+                    {% elif order.status.value == 'preparing' %}製作中
+                    {% elif order.status.value == 'ready' %}製作完成
+                    {% elif order.status.value == 'delivering' %}配送中
+                    {% elif order.status.value == 'completed' %}交付完成
+                    {% elif order.status.value == 'cancelled' %}已取消
+                    {% else %}{{ order.status.value }}
+                    {% endif %}
+                </span>
+            </span>
+        </div>
         <p>
             菜單列表：<br>
             {% for dish in order.dishes %}
@@ -70,6 +92,39 @@
 </div>
 
 <script src="/static/js/notification.js"></script>
+<script>
+// 訂單狀態
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const orderCards = document.querySelectorAll('.order-card');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // 移除所有按鈕的active類
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            // 為當前按鈕加上active類
+            this.classList.add('active');
+
+            const filterStatus = this.getAttribute('data-status');
+
+            orderCards.forEach(card => {
+                const cardStatus = card.getAttribute('data-status');
+                
+                if (filterStatus === 'all' || cardStatus === filterStatus) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+
+function openMessageBoard(button) {
+    // 留言功能待實現
+    alert('留言功能開發中');
+}
+</script>
 
 </body>
 </html>

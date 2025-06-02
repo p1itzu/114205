@@ -2,7 +2,7 @@ from fastapi import Request, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from database import get_db
 from utils.security import decode_access_token
-from models.user import User
+from models.user import User, UserRole
 
 def get_current_user(
     request: Request,
@@ -20,12 +20,12 @@ def get_current_user(
     return user
 
 def require_customer(user: User = Depends(get_current_user)) -> User:
-    if user.role != "customer":
+    if user.role != UserRole.CUSTOMER:
         raise HTTPException(status_code=404, detail="Not Found")
     return user
 
 def require_chef(user: User = Depends(get_current_user)) -> User:
-    if user.role != "chef":
+    if user.role != UserRole.CHEF:
         raise HTTPException(status_code=404, detail="Not Found")
     return user
 
@@ -42,9 +42,11 @@ def common_template_params(
         if payload and "user_id" in payload:
             user = db.query(User).get(payload["user_id"])
     
-    avatar = request.cookies.get("avatar_url") \
-        if request.cookies.get("avatar_url") \
-        else "/static/imgs/avatar.png"
+    # 使用用戶的 avatar_url 或默認頭像
+    if user and user.avatar_url:
+        avatar = user.avatar_url
+    else:
+        avatar = request.cookies.get("avatar_url", "/static/imgs/avatar.png")
 
     return {
         "request": request,
