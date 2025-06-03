@@ -1,8 +1,13 @@
-from fastapi import FastAPI, Request, Depends, status, HTTPException
+from fastapi import FastAPI, Request, Depends, status, HTTPException, Form, File, UploadFile
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import JSONResponse
 from database import Base, engine, get_db
+from typing import Optional
+from datetime import datetime
+import os
+import uuid
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exception_handlers import http_exception_handler as default_http_handler
@@ -14,8 +19,9 @@ from routers.chef import router as chef_router
 
 from config import settings
 
-from utils.dependencies import common_template_params
-from utils.security import decode_access_token
+from utils.dependencies import common_template_params, get_current_user
+from utils.security import decode_access_token, get_password_hash, verify_password
+from models.user import User
 
 import models.user
 import models.order
@@ -55,6 +61,72 @@ app.include_router(chef_router, prefix="/chef")
 @app.get("/", name="index")
 def index(ctx: dict = Depends(common_template_params)):
     return templates.TemplateResponse("index.html", ctx)
+
+# 通用個人資料更新API
+@app.post("/profile/update")
+async def update_profile(
+    name: str = Form(...),
+    phone: Optional[str] = Form(None),
+    current_password: Optional[str] = Form(None),
+    new_password: Optional[str] = Form(None),
+    avatar: Optional[UploadFile] = File(None),
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    try:
+        # 更新基本資料
+        current_user.name = name
+        if phone:
+            current_user.phone = phone
+        
+        # 處理密碼更新
+        if new_password:
+            if not current_password:
+                return JSONResponse(
+                    status_code=400,
+                    content={"success": False, "message": "請輸入目前密碼"}
+                )
+            
+            # 驗證目前密碼（OAuth用戶可能沒有密碼）
+            if current_user.hashed_password and not verify_password(current_password, current_user.hashed_password):
+                return JSONResponse(
+                    status_code=400,
+                    content={"success": False, "message": "目前密碼錯誤"}
+                )
+            
+            # 設置新密碼
+            current_user.hashed_password = get_password_hash(new_password)
+        
+        # 處理頭像上傳
+        if avatar and avatar.filename:
+            # 確保uploads目錄存在
+            os.makedirs("static/uploads/avatars", exist_ok=True)
+            
+            # 生成唯一檔名
+            file_extension = avatar.filename.split('.')[-1] if '.' in avatar.filename else 'jpg'
+            filename = f"{uuid.uuid4()}.{file_extension}"
+            file_path = f"static/uploads/avatars/{filename}"
+            
+            # 儲存檔案
+            with open(file_path, "wb") as buffer:
+                content = await avatar.read()
+                buffer.write(content)
+            
+            current_user.avatar_url = f"/static/uploads/avatars/{filename}"
+        
+        # 更新時間戳
+        current_user.updated_at = datetime.utcnow()
+        
+        db.commit()
+        
+        return JSONResponse(content={"success": True, "message": "個人資料更新成功！"})
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"更新失敗：{str(e)}"}
+        )
 
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException) -> Response:

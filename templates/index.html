@@ -16,10 +16,30 @@
         <div class="nav-links">
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
-            <a href="CookingMethod.html">料理方式建議</a>
-            <a href="{{ url_for('order_step0') }}">新增訂單</a>
-            <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
-            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                {% if user.role and user.role.value == 'chef' %}
+                <!-- 廚師專用導航 -->
+                <a href="{{ url_for('chef_dashboard') }}">總覽</a>
+                <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
+                
+                <!-- 廚師的我的訂單下拉選單 -->
+                <div class="dropdown" style="position: relative; display: inline-block;">
+                    <button class="dropdown-btn" onclick="toggleDropdown()" style="background: none; border: none; color: #B3811C; font-size: 18px; font-weight: bold; cursor: pointer; padding: 10px 20px; font-family: Arial, sans-serif; border-radius: 5px;">我的訂單 ▾</button>
+                    <div class="dropdown-content" id="orderDropdown" style="display: none; position: absolute; background-color: white; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 5px; top: 100%;">
+                        <a href="{{ url_for('chef_accepted_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">待完成訂單</a>
+                        <a href="{{ url_for('chef_completed_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已完成訂單</a>
+                        <a href="{{ url_for('chef_negotiating_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">議價中訂單</a>
+                        <a href="{{ url_for('chef_cancelled_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已取消訂單</a>
+                    </div>
+                </div>
+                
+                <a href="#">客服聯絡</a>
+                {% else %}
+                <!-- 顧客專用導航 -->
+                <a href="CookingMethod.html">料理方式建議</a>
+                <a href="{{ url_for('order_step0') }}">新增訂單</a>
+                <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
+                <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                {% endif %}
             {% else %}
             <a href="{{ url_for('index') }}">關於我們</a>
             <a href="{{ url_for('index') }}">料理方式建議</a>
@@ -74,7 +94,7 @@
 
     <div class="footer">
         © 2025 網站名稱. All rights reserved.<br>
-        聯絡我們：official@example.com | 電話：02-12345678900
+        聯絡我們：official@example.com | 電話：02-12345678900
     </div>
 
      <!-- 設定小視窗 -->
@@ -209,6 +229,17 @@
             if (event.target === profileModal) {
                 toggleProfileModal();
             }
+
+            // 關閉廚師下拉選單（如果點擊的不是下拉按鈕）
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.style.display === 'block') {
+                        openDropdown.style.display = 'none';
+                    }
+                }
+            }
         };
 
         // 處理頭像上傳
@@ -247,7 +278,7 @@
                     const formData = new FormData(profileForm);
                     
                     try {
-                        const response = await fetch('/customer/profile/update', {
+                        const response = await fetch('/profile/update', {
                             method: 'POST',
                             body: formData
                         });
@@ -265,6 +296,31 @@
                         console.error('Error:', error);
                         alert('更新失敗，請稍後再試。');
                     }
+                });
+            }
+        });
+
+        // 廚師下拉選單切換函數
+        function toggleDropdown() {
+            const dropdown = document.getElementById("orderDropdown");
+            if (dropdown) {
+                if (dropdown.style.display === 'block') {
+                    dropdown.style.display = 'none';
+                } else {
+                    dropdown.style.display = 'block';
+                }
+            }
+        }
+
+        // 為下拉按鈕添加hover效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.querySelector('.dropdown-btn');
+            if (dropdownBtn) {
+                dropdownBtn.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f9e4ba';
+                });
+                dropdownBtn.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = 'transparent';
                 });
             }
         });

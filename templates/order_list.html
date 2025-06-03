@@ -53,12 +53,33 @@
 </div>
 <div class="container">
     {% for order in orders %}
+    <!-- 檢查是否有待回應的廚師最終定價 -->
+    {% set chef_final_pricing = none %}
+    {% for nego in order.negotiations %}
+        {% if nego.proposed_by == 'chef' and nego.is_accepted is none %}
+            {% set chef_final_pricing = nego %}
+        {% endif %}
+    {% endfor %}
+    
     <div class="order-card" data-status="
-        {%- if order.status.value in ['pending', 'accepted', 'preparing', 'ready', 'delivering'] -%}ongoing
+        {%- if order.status.value in ['pending', 'negotiating', 'accepted', 'preparing', 'ready'] -%}ongoing
         {%- elif order.status.value == 'completed' -%}completed
         {%- elif order.status.value == 'cancelled' -%}cancelled
         {%- else -%}all
         {%- endif -%}">
+        
+        <!-- 最終定價待回應提醒 -->
+        {% if chef_final_pricing %}
+        <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+            <div style="color: #856404; font-weight: bold; font-size: 14px;">
+                🔔 廚師已提供最終定價，請儘快回應！
+            </div>
+            <div style="color: #856404; font-size: 12px; margin-top: 5px;">
+                最終定價：NT${{ chef_final_pricing.proposed_amount | int }}
+            </div>
+        </div>
+        {% endif %}
+        
         <div class="order-header">
             <span class="order-num"><strong>訂單編號 #{{ order.id }}</strong></span>
             <span class="order-status">
@@ -66,10 +87,10 @@
                 <!-- 狀態對象: {{ order.status }}, 狀態值: {{ order.status.value }} -->
                 <span class="status {{ order.status.value }}" style="background-color: #FF9800; color: white; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: bold;">
                     {% if order.status.value == 'pending' %}等待回應
+                    {% elif order.status.value == 'negotiating' %}議價中
                     {% elif order.status.value == 'accepted' %}已接單
                     {% elif order.status.value == 'preparing' %}製作中
                     {% elif order.status.value == 'ready' %}製作完成
-                    {% elif order.status.value == 'delivering' %}配送中
                     {% elif order.status.value == 'completed' %}交付完成
                     {% elif order.status.value == 'cancelled' %}已取消
                     {% else %}{{ order.status.value }}
@@ -84,6 +105,13 @@
             {% endfor %}
         </p>
         <div class="button-group">
+            {% if chef_final_pricing %}
+            <a href="{{ url_for('customer_final_pricing', order_id=order.id) }}" 
+               class="order-btn" 
+               style="background: #28a745; color: white; text-decoration: none; font-weight: bold;">
+                查看最終定價
+            </a>
+            {% endif %}
             <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
             <a href="{{ url_for('order_detail', order_id=order.id) }}" class="order-btn">查看詳細訂單資訊</a>
         </div>

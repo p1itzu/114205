@@ -14,7 +14,7 @@
     <title>代做菜媒合平台</title>
 </head>
 
-<body>
+<body data-order-id="{{ order.id }}">
     <div class="navbar">
         <div class="site-name">味你而煮</div>
         <div class="nav-links">
@@ -66,10 +66,10 @@
                 <div class="status-bar">
                     <!-- 根據訂單狀態顯示進度 -->
                     <div class="status {% if order.status.value == 'pending' %}active{% endif %}">等待回應</div>
-                    <div class="status {% if order.status.value == 'accepted' %}active{% endif %}">已接單</div>
-                    <div class="status {% if order.status.value == 'preparing' %}active{% endif %}">製作中</div>
+                    <div class="status {% if order.status.value == 'negotiating' %}active{% endif %}">議價中</div>
+                    <div class="status {% if order.status.value in ['accepted', 'preparing'] %}active{% endif %}">已接單</div>
+                    <div class="status {% if order.status.value in ['accepted', 'preparing'] %}active{% endif %}">製作中</div>
                     <div class="status {% if order.status.value == 'ready' %}active{% endif %}">製作完成</div>
-                    <div class="status {% if order.status.value == 'delivering' %}active{% endif %}">配送中</div>
                     <div class="status {% if order.status.value == 'completed' %}active{% endif %}">交付完成</div>
                 </div>
             </div>
@@ -103,58 +103,98 @@
             <div class="extra-section">
                 <div class="extra-left">
                     {% if order.status.value == 'negotiating' %}
-                        {% set latest_negotiation = order.negotiations|selectattr('proposed_by', 'equalto', 'chef')|sort(attribute='created_at')|last %}
-                        {% if latest_negotiation and latest_negotiation.is_accepted is none %}
-                            <!-- 顯示廚師的議價，等待顧客回應 -->
+                        <!-- 檢查是否有廚師最終定價等待回應 -->
+                        {% if chef_final_pricing_pending %}
+                            {% if chef_final_pricing %}
+                            <!-- 有最終定價等待顧客回應 -->
                             <div class="price-negotiation">
-                                <h4>廚師第一次定價：NT${{ latest_negotiation.proposed_amount }}</h4>
-                                {% if latest_negotiation.message %}
-                                <p style="color: #666; margin: 10px 0;">廚師說明：{{ latest_negotiation.message }}</p>
+                                <h4 style="color: #e74c3c;">廚師最終定價：NT${{ chef_final_pricing.proposed_amount | int }}</h4>
+                                {% if chef_final_pricing.message %}
+                                <p style="color: #666; margin: 10px 0;">{{ chef_final_pricing.message }}</p>
                                 {% endif %}
+                                <p style="color: #d63384; font-weight: bold;">⚠️ 這是最後的議價機會</p>
                                 <div class="negotiation-buttons">
-                                    <button class="btn-agree" data-negotiation-id="{{ latest_negotiation.id }}">同意</button>
-                                    <button class="btn-negotiate" onclick="showCounterOffer()">再議價</button>
-                                </div>
-                                
-                                <!-- 再議價輸入區域 -->
-                                <div id="counter-offer-section" style="display: none; margin-top: 15px;">
-                                    <input type="number" id="counter-amount" placeholder="請輸入理想金額" class="price-input" min="0" step="1">
-                                    <input type="text" id="counter-reason" placeholder="請填寫需求或理由，讓廚師知道" class="text-input">
-                                    <button class="submit-btn" data-negotiation-id="{{ latest_negotiation.id }}">送出</button>
-                                    <p class="note">*注意：僅此一次議價機會</p>
+                                    <button class="btn-agree" data-negotiation-id="{{ chef_final_pricing.id }}" onclick="acceptFinalPricing('{{ chef_final_pricing.id }}')">同意最終報價</button>
+                                    <button class="btn-reject" onclick="rejectFinalPricing('{{ chef_final_pricing.id }}')" style="background: #dc3545; color: white;">不同意並取消訂單</button>
                                 </div>
                             </div>
-                        {% elif latest_negotiation and latest_negotiation.is_accepted == true %}
-                            <!-- 顧客已接受議價 -->
-                            <div class="price-negotiation">
-                                <h4 style="color: #28a745;">議價已接受：NT${{ latest_negotiation.proposed_amount }}</h4>
-                                <p style="color: #666;">等待廚師確認開始製作...</p>
-                            </div>
-                        {% elif latest_negotiation and latest_negotiation.is_accepted == false %}
-                            {% if order.negotiation_count >= 2 %}
-                                <!-- 議價次數用盡，訂單取消 -->
-                                <div class="price-negotiation">
-                                    <h4 style="color: #dc3545;">議價失敗，訂單已取消</h4>
-                                    <p style="color: #666;">議價次數已用盡</p>
-                                </div>
                             {% else %}
-                                <!-- 等待廚師再次議價 -->
-                                <div class="price-negotiation">
-                                    <h4 style="color: #ffc107;">已拒絕廚師議價：NT${{ latest_negotiation.proposed_amount }}</h4>
-                                    <p style="color: #666;">等待廚師再次議價...</p>
-                                </div>
+                            <!-- 如果沒有找到最終定價記錄，顯示錯誤信息 -->
+                            <div class="price-negotiation">
+                                <h4 style="color: #dc3545;">系統錯誤：無法找到最終定價記錄</h4>
+                                <p style="color: #666;">請聯繫客服處理此問題</p>
+                            </div>
                             {% endif %}
                         {% else %}
-                            <!-- 等待廚師定價 -->
-                            <div class="price-negotiation">
-                                <h4>等待廚師定價中...</h4>
-                                <p style="color: #666;">廚師已接單，正在進行價格評估</p>
-                            </div>
+                            <!-- 一般議價流程 -->
+                            {% set latest_negotiation = order.negotiations|selectattr('proposed_by', 'equalto', 'chef')|sort(attribute='created_at')|last %}
+                            {% if latest_negotiation and latest_negotiation.is_accepted is none %}
+                                <!-- 顯示廚師的議價，等待顧客回應 -->
+                                <div class="price-negotiation">
+                                    <h4>廚師第一次定價：NT${{ latest_negotiation.proposed_amount | int }}</h4>
+                                    {% if latest_negotiation.message %}
+                                    <p style="color: #666; margin: 10px 0;">廚師說明：{{ latest_negotiation.message }}</p>
+                                    {% endif %}
+                                    <div class="negotiation-buttons">
+                                        <button class="btn-agree" data-negotiation-id="{{ latest_negotiation.id }}">同意</button>
+                                        <button class="btn-negotiate" onclick="showCounterOffer()">再議價</button>
+                                    </div>
+                                    
+                                    <!-- 再議價輸入區域 -->
+                                    <div id="counter-offer-section" style="display: none; margin-top: 15px;">
+                                        <input type="number" id="counter-amount" placeholder="請輸入理想金額" class="price-input" min="0" step="1">
+                                        <input type="text" id="counter-reason" placeholder="請填寫需求或理由，讓廚師知道" class="text-input">
+                                        <button class="submit-btn" data-negotiation-id="{{ latest_negotiation.id }}">送出</button>
+                                        <p class="note">*注意：僅此一次議價機會</p>
+                                    </div>
+                                </div>
+                            {% elif latest_negotiation and latest_negotiation.is_accepted == true %}
+                                <!-- 顧客已接受議價 -->
+                                <div class="price-negotiation">
+                                    <h4 style="color: #28a745;">議價已接受：NT${{ latest_negotiation.proposed_amount | int }}</h4>
+                                    <p style="color: #666;">等待廚師確認開始製作...</p>
+                                </div>
+                            {% elif latest_negotiation and latest_negotiation.is_accepted == false %}
+                                {% if order.negotiation_count >= 2 %}
+                                    <!-- 議價次數用盡，訂單取消 -->
+                                    <div class="price-negotiation">
+                                        <h4 style="color: #dc3545;">議價失敗，訂單已取消</h4>
+                                        <p style="color: #666;">議價次數已用盡</p>
+                                    </div>
+                                {% else %}
+                                    <!-- 等待廚師再次議價 -->
+                                    <div class="price-negotiation">
+                                        <h4 style="color: #ffc107;">已拒絕廚師議價：NT${{ latest_negotiation.proposed_amount | int }}</h4>
+                                        <p style="color: #666;">等待廚師再次議價...</p>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <!-- 等待廚師定價 -->
+                                <div class="price-negotiation">
+                                    <h4>等待廚師定價中...</h4>
+                                    <p style="color: #666;">廚師已接單，正在進行價格評估</p>
+                                </div>
+                            {% endif %}
                         {% endif %}
                     {% elif order.status.value == 'accepted' %}
                         <div class="price-negotiation">
-                            <h4 style="color: #28a745;">訂單已確認：NT${{ order.total_amount }}</h4>
+                            <h4 style="color: #28a745;">訂單已確認：NT${{ order.total_amount | int }}</h4>
                             <p style="color: #666;">廚師開始準備您的餐點</p>
+                        </div>
+                    {% elif order.status.value == 'preparing' %}
+                        <div class="price-negotiation">
+                            <h4 style="color: #2196F3;">製作中</h4>
+                            <p style="color: #666;">廚師正在用心製作您的餐點</p>
+                        </div>
+                    {% elif order.status.value == 'ready' %}
+                        <div class="price-negotiation">
+                            <h4 style="color: #9C27B0;">製作完成</h4>
+                            <p style="color: #666;">餐點已完成，等待取餐</p>
+                            <div style="text-align: center; margin-top: 15px;">
+                                <button onclick="confirmReceived()" style="background: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                                    確認收貨完成
+                                </button>
+                            </div>
                         </div>
                     {% elif order.status.value == 'pending' %}
                         <div class="price-negotiation">
@@ -165,9 +205,14 @@
                         <div class="price-negotiation">
                             <h4 style="color: #dc3545;">訂單已取消</h4>
                         </div>
+                    {% elif order.status.value == 'completed' %}
+                        <div class="price-negotiation">
+                            <h4 style="color: #607D8B;">交付完成</h4>
+                            <p style="color: #666;">訂單已完成，感謝您的使用</p>
+                        </div>
                     {% else %}
                         <div class="price-negotiation">
-                            <h4>訂單狀態：{{ order.status.value | replace('preparing', '製作中') | replace('ready', '製作完成') | replace('delivering', '配送中') | replace('completed', '已完成') }}</h4>
+                            <h4>訂單狀態：{{ order.status.value }}</h4>
                         </div>
                     {% endif %}
                 </div>
@@ -177,18 +222,18 @@
                     {% for dish in order.dishes %}
                         <p>{{ loop.index }}. {{ dish.dish_name }} 
                         {% if dish.unit_price > 0 %}
-                            NT$ {{ dish.unit_price }} × {{ dish.quantity }} = NT$ {{ dish.unit_price * dish.quantity }}
+                        × {{ dish.quantity }} NT${{ dish.unit_price | int }}
                         {% else %}
-                            待定價 × {{ dish.quantity }}
+                        × {{ dish.quantity }} 待定價
                         {% endif %}
                         </p>
                     {% endfor %}
                     {% if order.delivery_fee > 0 %}
-                        <p>外送費 NT$ {{ order.delivery_fee }}</p>
+                        <p>外送費 NT${{ order.delivery_fee | int }}</p>
                     {% endif %}
                     <hr>
                     {% if order.total_amount > 0 %}
-                        <p><strong>總計 NT$ {{ (order.total_amount + order.delivery_fee) | int }}</strong></p>
+                        <p><strong>總計 NT${{ (order.total_amount + order.delivery_fee) | int }}</strong></p>
                     {% else %}
                         <p><strong>總計：待定價</strong></p>
                     {% endif %}
@@ -211,8 +256,8 @@
     </div>
 
     <script>
-        // 從模板傳遞的訂單ID
-        const orderId = {{ order.id }};
+        // 從DOM獲取訂單ID
+        const orderId = parseInt(document.body.getAttribute('data-order-id'));
         
         function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
@@ -251,6 +296,62 @@
         // 顯示再議價輸入區域
         function showCounterOffer() {
             document.getElementById('counter-offer-section').style.display = 'block';
+        }
+
+        // 接受最終定價
+        function acceptFinalPricing(negotiationId) {
+            if (confirm('確定接受廚師的最終定價？')) {
+                fetch(`/customer/order/${orderId}/respond_final_pricing/${negotiationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        is_accepted: true
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('已接受最終定價！訂單將進入製作階段。');
+                        location.reload();
+                    } else {
+                        alert('操作失敗：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('系統錯誤，請稍後再試');
+                });
+            }
+        }
+
+        // 拒絕最終定價
+        function rejectFinalPricing(negotiationId) {
+            if (confirm('確定拒絕最終定價？訂單將被取消且無法復原。')) {
+                fetch(`/customer/order/${orderId}/respond_final_pricing/${negotiationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        is_accepted: false
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('已拒絕最終定價，訂單已取消。');
+                        location.reload();
+                    } else {
+                        alert('操作失敗：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('系統錯誤，請稍後再試');
+                });
+            }
         }
 
         // 接受議價
@@ -307,6 +408,31 @@
                 .then(data => {
                     if (data.success) {
                         alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('操作失敗：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('系統錯誤，請稍後再試');
+                });
+            }
+        }
+
+        // 確認收貨
+        function confirmReceived() {
+            if (confirm('確定已經收到餐點並對本次服務滿意嗎？此操作將完成訂單。')) {
+                fetch(`/customer/order/${orderId}/confirm_received`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('訂單已完成！感謝您的訂購。');
                         location.reload();
                     } else {
                         alert('操作失敗：' + data.message);

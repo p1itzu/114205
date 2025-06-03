@@ -99,12 +99,20 @@ def chef_order_detail(
     if order.chef_id is not None and order.chef_id != current_user.id:
         raise HTTPException(status_code=403, detail="無權查看此訂單")
     
+    # 檢查是否有待顧客回應的最終定價
+    chef_final_pricing_pending = False
+    for nego in order.negotiations:
+        if nego.proposed_by == "chef" and nego.is_accepted is None:
+            chef_final_pricing_pending = True
+            break
+    
     return templates.TemplateResponse(
         "chef_order_detail.html",
         {
             **commons,
             "current_user": current_user,
-            "order": order
+            "order": order,
+            "chef_final_pricing_pending": chef_final_pricing_pending
         }
     )
 
@@ -291,10 +299,12 @@ def chef_negotiating_orders(
     current_user: User = Depends(require_chef),
     db: Session = Depends(get_db)
 ):
-    # 獲取議價中的訂單（這裡可以根據需要擴展狀態）
-    negotiating_orders = db.query(Order).filter(
+    # 獲取議價中的訂單，包含議價記錄
+    negotiating_orders = db.query(Order).options(
+        joinedload(Order.negotiations)
+    ).filter(
         Order.chef_id == current_user.id,
-        Order.status == OrderStatus.PREPARING  # 暫時用準備中狀態代表議價中
+        Order.status == OrderStatus.NEGOTIATING
     ).order_by(Order.accepted_at.desc()).all()
     
     return templates.TemplateResponse(
@@ -621,6 +631,59 @@ def confirm_negotiation(
             content={"success": False, "message": f"確認失敗：{str(e)}"}
         )
 
+@router.post("/order/{order_id}/mark_ready")
+def mark_order_ready(
+    order_id: int,
+    current_user: User = Depends(require_chef),
+    db: Session = Depends(get_db)
+):
+    # 獲取訂單
+    order = db.query(Order).filter(
+        Order.id == order_id,
+        Order.chef_id == current_user.id
+    ).first()
+    
+    if not order:
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "message": "訂單不存在"}
+        )
+    
+    # 檢查訂單狀態，只有已接單狀態才能標記為製作完成
+    if order.status != OrderStatus.ACCEPTED:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "只有已接單的訂單才能標記為製作完成"}
+        )
+    
+    try:
+        # 更新訂單狀態為製作完成
+        old_status = order.status
+        order.status = OrderStatus.READY
+        order.ready_at = datetime.utcnow()
+        
+        # 記錄狀態變更歷史
+        status_history = OrderStatusHistory(
+            order_id=order.id,
+            old_status=old_status,
+            new_status=OrderStatus.READY,
+            notes=f"廚師標記餐點製作完成"
+        )
+        db.add(status_history)
+        
+        db.commit()
+        
+        return JSONResponse(
+            content={"success": True, "message": "餐點已標記為製作完成！"}
+        )
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"操作失敗：{str(e)}"}
+        )
+
 # 廚師估價頁面
 @router.get("/order/{order_id}/pricing")
 def chef_pricing_page(
@@ -832,5 +895,176 @@ def respond_counter_offer(
         return JSONResponse(
             status_code=500,
             content={"success": False, "message": f"操作失敗：{str(e)}"}
+        )
+
+# 廚師訂單總覽 - 包含所有分類
+@router.get("/orders", name="chef_orders_overview")
+def chef_orders_overview(
+    request: Request,
+    commons=Depends(common_template_params),
+    current_user: User = Depends(require_chef),
+    db: Session = Depends(get_db)
+):
+    # 待完成訂單 (已接單 + 製作中)
+    pending_orders = db.query(Order).filter(
+        Order.chef_id == current_user.id,
+        Order.status.in_([OrderStatus.ACCEPTED, OrderStatus.PREPARING])
+    ).order_by(Order.accepted_at.desc()).all()
+    
+    # 已完成訂單
+    completed_orders = db.query(Order).filter(
+        Order.chef_id == current_user.id,
+        Order.status == OrderStatus.COMPLETED
+    ).order_by(Order.completed_at.desc()).all()
+    
+    # 議價中訂單
+    negotiating_orders = db.query(Order).filter(
+        Order.chef_id == current_user.id,
+        Order.status == OrderStatus.NEGOTIATING
+    ).order_by(Order.accepted_at.desc()).all()
+    
+    # 已取消訂單
+    cancelled_orders = db.query(Order).filter(
+        Order.chef_id == current_user.id,
+        Order.status == OrderStatus.CANCELLED
+    ).order_by(Order.updated_at.desc()).all()
+    
+    return templates.TemplateResponse(
+        "chef_orders_overview.html",
+        {
+            **commons,
+            "current_user": current_user,
+            "pending_orders": pending_orders,
+            "completed_orders": completed_orders,
+            "negotiating_orders": negotiating_orders,
+            "cancelled_orders": cancelled_orders
+        }
+    )
+
+# 廚師回應顧客再議價頁面
+@router.get("/order/{order_id}/counter_offer_response")
+def chef_counter_offer_response(
+    order_id: int,
+    request: Request,
+    commons=Depends(common_template_params),
+    current_user: User = Depends(require_chef),
+    db: Session = Depends(get_db)
+):
+    # 獲取訂單
+    order = db.query(Order).options(
+        joinedload(Order.dishes),
+        joinedload(Order.customer),
+        joinedload(Order.negotiations)
+    ).filter(Order.id == order_id).first()
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="訂單不存在")
+    
+    # 檢查權限
+    if order.chef_id != current_user.id:
+        raise HTTPException(status_code=403, detail="無權操作此訂單")
+    
+    # 檢查是否有待回應的顧客議價
+    customer_negotiation = None
+    for nego in order.negotiations:
+        if nego.proposed_by == "customer" and nego.is_accepted is None:
+            customer_negotiation = nego
+            break
+    
+    if not customer_negotiation:
+        raise HTTPException(status_code=400, detail="沒有待回應的顧客議價")
+    
+    return templates.TemplateResponse(
+        "chef_counter_offer_response.html",
+        {
+            **commons,
+            "request": request,
+            "order": order,
+            "current_user": current_user,
+            "customer_negotiation": customer_negotiation
+        }
+    )
+
+# 廚師提交最終定價（等待顧客回應）
+@router.post("/order/{order_id}/submit_final_pricing")
+def submit_final_pricing(
+    order_id: int,
+    pricing_data: dict,
+    current_user: User = Depends(require_chef),
+    db: Session = Depends(get_db)
+):
+    # 獲取訂單
+    order = db.query(Order).options(
+        joinedload(Order.dishes),
+        joinedload(Order.negotiations)
+    ).filter(Order.id == order_id).first()
+    
+    if not order:
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "message": "訂單不存在"}
+        )
+    
+    # 檢查權限
+    if order.chef_id != current_user.id:
+        return JSONResponse(
+            status_code=403,
+            content={"success": False, "message": "無權操作此訂單"}
+        )
+    
+    try:
+        dish_prices = pricing_data.get('dish_prices', [])
+        total_amount = pricing_data.get('total_amount', 0)
+        customer_negotiation_id = pricing_data.get('customer_negotiation_id')
+        
+        # 更新菜品價格
+        for dish_price in dish_prices:
+            dish_id = dish_price.get('dish_id')
+            price = dish_price.get('price')
+            
+            dish = db.query(OrderDish).filter(
+                OrderDish.id == dish_id,
+                OrderDish.order_id == order_id
+            ).first()
+            
+            if dish:
+                dish.unit_price = price
+        
+        # 更新訂單總價
+        order.total_amount = total_amount
+        
+        # 創建廚師的最終定價議價記錄
+        final_negotiation = Negotiation(
+            order_id=order.id,
+            proposed_amount=total_amount,
+            proposed_by="chef",
+            message=pricing_data.get('pricing_notes', '廚師最終定價'),
+            is_accepted=None  # 等待顧客回應
+        )
+        db.add(final_negotiation)
+        
+        # 將訂單狀態設為等待顧客確認最終定價
+        order.status = OrderStatus.NEGOTIATING
+        
+        # 記錄狀態歷史
+        status_history = OrderStatusHistory(
+            order_id=order.id,
+            old_status=OrderStatus.NEGOTIATING,
+            new_status=OrderStatus.NEGOTIATING,
+            notes=f"廚師提交最終定價：NT${total_amount}，等待顧客確認"
+        )
+        db.add(status_history)
+        
+        db.commit()
+        
+        return JSONResponse(
+            content={"success": True, "message": "最終定價已送出，等待顧客回應"}
+        )
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"提交失敗：{str(e)}"}
         )
     

@@ -327,7 +327,7 @@
                     const formData = new FormData(profileForm);
                     
                     try {
-                        const response = await fetch('/customer/profile/update', {
+                        const response = await fetch('/profile/update', {
                             method: 'POST',
                             body: formData
                         });

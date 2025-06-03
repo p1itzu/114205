@@ -873,6 +873,10 @@ div.footer {
     background-color: #FF9800 !important; /* 橘色 - 等待回應 */
 }
 
+.order-card .order-header .order-status .status.negotiating {
+    background-color: #FF5722 !important; /* 深橘色 - 議價中 */
+}
+
 .order-card .order-header .order-status .status.accepted {
     background-color: #4CAF50 !important; /* 綠色 - 已接單 */
 }
@@ -883,10 +887,6 @@ div.footer {
 
 .order-card .order-header .order-status .status.ready {
     background-color: #9C27B0 !important; /* 紫色 - 製作完成 */
-}
-
-.order-card .order-header .order-status .status.delivering {
-    background-color: #FF5722 !important; /* 深橘色 - 配送中 */
 }
 
 .order-card .order-header .order-status .status.completed {
@@ -913,6 +913,10 @@ div.footer {
     background-color: #FF9800; /* 橘色 - 等待回應 */
 }
 
+.status.negotiating {
+    background-color: #FF5722; /* 深橘色 - 議價中 */
+}
+
 .status.accepted {
     background-color: #4CAF50; /* 綠色 - 已接單 */
 }
@@ -923,10 +927,6 @@ div.footer {
 
 .status.ready {
     background-color: #9C27B0; /* 紫色 - 製作完成 */
-}
-
-.status.delivering {
-    background-color: #FF5722; /* 深橘色 - 配送中 */
 }
 
 .status.completed {

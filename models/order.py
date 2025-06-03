@@ -5,13 +5,12 @@ from datetime import datetime
 import enum
 
 class OrderStatus(enum.Enum):
-    PENDING = "pending"              # 待接單
+    PENDING = "pending"              # 等待回應
     NEGOTIATING = "negotiating"      # 議價中
     ACCEPTED = "accepted"            # 已接單（議價完成）
-    PREPARING = "preparing"          # 準備中
-    READY = "ready"                 # 已完成
-    DELIVERING = "delivering"        # 配送中
-    COMPLETED = "completed"          # 已完成
+    PREPARING = "preparing"          # 製作中
+    READY = "ready"                 # 製作完成
+    COMPLETED = "completed"          # 交付完成
     CANCELLED = "cancelled"          # 已取消
 
 class DeliveryMethod(enum.Enum):
@@ -51,6 +50,7 @@ class Order(Base):
     # 時間資訊
     preferred_time = Column(DateTime, nullable=True)  # 希望完成時間
     accepted_at = Column(DateTime, nullable=True)     # 接單時間
+    ready_at = Column(DateTime, nullable=True)        # 製作完成時間
     completed_at = Column(DateTime, nullable=True)    # 完成時間
     
     # 價格資訊

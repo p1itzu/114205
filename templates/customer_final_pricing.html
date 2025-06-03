@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最終定價確認 - 味你而煮</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/Order.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">味你而煮</div>
+        <div class="nav-links">
+            <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
+            <a href="#">常見問題</a>
+            <a href="#">客服聯絡</a>
+        </div>
+        <div class="user-info">
+            <div class="username">{{ current_user.email }}</div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="back-button" onclick="goBack()">← 返回</div>
+        <div class="title">最終定價確認</div>
+        <div class="subtitle">訂單編號 #{{ order.order_number }}</div>
+        
+        <div class="content">
+            <!-- 訂單基本信息 -->
+            <div style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 5px;">
+                <h4>訂單資訊</h4>
+                <p><strong>預約時間：</strong>{{ order.preferred_time.strftime('%Y/%m/%d %H:%M') if order.preferred_time else '未指定' }}</p>
+                <p><strong>取餐方式：</strong>{{ '外送' if order.delivery_method.value == 'delivery' else '自取' }}</p>
+                {% if order.delivery_address %}
+                <p><strong>地址：</strong>{{ order.delivery_address }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- 菜品列表 -->
+            <div style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 5px;">
+                <h4>菜品明細</h4>
+                {% for dish in order.dishes %}
+                <div style="border-bottom: 1px solid #ddd; padding: 10px 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>{{ dish.dish_name }} × {{ dish.quantity }}</strong>
+                            <div style="color: #666; font-size: 0.9em;">
+                                鹹度: {{ dish.salt_level.value | replace('light', '清淡') | replace('normal', '正常') | replace('heavy', '重鹹') }}
+                                | 辣度: {{ dish.spice_level.value | replace('none', '不辣') | replace('mild', '微辣') | replace('medium', '中辣') | replace('spicy', '辣') | replace('very_spicy', '超辣') }}
+                            </div>
+                            {% if dish.custom_notes %}
+                            <div style="color: #666; font-size: 0.9em;">備註：{{ dish.custom_notes }}</div>
+                            {% endif %}
+                        </div>
+                        <div style="font-weight: bold; color: #e74c3c;">
+                            NT${{ dish.unit_price | int if dish.unit_price else 0 }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- 定價對比 -->
+            <div style="background: #fff3cd; padding: 20px; margin: 15px 0; border-radius: 5px; border: 1px solid #ffeaa7;">
+                <h4 style="color: #856404; margin-bottom: 15px;">定價說明</h4>
+                
+                <!-- 找到最新的顧客議價記錄 -->
+                {% set customer_negotiation = none %}
+                {% for nego in order.negotiations %}
+                    {% if nego.proposed_by == 'customer' %}
+                        {% set customer_negotiation = nego %}
+                    {% endif %}
+                {% endfor %}
+                
+                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                    <span>您的議價金額：</span>
+                    <span style="font-weight: bold;">
+                        {% if customer_negotiation %}
+                            NT${{ customer_negotiation.proposed_amount | int }}
+                        {% else %}
+                            未議價
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin: 10px 0; padding-top: 10px; border-top: 1px solid #ddd;">
+                    <span style="font-size: 1.1em; font-weight: bold; color: #e74c3c;">廚師最終定價：</span>
+                    <span style="font-size: 1.2em; font-weight: bold; color: #e74c3c;">NT${{ chef_final_pricing.proposed_amount | int }}</span>
+                </div>
+                
+                {% if chef_final_pricing.message %}
+                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd;">
+                    <strong>廚師說明：</strong>
+                    <p style="margin: 5px 0; color: #666;">{{ chef_final_pricing.message }}</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- 決定按鈕 -->
+            <div style="background: white; padding: 20px; margin: 20px 0; border-radius: 5px; border: 1px solid #ddd;">
+                <h4 style="text-align: center; margin-bottom: 20px; color: #333;">請選擇您的決定</h4>
+                
+                <div style="display: flex; gap: 20px; justify-content: center;">
+                    <button onclick="respondToPricing(true)" 
+                            style="background: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; min-width: 150px;">
+                        ✓ 同意最終報價
+                    </button>
+                    
+                    <button onclick="respondToPricing(false)" 
+                            style="background: #dc3545; color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; min-width: 150px;">
+                        ✗ 不同意並取消訂單
+                    </button>
+                </div>
+                
+                <div style="text-align: center; margin-top: 15px; color: #666; font-size: 0.9em;">
+                    <p>* 這是最後的決定機會</p>
+                    <p>* 選擇「不同意」將會取消整個訂單</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = "{{ url_for('customer_order_list') }}";
+        }
+
+        async function respondToPricing(isAccepted) {
+            const actionText = isAccepted ? "接受" : "拒絕";
+            const warningText = isAccepted ? 
+                "確定接受廚師的最終定價嗎？訂單將進入製作階段。" : 
+                "確定拒絕最終定價嗎？訂單將會被取消。";
+            
+            const result = await Swal.fire({
+                title: `${actionText}最終定價`,
+                text: warningText,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: `確定${actionText}`,
+                cancelButtonText: "取消",
+                confirmButtonColor: isAccepted ? "#28a745" : "#dc3545"
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/customer/order/{{ order.id }}/respond_final_pricing/{{ chef_final_pricing.id }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            is_accepted: isAccepted
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        Swal.fire({
+                            title: "操作成功",
+                            text: data.message,
+                            icon: "success",
+                            confirmButtonText: "確認"
+                        }).then(() => {
+                            window.location.href = "{{ url_for('customer_order_list') }}";
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "操作失敗",
+                            text: data.message || "請稍後再試",
+                            icon: "error",
+                            confirmButtonText: "確認"
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: "網路錯誤",
+                        text: "請檢查網路連線並重試",
+                        icon: "error",
+                        confirmButtonText: "確認"
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

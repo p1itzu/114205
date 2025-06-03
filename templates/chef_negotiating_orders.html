@@ -10,15 +10,39 @@
     <div class="navbar">
         <div class="site-name">味你而煮</div>
         <div class="nav-links">
-            <a href="{{ url_for('chef_dashboard') }}">首頁</a>
-            <a href="{{ url_for('chef_profile') }}">我的頁面</a>
+            <a href="{{ url_for('index') }}">首頁</a>
+            <a href="{{ url_for('chef_dashboard') }}">總覽</a>
             <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
-            <a href="{{ url_for('chef_accepted_orders') }}">我的訂單</a>
+
+            <!-- 新增下拉選單 -->
+            <div class="dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                <div class="dropdown-content" id="orderDropdown">
+                    <a href="{{ url_for('chef_accepted_orders') }}">待完成訂單</a>
+                    <a href="{{ url_for('chef_completed_orders') }}">已完成訂單</a>
+                    <a href="{{ url_for('chef_negotiating_orders') }}">議價中訂單</a>
+                    <a href="{{ url_for('chef_cancelled_orders') }}">已取消訂單</a>
+                </div>
+            </div>
+
             <a href="#">客服聯絡</a>
         </div>
         <div class="user-info">
-            <div class="username">{{ current_user.email }}</div>
-            <a href="/auth/logout" style="color: #B3811C; text-decoration: none; margin-left: 15px;">登出</a>
+            {% if user %}
+            <img
+                src="{{ avatar_url }}"
+                alt="頭像"
+                class="avatar"
+            />
+            <div class="user-text">
+                <div class="name">{{ user.name }}</div>
+                <div class="email">{{ user.email }}</div>
+            </div>
+            
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            {% else %}
+            <a href="{{ url_for('login') }}">登入/註冊</a>
+            {% endif %}
         </div>
     </div>
     
@@ -37,16 +61,30 @@
     <div class="container">
         {% if negotiating_orders %}
             {% for order in negotiating_orders %}
-            <div class="order-card" data-date="{{ order.preferred_time.strftime('%Y/%m/%d') if order.preferred_time else '' }}">
+            <!-- 檢查是否有待回應的顧客議價 -->
+            {% set customer_counter_offer = None %}
+            {% for nego in order.negotiations %}
+                {% if nego.proposed_by == 'customer' and nego.is_accepted is none %}
+                    {% set customer_counter_offer = nego %}
+                {% endif %}
+            {% endfor %}
+            
+            <div class="order-card" 
+                 data-date="{{ order.preferred_time.strftime('%Y/%m/%d') if order.preferred_time else '' }}"
+                 data-order-id="{{ order.id }}"
+                 data-has-counter-offer="{{ 'true' if customer_counter_offer else 'false' }}">
                 <p><strong>訂單編號</strong><br>#{{ order.order_number }}</p>
                 <p>
                     預定日期：{{ order.preferred_time.strftime('%Y/%m/%d') if order.preferred_time else '未指定' }}<br>
                     地區：{{ order.delivery_address.split(' ')[0] if order.delivery_address else '未指定' }}<br>
                     地址：{{ order.delivery_address if order.delivery_address else '未指定' }}<br>
-                    狀態：議價中<br>
-                    目前報價：NT${{ "{:,.0f}".format(order.total_amount) if order.total_amount > 0 else '待議價' }}
+                    狀態：議價中{% if customer_counter_offer %} - 顧客已議價{% endif %}<br>
+                    目前報價：NT${{ order.total_amount | int if order.total_amount > 0 else '待議價' }}
+                    {% if customer_counter_offer %}<br><span style="color: #dc3545; font-weight: bold;">顧客議價：NT${{ customer_counter_offer.proposed_amount | int }}</span>{% endif %}
                 </p>
-                <button class="order-btn" onclick="viewOrderDetail('{{ order.id }}')">查看訂單詳情</button>
+                <button class="order-btn" onclick="viewOrderDetail(this)">
+                    查看訂單詳情
+                </button>
             </div>
             {% endfor %}
         {% else %}
@@ -57,8 +95,33 @@
     </div>
 
     <script>
-        function viewOrderDetail(orderId) {
-            window.location.href = `/chef/order/${orderId}`;
+        function toggleDropdown() {
+            document.getElementById("orderDropdown").classList.toggle("show");
+        }
+
+        // 點擊其他地方時關閉下拉選單
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        function viewOrderDetail(buttonElement) {
+            const orderCard = buttonElement.closest('.order-card');
+            const orderId = orderCard.getAttribute('data-order-id');
+            const hasCounterOffer = orderCard.getAttribute('data-has-counter-offer') === 'true';
+            
+            if (hasCounterOffer) {
+                window.location.href = `/chef/order/${orderId}/counter_offer_response`;
+            } else {
+                window.location.href = `/chef/order/${orderId}`;
+            }
         }
 
         function searchOrders() {

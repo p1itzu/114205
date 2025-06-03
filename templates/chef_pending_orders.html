@@ -12,8 +12,8 @@
     <div class="navbar">
         <div class="site-name">味你而煮</div>
         <div class="nav-links">
-            <a href="{{ url_for('chef_dashboard') }}">首頁</a>
-            <a href="{{ url_for('chef_profile') }}">我的頁面</a>
+            <a href="{{ url_for('index') }}">首頁</a>
+            <a href="{{ url_for('chef_dashboard') }}">總覽</a>
             <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
 
             <!-- 新增下拉選單 -->
@@ -68,7 +68,7 @@
                 <p>
                     預定日期：{{ order.preferred_time.strftime('%Y/%m/%d') if order.preferred_time else '未指定' }}<br>
                     地址：{{ order.delivery_address if order.delivery_address else '未指定' }}<br>
-                    預估價格：NT${{ "{:,.0f}".format(order.total_amount) if order.total_amount > 0 else '待議價' }}
+                    預估價格：NT${{ order.total_amount | int if order.total_amount > 0 else '待議價' }}
                 </p>
                 <button class="order-btn" onclick="viewOrderDetail('{{ order.id }}')">查看詳細訂單資訊</button>
             </div>

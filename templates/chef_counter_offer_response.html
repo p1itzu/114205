@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最終定價</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/OrderfinalPrice.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
+    <script>
+        function toggleDropdown() {
+            document.getElementById("orderDropdown").classList.toggle("show");
+        }
+
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">味你而煮</div>
+        <div class="nav-links">
+            <a href="{{ url_for('chef_dashboard') }}">首頁</a>
+            <a href="{{ url_for('chef_main') }}">我的頁面</a>
+            <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
+
+            <!-- 下拉選單 -->
+            <div class="dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                <div class="dropdown-content" id="orderDropdown">
+                    <a href="{{ url_for('chef_accepted_orders') }}">待完成訂單</a>
+                    <a href="{{ url_for('chef_completed_orders') }}">已完成訂單</a>
+                    <a href="{{ url_for('chef_negotiating_orders') }}">議價中訂單</a>
+                    <a href="{{ url_for('chef_cancelled_orders') }}">已取消訂單</a>
+                </div>
+            </div>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+        </div>
+        <div class="user-info">
+            <img src="{{ avatar_url }}" alt="頭像" class="avatar" />
+            <div class="user-text">
+                <div class="name">{{ user.name }}</div>
+                <div class="email">{{ user.email }}</div>
+            </div>
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+        </div>
+    </div>
+
+    <!-- 通知中心視窗 -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <span>通知中心</span>
+            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- 通知項目會動態添加在這裡 -->
+        </ul>
+    </div>
+
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 class="modal-title">訂單編號 #{{ order.order_number }}</h2>
+            <span class="close-button" onclick="goBackToNegotiatingOrders()">×</span>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-label">預約時間：<span class="info-value">{{ order.preferred_time.strftime('%Y/%m/%d %H:%M') if order.preferred_time else '未設定' }}</span></div>
+            {% if order.delivery_method.value == 'delivery' %}
+            <div class="info-label">地址：<span class="info-value">{{ order.delivery_address or '未提供' }}</span></div>
+            {% endif %}
+            <div class="info-label">取餐方式：<span class="info-value">{{ '外送' if order.delivery_method.value == 'delivery' else '自取' }}</span></div>
+            <div class="info-label">聯絡人資訊：<span class="info-value">{{ order.customer.name }} {{ order.customer.phone or order.customer.email }}</span></div>
+        </div>
+
+        <div class="menu-list">
+            {% for dish in order.dishes %}
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <div>{{ loop.index }}. {{ dish.dish_name }} {{ dish.quantity }}人份</div>
+                    <div>
+                        <span>第{{ loop.index }}道價格</span>
+                        <input type="number" 
+                               class="price-input" 
+                               value="{{ dish.unit_price | int if dish.unit_price else 0 }}" 
+                               data-dish-id="{{ dish.id }}"
+                               onchange="calculateTotal()">
+                    </div>
+                </div>
+                <div>（鹹度:{{ dish.salt_level.value | replace('light', '清淡') | replace('normal', '正常') | replace('heavy', '重鹹') }} 
+                     辣度:{{ dish.spice_level.value | replace('none', '不辣') | replace('mild', '微辣') | replace('medium', '中辣') | replace('spicy', '辣') | replace('very_spicy', '超辣') }} 
+                     ）</div>
+                <div class="system-price">您的首次估價：{{ dish.unit_price | int if dish.unit_price else '未估價' }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 獲取顧客議價記錄 - 使用後端傳遞的customer_negotiation，不重新計算 -->
+        
+        <div class="price-section">
+            <div class="price-content">
+                <div class="two-column-layout">
+                    <!-- 左欄：顧客議價資訊 -->
+                    <div class="left-column">
+                        <div class="customer-remark">
+                            <div class="price-row">顧客議價金額：{{ customer_negotiation.proposed_amount | int if customer_negotiation else '未提供' }}</div>
+                            <div class="remark-label">備註原因：</div>
+                            <div class="remark-text">{{ customer_negotiation.message if customer_negotiation and customer_negotiation.message else '無' }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右欄：最終定價資訊 -->
+                    <div class="right-column">
+                        <div class="price-info">
+                            <div class="price-final">最終定價金額為：<span id="finalTotalPrice">0</span></div>
+                            <div class="price-row">原定價：{{ order.total_amount | int if order.total_amount else 0 }}</div>
+                        </div>
+                        <button class="confirm-button" onclick="confirmPrice()">確認送出</button>
+                    </div>
+                </div>
+                
+                <!-- 底部提示 -->
+                <div class="bottom-section">
+                    <div class="price-note">
+                        *提醒最後一次議價，若顧客依然不同意此價格，此訂單將不成立
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 設定小視窗 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2>設定</h2>
+            <p>帳號</p>
+            <p>其他</p>
+            <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+        </div>
+    </div>
+
+    <!-- 添加data屬性來傳遞數據到JavaScript -->
+    <div id="page-data" 
+         data-order-id="{{ order.id }}"
+         data-negotiation-id="{{ customer_negotiation.id if customer_negotiation else '' }}"
+         data-negotiating-orders-url="{{ url_for('chef_negotiating_orders') }}"
+         style="display: none;"></div>
+
+    <script>
+        // 從data屬性獲取數據
+        const pageData = document.getElementById('page-data');
+        const orderId = parseInt(pageData.getAttribute('data-order-id'));
+        const customerNegotiationId = pageData.getAttribute('data-negotiation-id') ? parseInt(pageData.getAttribute('data-negotiation-id')) : null;
+        const negotiatingOrdersUrl = pageData.getAttribute('data-negotiating-orders-url');
+        
+        // 簡單調試
+        console.log('orderId:', orderId);
+        console.log('customerNegotiationId:', customerNegotiationId);
+
+        function goBackToNegotiatingOrders() {
+            window.location.href = negotiatingOrdersUrl;
+        }
+
+        function calculateTotal() {
+            const inputs = document.querySelectorAll('.price-input');
+            let total = 0;
+
+            inputs.forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                total += value;
+            });
+
+            document.getElementById('finalTotalPrice').textContent = total;
+        }
+
+        // 頁面載入時計算總價
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateTotal();
+        });
+
+        async function confirmPrice() {
+            if (!customerNegotiationId) {
+                Swal.fire({
+                    title: '錯誤',
+                    text: '找不到顧客議價記錄',
+                    icon: 'error',
+                    confirmButtonText: '好的'
+                });
+                return;
+            }
+
+            const inputs = document.querySelectorAll('.price-input');
+            const dishPrices = [];
+            let calculatedTotal = 0;
+            let allInputsValid = true;
+
+            inputs.forEach(input => {
+                const dishId = input.dataset.dishId;
+                const priceStr = input.value;
+                const price = parseFloat(priceStr);
+
+                if (isNaN(price) || price < 0) {
+                    allInputsValid = false;
+                } else {
+                    dishPrices.push({
+                        dish_id: dishId,
+                        price: price
+                    });
+                    calculatedTotal += price;
+                }
+            });
+
+            if (!allInputsValid) {
+                Swal.fire({
+                    title: '輸入錯誤',
+                    text: '部分菜品價格輸入無效，請檢查。',
+                    icon: 'error',
+                    confirmButtonText: '好的'
+                });
+                return;
+            }
+
+            try {
+                // 提交最終定價，等待顧客回應
+                const response = await fetch(`/chef/order/${orderId}/submit_final_pricing`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        dish_prices: dishPrices,
+                        total_amount: calculatedTotal,
+                        customer_negotiation_id: customerNegotiationId,
+                        pricing_notes: '廚師最終定價，等待顧客確認'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    Swal.fire({
+                        title: "最終定價已送出",
+                        text: "已通知顧客查看最終定價，等待顧客回應",
+                        icon: "success",
+                        confirmButtonText: "確認",
+                        customClass: {
+                            confirmButton: "swal-custom-button"
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = negotiatingOrdersUrl;
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: '錯誤',
+                        text: result.message || '提交最終定價失敗，請稍後再試。',
+                        icon: 'error',
+                        confirmButtonText: '好的'
+                    });
+                }
+            } catch (error) {
+                console.error('Error submitting final price:', error);
+                Swal.fire({
+                    title: '網路錯誤',
+                    text: '提交過程中發生網路問題，請檢查您的連線並重試。',
+                    icon: 'error',
+                    confirmButtonText: '好的'
+                });
+            }
+        }
+
+        function toggleSettingsModal() {
+            // 設定modal功能（可選）
+        }
+    </script>
+</body>
+
+</html> 

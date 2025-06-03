@@ -1,0 +1,120 @@
+/* 議價信息樣式 */
+.negotiation-info {
+    background: #f8f9fa;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.customer-offer {
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #fff3cd;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+}
+
+.customer-offer p {
+    margin: 5px 0;
+    color: #856404;
+    font-size: 16px;
+}
+
+.customer-reason {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ffeaa7;
+}
+
+.final-decision {
+    text-align: center;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 2px solid #FF8C00;
+}
+
+.final-amount {
+    font-size: 20px;
+    color: #FF8C00;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.original-amount {
+    font-size: 16px;
+    color: #666;
+    margin: 5px 0;
+}
+
+/* 操作按鈕樣式 */
+.action-buttons {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.confirm-btn {
+    background: #FF8C00;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.confirm-btn:hover {
+    background: #FF7A00;
+}
+
+/* 注意事項樣式 */
+.note {
+    text-align: center;
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* 價格顯示樣式 */
+.pricing-display {
+    text-align: center;
+}
+
+.pricing-display label {
+    display: block;
+    margin-bottom: 5px;
+    color: #666;
+    font-size: 14px;
+}
+
+.price-display {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    min-width: 80px;
+    display: inline-block;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .final-decision {
+        padding: 10px;
+    }
+    
+    .final-amount {
+        font-size: 18px;
+    }
+    
+    .confirm-btn {
+        padding: 10px 25px;
+        font-size: 14px;
+    }
+} 

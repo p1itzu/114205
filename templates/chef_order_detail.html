@@ -32,7 +32,6 @@
         <div class="content">
             <p><strong>預約日期與時間：{{ order.preferred_time.strftime('%Y/%m/%d %H:%M') if order.preferred_time else '未指定' }}</strong></p>
             <p><strong>取餐方式：{{ '外送' if order.delivery_method.value == 'delivery' else '自取' }}</strong></p>
-            <p><strong>地址：{{ order.delivery_address if order.delivery_address else '未指定' }}</strong></p>
             <p><strong>聯絡人資訊：{{ order.customer.email }}</strong></p>
             <p><strong>聯絡電話：{{ order.customer.phone if order.customer.phone else '未提供' }}</strong></p>
             
@@ -72,7 +71,24 @@
             <button class="reject" onclick="rejectOrder()">拒絕</button>
             <button class="accept" type="button" onclick="acceptOrder()">接單</button>
         </div>
+        
         {% elif order.status.value == 'negotiating' %}
+        <!-- 檢查是否有最終定價等待顧客回應 -->
+        {% if chef_final_pricing_pending %}
+        <div style="background: #fff3cd; padding: 15px; margin: 15px 0; border-radius: 5px; border: 1px solid #ffeaa7;">
+            <h4 style="color: #856404;">⏳ 等待顧客回應最終定價</h4>
+            <p style="color: #856404;">您已提交最終定價，請耐心等待顧客回應。在此期間無法修改訂單。</p>
+            {% for nego in order.negotiations %}
+                {% if nego.proposed_by == 'chef' and nego.is_accepted is none %}
+                <p style="color: #856404;"><strong>最終定價：NT${{ nego.proposed_amount | int }}</strong></p>
+                {% if nego.message %}
+                <p style="color: #856404;">說明：{{ nego.message }}</p>
+                {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+        
+        {% else %}
         <p style="text-align: center; margin-top: 15px; font-weight: bold; color: #FF8C00;">
             訂單進入議價階段（{{ order.negotiation_count }}/2 次議價）
         </p>
@@ -83,7 +99,7 @@
             <h4>議價記錄：</h4>
             {% for nego in order.negotiations %}
             <div style="border-left: 3px solid #007bff; padding: 10px; margin: 10px 0; background: white;">
-                <p><strong>{{ '廚師' if nego.proposed_by == 'chef' else '顧客' }}提議：</strong> NT${{ nego.proposed_amount }}</p>
+                <p><strong>{{ '廚師' if nego.proposed_by == 'chef' else '顧客' }}提議：</strong> NT${{ nego.proposed_amount | int }}</p>
                 {% if nego.message %}<p><strong>說明：</strong>{{ nego.message }}</p>{% endif %}
                 <p><strong>時間：</strong>{{ nego.created_at.strftime('%m/%d %H:%M') }}</p>
                 {% if nego.is_accepted is not none %}
@@ -133,7 +149,7 @@
         {% for nego in order.negotiations %}
             {% if nego.is_accepted %}
                 {% set accepted_nego = nego %}
-            {% elif nego.proposed_by == 'customer' and nego.is_accepted is none %}
+            {% elif nego.proposed_by == 'customer' and (nego.is_accepted is none or nego.is_accepted is null or nego.is_accepted == None) %}
                 {% set customer_counter_offer = nego %}
             {% endif %}
         {% endfor %}
@@ -141,14 +157,18 @@
         {% if customer_counter_offer %}
         <!-- 顯示顧客的再議價 -->
         <div style="background: #fff3cd; padding: 15px; margin: 15px 0; border-radius: 5px; border: 1px solid #ffeaa7;">
-            <h4 style="color: #856404;">顧客再議價：NT${{ customer_counter_offer.proposed_amount }}</h4>
+            <h4 style="color: #856404;">顧客再議價：NT${{ customer_counter_offer.proposed_amount | int }}</h4>
             {% if customer_counter_offer.message %}
             <p style="color: #856404; margin: 10px 0;">顧客說明：{{ customer_counter_offer.message }}</p>
             {% endif %}
             <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <a href="{{ url_for('chef_counter_offer_response', order_id=order.id) }}" 
+                   style="background: #17a2b8; color: white; padding: 10px 20px; border: none; border-radius: 5px; text-decoration: none; display: inline-block;">
+                    前往議價回應頁面
+                </a>
                 <button class="accept-counter-offer" data-negotiation-id="{{ customer_counter_offer.id }}" 
                         style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                    接受顧客議價
+                    快速接受議價
                 </button>
                 <button class="reject-counter-offer" data-negotiation-id="{{ customer_counter_offer.id }}" 
                         style="background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
@@ -158,21 +178,95 @@
         </div>
         {% elif accepted_nego %}
         <div style="background: #d4edda; padding: 15px; margin: 15px 0; border-radius: 5px; border: 1px solid #c3e6cb;">
-            <p style="color: #155724; font-weight: bold;">顧客已接受議價：NT${{ accepted_nego.proposed_amount }}</p>
+            <p style="color: #155724; font-weight: bold;">顧客已接受議價：NT${{ accepted_nego.proposed_amount | int }}</p>
             <button onclick="confirmNegotiation()" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
                 確認開始製作
             </button>
         </div>
         {% endif %}
+        {% endif %}
         
         {% else %}
         <p style="text-align: center; margin-top: 15px; font-weight: bold; color: #666;">
-            此訂單狀態：{{ order.status.value | replace('accepted', '已接單') | replace('preparing', '準備中') | replace('completed', '已完成') | replace('cancelled', '已取消') | replace('negotiating', '議價中') }}
+            此訂單狀態：{{ order.status.value | replace('accepted', '已接單') | replace('preparing', '製作中') | replace('ready', '製作完成') | replace('completed', '已完成') | replace('cancelled', '已取消') | replace('negotiating', '議價中') | replace('pending', '等待回應') }}
         </p>
+        
+        {% if order.status.value == 'accepted' %}
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="markOrderReady()" style="background: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                餐點製作完成
+            </button>
+        </div>
+        {% endif %}
         {% endif %}
     </div>
     
+    <!-- 添加資料屬性 -->
+    {% set has_customer_counter = false %}
+    {% for nego in order.negotiations %}
+        {% if nego.proposed_by == 'customer' and (nego.is_accepted is none or nego.is_accepted is null or nego.is_accepted == None) %}
+            {% set has_customer_counter = true %}
+        {% endif %}
+    {% endfor %}
+    
+    <!-- 調試：顯示每個議價記錄的詳細信息 -->
+    <div id="debug-info" style="display: none;">
+        {% for nego in order.negotiations %}
+        <div data-nego-id="{{ nego.id }}" 
+             data-proposed-by="{{ nego.proposed_by }}" 
+             data-is-accepted="{{ nego.is_accepted if nego.is_accepted is not none else 'null' }}"
+             data-amount="{{ nego.proposed_amount }}"></div>
+        {% endfor %}
+    </div>
+    
+    <div id="page-data" 
+         data-has-counter-offer="{{ 'true' if has_customer_counter else 'false' }}"
+         data-counter-offer-url="{{ url_for('chef_counter_offer_response', order_id=order.id) }}"
+         data-order-id="{{ order.id }}"
+         style="display: none;"></div>
+
     <script>
+        // 調試信息：檢查所有議價記錄
+        const debugInfo = document.getElementById('debug-info');
+        const negoElements = debugInfo.querySelectorAll('[data-nego-id]');
+        console.log('=== 議價記錄調試 ===');
+        negoElements.forEach(elem => {
+            console.log('議價記錄:', {
+                id: elem.getAttribute('data-nego-id'),
+                proposed_by: elem.getAttribute('data-proposed-by'),
+                is_accepted: elem.getAttribute('data-is-accepted'),
+                amount: elem.getAttribute('data-amount')
+            });
+        });
+        
+        // 檢查是否有待回應的顧客議價
+        const pageData = document.getElementById('page-data');
+        const hasCounterOffer = pageData.getAttribute('data-has-counter-offer') === 'true';
+        const orderStatus = '{{ order.status.value }}';
+        
+        console.log('自動跳轉檢查 - 有顧客議價:', hasCounterOffer, '訂單狀態:', orderStatus);
+        
+        // 手動檢查是否有未回應的顧客議價
+        let manualCheck = false;
+        negoElements.forEach(elem => {
+            const proposedBy = elem.getAttribute('data-proposed-by');
+            const isAccepted = elem.getAttribute('data-is-accepted');
+            if (proposedBy === 'customer' && (isAccepted === 'null' || isAccepted === 'None' || isAccepted === '')) {
+                manualCheck = true;
+                console.log('手動檢查發現未回應的顧客議價:', elem.getAttribute('data-nego-id'));
+            }
+        });
+        
+        console.log('手動檢查結果:', manualCheck);
+        
+        if ((hasCounterOffer || manualCheck) && orderStatus === 'negotiating') {
+            const counterOfferUrl = pageData.getAttribute('data-counter-offer-url');
+            console.log('準備跳轉到:', counterOfferUrl);
+            
+            // 直接跳轉到議價回應頁面（移除提示）
+            window.location.href = counterOfferUrl;
+        }
+        
         function goBack() {
             window.history.back();
         }
@@ -479,6 +573,54 @@
                 });
             });
         });
+
+        // 餐點製作完成
+        function markOrderReady() {
+            Swal.fire({
+                title: "確認餐點製作完成?",
+                text: "您確定訂單 #{{ order.order_number }} 的所有餐點都已製作完成嗎？",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "是的，已完成製作",
+                cancelButtonText: "取消",
+                confirmButtonColor: "#28a745"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/chef/order/{{ order.id }}/mark_ready`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: "製作完成！",
+                                text: "餐點已標記為製作完成，顧客將收到通知",
+                                icon: "success"
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "操作失敗",
+                                text: data.message,
+                                icon: "error"
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: "操作失敗",
+                            text: "系統錯誤，請稍後再試",
+                            icon: "error"
+                        });
+                    });
+                }
+            });
+        }
     </script>
 </body>
 
