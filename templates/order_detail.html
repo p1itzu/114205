@@ -102,28 +102,96 @@
             </div>
             <div class="extra-section">
                 <div class="extra-left">
-                    <div class="price-negotiation">
-                        <h4>廚師第一次定價：NT${{ order.total_amount }}</h4>
-                        <div class="negotiation-buttons">
-                            <button class="btn-agree">同意</button>
-                            <button class="btn-negotiate">再議價</button>
-                            <input type="text" placeholder="請輸入理想金額" class="price-input">
+                    {% if order.status.value == 'negotiating' %}
+                        {% set latest_negotiation = order.negotiations|selectattr('proposed_by', 'equalto', 'chef')|sort(attribute='created_at')|last %}
+                        {% if latest_negotiation and latest_negotiation.is_accepted is none %}
+                            <!-- 顯示廚師的議價，等待顧客回應 -->
+                            <div class="price-negotiation">
+                                <h4>廚師第一次定價：NT${{ latest_negotiation.proposed_amount }}</h4>
+                                {% if latest_negotiation.message %}
+                                <p style="color: #666; margin: 10px 0;">廚師說明：{{ latest_negotiation.message }}</p>
+                                {% endif %}
+                                <div class="negotiation-buttons">
+                                    <button class="btn-agree" data-negotiation-id="{{ latest_negotiation.id }}">同意</button>
+                                    <button class="btn-negotiate" onclick="showCounterOffer()">再議價</button>
+                                </div>
+                                
+                                <!-- 再議價輸入區域 -->
+                                <div id="counter-offer-section" style="display: none; margin-top: 15px;">
+                                    <input type="number" id="counter-amount" placeholder="請輸入理想金額" class="price-input" min="0" step="1">
+                                    <input type="text" id="counter-reason" placeholder="請填寫需求或理由，讓廚師知道" class="text-input">
+                                    <button class="submit-btn" data-negotiation-id="{{ latest_negotiation.id }}">送出</button>
+                                    <p class="note">*注意：僅此一次議價機會</p>
+                                </div>
+                            </div>
+                        {% elif latest_negotiation and latest_negotiation.is_accepted == true %}
+                            <!-- 顧客已接受議價 -->
+                            <div class="price-negotiation">
+                                <h4 style="color: #28a745;">議價已接受：NT${{ latest_negotiation.proposed_amount }}</h4>
+                                <p style="color: #666;">等待廚師確認開始製作...</p>
+                            </div>
+                        {% elif latest_negotiation and latest_negotiation.is_accepted == false %}
+                            {% if order.negotiation_count >= 2 %}
+                                <!-- 議價次數用盡，訂單取消 -->
+                                <div class="price-negotiation">
+                                    <h4 style="color: #dc3545;">議價失敗，訂單已取消</h4>
+                                    <p style="color: #666;">議價次數已用盡</p>
+                                </div>
+                            {% else %}
+                                <!-- 等待廚師再次議價 -->
+                                <div class="price-negotiation">
+                                    <h4 style="color: #ffc107;">已拒絕廚師議價：NT${{ latest_negotiation.proposed_amount }}</h4>
+                                    <p style="color: #666;">等待廚師再次議價...</p>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <!-- 等待廚師定價 -->
+                            <div class="price-negotiation">
+                                <h4>等待廚師定價中...</h4>
+                                <p style="color: #666;">廚師已接單，正在進行價格評估</p>
+                            </div>
+                        {% endif %}
+                    {% elif order.status.value == 'accepted' %}
+                        <div class="price-negotiation">
+                            <h4 style="color: #28a745;">訂單已確認：NT${{ order.total_amount }}</h4>
+                            <p style="color: #666;">廚師開始準備您的餐點</p>
                         </div>
-                        <input type="text" placeholder="請填寫需求或理由，讓廚師知道" class="text-input">
-                        <button class="submit-btn" type="submit" onclick="location.href='#'">送出</button>
-                        <p class="note">*注意：僅此一次議價機會</p>
-                    </div>
+                    {% elif order.status.value == 'pending' %}
+                        <div class="price-negotiation">
+                            <h4>等待廚師接單...</h4>
+                            <p style="color: #666;">您的訂單已提交，等待廚師回應</p>
+                        </div>
+                    {% elif order.status.value == 'cancelled' %}
+                        <div class="price-negotiation">
+                            <h4 style="color: #dc3545;">訂單已取消</h4>
+                        </div>
+                    {% else %}
+                        <div class="price-negotiation">
+                            <h4>訂單狀態：{{ order.status.value | replace('preparing', '製作中') | replace('ready', '製作完成') | replace('delivering', '配送中') | replace('completed', '已完成') }}</h4>
+                        </div>
+                    {% endif %}
                 </div>
+                
                 <div class="extra-right">
                     <p>價錢明細:</p>
                     {% for dish in order.dishes %}
-                        <p>{{ loop.index }}. {{ dish.dish_name }} NT$ {{ dish.unit_price }} × {{ dish.quantity }} = NT$ {{ dish.unit_price * dish.quantity }}</p>
+                        <p>{{ loop.index }}. {{ dish.dish_name }} 
+                        {% if dish.unit_price > 0 %}
+                            NT$ {{ dish.unit_price }} × {{ dish.quantity }} = NT$ {{ dish.unit_price * dish.quantity }}
+                        {% else %}
+                            待定價 × {{ dish.quantity }}
+                        {% endif %}
+                        </p>
                     {% endfor %}
                     {% if order.delivery_fee > 0 %}
                         <p>外送費 NT$ {{ order.delivery_fee }}</p>
                     {% endif %}
                     <hr>
-                    <p><strong>總計 NT$ {{ order.total_amount + order.delivery_fee }}</strong></p>
+                    {% if order.total_amount > 0 %}
+                        <p><strong>總計 NT$ {{ (order.total_amount + order.delivery_fee) | int }}</strong></p>
+                    {% else %}
+                        <p><strong>總計：待定價</strong></p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -143,6 +211,9 @@
     </div>
 
     <script>
+        // 從模板傳遞的訂單ID
+        const orderId = {{ order.id }};
+        
         function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
             modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
@@ -177,6 +248,77 @@
             }
         }
 
+        // 顯示再議價輸入區域
+        function showCounterOffer() {
+            document.getElementById('counter-offer-section').style.display = 'block';
+        }
+
+        // 接受議價
+        function acceptNegotiation(negotiationId) {
+            if (confirm('確定接受此議價金額？')) {
+                fetch(`/customer/order/${orderId}/respond_negotiation/${negotiationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        is_accepted: true
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('操作失敗：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('系統錯誤，請稍後再試');
+                });
+            }
+        }
+
+        // 提交再議價
+        function submitCounterOffer(negotiationId) {
+            const amount = document.getElementById('counter-amount').value;
+            const reason = document.getElementById('counter-reason').value;
+
+            if (!amount || amount <= 0) {
+                alert('請輸入有效的議價金額');
+                return;
+            }
+
+            if (confirm('確定提交再議價？')) {
+                fetch(`/customer/order/${orderId}/respond_negotiation/${negotiationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        is_accepted: false,
+                        response_message: reason || null,
+                        counter_amount: parseFloat(amount)
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('操作失敗：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('系統錯誤，請稍後再試');
+                });
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             const negotiateBtn = document.querySelector(".btn-negotiate"); // 再議價按鈕
             const agreeBtn = document.querySelector(".btn-agree"); // 同意按鈕
@@ -185,43 +327,57 @@
             const submitBtn = document.querySelector(".submit-btn"); // 送出按鈕
             const noteText = document.querySelector(".note"); // *注意：僅此一次議價機會*
 
-            // 預設隱藏輸入框、送出按鈕與提示文字
-            priceInput.style.display = "none";
-            textInput.style.display = "none";
-            submitBtn.style.display = "none";
-            noteText.style.display = "none";
+            // 如果元素存在，設置初始狀態
+            if (priceInput) priceInput.style.display = "none";
+            if (textInput) textInput.style.display = "none";
+            if (submitBtn) submitBtn.style.display = "none";
+            if (noteText) noteText.style.display = "none";
 
             // 點擊「再議價」按鈕時，顯示輸入框與提示文字
-            negotiateBtn.addEventListener("click", function () {
-                priceInput.style.display = "block";
-                textInput.style.display = "block";
-                noteText.style.display = "block";
-            });
+            if (negotiateBtn) {
+                negotiateBtn.addEventListener("click", function () {
+                    if (priceInput) priceInput.style.display = "block";
+                    if (textInput) textInput.style.display = "block";
+                    if (noteText) noteText.style.display = "block";
+                });
+            }
 
             // 當使用者輸入內容時，顯示「送出」按鈕
             function checkInput() {
-                if (priceInput.value.trim() !== "" || textInput.value.trim() !== "") {
-                    submitBtn.style.display = "block";
-                } else {
-                    submitBtn.style.display = "none";
+                if (priceInput && textInput && submitBtn) {
+                    if (priceInput.value.trim() !== "" || textInput.value.trim() !== "") {
+                        submitBtn.style.display = "block";
+                    } else {
+                        submitBtn.style.display = "none";
+                    }
                 }
             }
 
             // 監聽輸入框變化
-            priceInput.addEventListener("input", checkInput);
-            textInput.addEventListener("input", checkInput);
+            if (priceInput) priceInput.addEventListener("input", checkInput);
+            if (textInput) textInput.addEventListener("input", checkInput);
 
             // 點擊「同意」時，隱藏所有輸入欄、送出按鈕與提示文字
-            agreeBtn.addEventListener("click", function () {
-                priceInput.style.display = "none";
-                textInput.style.display = "none";
-                submitBtn.style.display = "none";
-                noteText.style.display = "none";
-            });
+            if (agreeBtn) {
+                agreeBtn.addEventListener("click", function () {
+                    const negotiationId = this.getAttribute('data-negotiation-id');
+                    acceptNegotiation(negotiationId);
+                    
+                    if (priceInput) priceInput.style.display = "none";
+                    if (textInput) textInput.style.display = "none";
+                    if (submitBtn) submitBtn.style.display = "none";
+                    if (noteText) noteText.style.display = "none";
+                });
+            }
+
+            // 點擊「送出」按鈕
+            if (submitBtn) {
+                submitBtn.addEventListener("click", function () {
+                    const negotiationId = this.getAttribute('data-negotiation-id');
+                    submitCounterOffer(negotiationId);
+                });
+            }
         });
-
-
-
     </script>
     <script src="/static/js/notification.js"></script>
 </body>

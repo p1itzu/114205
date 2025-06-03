@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, status
+from fastapi import FastAPI, Request, Depends, status, HTTPException
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -59,6 +59,29 @@ def index(ctx: dict = Depends(common_template_params)):
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException) -> Response:
     if exc.status_code == status.HTTP_404_NOT_FOUND:
+        return templates.TemplateResponse(
+            "404.html",
+            {"request": request},
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+    elif exc.status_code == status.HTTP_401_UNAUTHORIZED:
+        return templates.TemplateResponse(
+            "401.html",
+            {"request": request},
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+    
+    return await default_http_handler(request, exc)
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException) -> Response:
+    if exc.status_code == status.HTTP_401_UNAUTHORIZED:
+        return templates.TemplateResponse(
+            "401.html",
+            {"request": request},
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+    elif exc.status_code == status.HTTP_404_NOT_FOUND:
         return templates.TemplateResponse(
             "404.html",
             {"request": request},

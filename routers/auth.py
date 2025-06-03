@@ -13,7 +13,7 @@ from config import settings
 from database import get_db
 from models.user import User, UserRole
 from models.chef import ChefProfile
-from utils.security import verify_password, get_password_hash, create_access_token
+from utils.security import verify_password, get_password_hash, create_access_token, validate_password_strength
 from utils.mail import sendmail
 
 router = APIRouter()
@@ -91,6 +91,14 @@ def signup(
     role: str = Form(...),
     db: Session = Depends(get_db)
     ):
+    # 驗證密碼強度
+    is_valid, error_message = validate_password_strength(password)
+    if not is_valid:
+        return templates.TemplateResponse(
+            "signup.html",
+            {"request": request, "error": error_message}
+        )
+    
     if db.query(User).filter(User.email == email).first():
         return templates.TemplateResponse(
             "signup.html",
@@ -284,13 +292,34 @@ async def upload_certificate(
         chef_profile.certificate_image_url = f"/static/uploads/certificates/{filename}"
         db.commit()
         
-        # 清除 session 並登入
+        # 清除 session 並設置登入cookie
         request.session.pop('chef_user_id', None)
         
-        return templates.TemplateResponse(
+        # 設置登入token
+        token = create_access_token({"user_id": user.id})
+        
+        response = templates.TemplateResponse(
             "certificate_success.html",
             {"request": request, "user": user}
         )
+        
+        # 設置登入cookie
+        response.set_cookie(
+            key="access_token",
+            value=token,
+            httponly=True,
+            max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        )
+        
+        # 如果用戶有頭像，也設置頭像cookie
+        if user.avatar_url:
+            response.set_cookie(
+                key="avatar_url", 
+                value=user.avatar_url, 
+                httponly=False
+            )
+        
+        return response
         
     except Exception as e:
         # 如果保存失敗，刪除檔案

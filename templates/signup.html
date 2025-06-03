@@ -5,6 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>用戶註冊</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/signup.css') }}">
+  <style>
+    .password-requirements {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+      padding: 8px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    .password-requirements ul {
+      margin: 0;
+      padding-left: 16px;
+    }
+    .password-requirements li {
+      margin: 2px 0;
+    }
+    .requirement-met {
+      color: #28a745;
+    }
+    .requirement-not-met {
+      color: #dc3545;
+    }
+    .password-strength {
+      font-size: 12px;
+      margin-top: 5px;
+      font-weight: bold;
+    }
+    .strength-weak {
+      color: #dc3545;
+    }
+    .strength-medium {
+      color: #ffc107;
+    }
+    .strength-strong {
+      color: #28a745;
+    }
+    .error {
+      transition: opacity 0.5s ease-out;
+    }
+    .error.fade-out {
+      opacity: 0;
+    }
+    .success {
+      transition: opacity 0.5s ease-out;
+    }
+    .success.fade-out {
+      opacity: 0;
+    }
+  </style>
 </head>
 <body>
   <div class="left-section"></div>
@@ -17,23 +67,37 @@
       <form action="{{ url_for('signup') }}" method="post" id="signup-form">
         <input type="text" name="name" placeholder="Name" required>
         <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="密碼 (8位數字+字母)" required>
+        <input type="password" name="password" id="password" placeholder="密碼" required>
+        <div class="password-requirements" id="password-requirements">
+          <div style="font-weight: bold; margin-bottom: 5px;">密碼要求：</div>
+          <ul>
+            <li id="length-req" class="requirement-not-met">至少8個字符</li>
+            <li id="uppercase-req" class="requirement-not-met">包含至少一個大寫字母 (A-Z)</li>
+            <li id="lowercase-req" class="requirement-not-met">包含至少一個小寫字母 (a-z)</li>
+            <li id="number-req" class="requirement-not-met">包含至少一個數字 (0-9)</li>
+          </ul>
+          <div id="password-strength" class="password-strength"></div>
+        </div>
         <div class="button-group">
           <span class="role-label">請選擇身分：</span>
           <button type="button" class="role-button" data-role="chef" onclick="selectRole('chef')">廚師</button>
           <button type="button" class="role-button" data-role="customer" onclick="selectRole('customer')">顧客</button>
         </div>
         <input type="hidden" name="role" id="selected-role" required>
-        <button type="submit" class="button">註冊</button>
+        <button type="submit" class="button" id="submit-btn">註冊</button>
       </form>
       {% if error %}
-        <p class="error">{{ error }}</p>
+        <p class="error" id="error-message">{{ error }}</p>
+      {% endif %}
+      {% if success %}
+        <p class="success" id="success-message">{{ success }}</p>
       {% endif %}
     </div>
   </div>
 
   <script>
     let selectedRole = null;
+    let passwordValid = false;
 
     function selectRole(role) {
       // 移除所有按鈕的選中狀態
@@ -47,7 +111,73 @@
       // 設置隱藏字段的值
       document.getElementById('selected-role').value = role;
       selectedRole = role;
+      
+      updateSubmitButton();
     }
+
+    function checkPasswordStrength(password) {
+      const requirements = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /\d/.test(password)
+      };
+
+      // 更新每個要求的顯示狀態
+      document.getElementById('length-req').className = requirements.length ? 'requirement-met' : 'requirement-not-met';
+      document.getElementById('uppercase-req').className = requirements.uppercase ? 'requirement-met' : 'requirement-not-met';
+      document.getElementById('lowercase-req').className = requirements.lowercase ? 'requirement-met' : 'requirement-not-met';
+      document.getElementById('number-req').className = requirements.number ? 'requirement-met' : 'requirement-not-met';
+
+      // 計算強度
+      const metRequirements = Object.values(requirements).filter(Boolean).length;
+      const strengthDiv = document.getElementById('password-strength');
+      
+      if (metRequirements === 4) {
+        strengthDiv.textContent = '密碼強度：強';
+        strengthDiv.className = 'password-strength strength-strong';
+        passwordValid = true;
+      } else if (metRequirements >= 2) {
+        strengthDiv.textContent = '密碼強度：中';
+        strengthDiv.className = 'password-strength strength-medium';
+        passwordValid = false;
+      } else {
+        strengthDiv.textContent = '密碼強度：弱';
+        strengthDiv.className = 'password-strength strength-weak';
+        passwordValid = false;
+      }
+
+      updateSubmitButton();
+    }
+
+    function updateSubmitButton() {
+      const submitBtn = document.getElementById('submit-btn');
+      if (passwordValid && selectedRole) {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+      } else {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.6';
+      }
+    }
+
+    function autoHideMessage(elementId, delay = 5000) {
+      const element = document.getElementById(elementId);
+      if (element) {
+        setTimeout(() => {
+          element.classList.add('fade-out');
+          // 完全移除元素
+          setTimeout(() => {
+            element.style.display = 'none';
+          }, 500); // 等待淡出動畫完成
+        }, delay);
+      }
+    }
+
+    // 密碼輸入事件監聽
+    document.getElementById('password').addEventListener('input', function(e) {
+      checkPasswordStrength(e.target.value);
+    });
 
     // 表單提交前驗證
     document.getElementById('signup-form').addEventListener('submit', function(e) {
@@ -56,6 +186,21 @@
         alert('請選擇您的身分（廚師或顧客）');
         return false;
       }
+      
+      if (!passwordValid) {
+        e.preventDefault();
+        alert('請確保密碼符合所有要求');
+        return false;
+      }
+    });
+
+    // 初始化按鈕狀態
+    updateSubmitButton();
+
+    // 頁面加載後自動隱藏錯誤和成功訊息
+    document.addEventListener('DOMContentLoaded', function() {
+      autoHideMessage('error-message', 5000);   // 5秒後隱藏錯誤訊息
+      autoHideMessage('success-message', 5000); // 5秒後隱藏成功訊息
     });
   </script>
 </body>

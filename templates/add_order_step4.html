@@ -84,27 +84,20 @@
                 <ul class="meal-list">
                     {% for dish in dishes %}
                     <li>
-                        {{ dish.dish_name }} - <span class="price" data-price="{{ dish.unit_price }}" data-quantity="{{ dish.quantity }}">{{ dish.unit_price }}</span> 元 × {{ dish.quantity }}
+                        {{ dish.dish_name }} × {{ dish.quantity }}
                     </li>
                     {% endfor %}
                 </ul>
             </div>
             <br>
 
-            <!-- 動態總價 -->
-            {% set total_price = 0 %}
-            {% for dish in dishes %}
-                {% set total_price = total_price + (dish.unit_price * dish.quantity) %}
-            {% endfor %}
-            <label class="order-time"><strong>預估價格:</strong> <span id="totalPrice">{{ "%.0f"|format(total_price) }}</span> 元</label>
-            <br><br>
-
             <!-- 按鈕 -->
             <form id="step4-form" method="post" action="{{ url_for('order_step4') }}">
                 <input type="hidden" name="contact_phone" value="{{ user.phone or '' }}" />
-                <button class="next-button" type="button" onclick="location.href='/customer/orders/new/step3';">上一步</button>
-                
-                <button class="save-button" type="submit">確認送出</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                    <button class="next-button" type="button" onclick="location.href='/customer/orders/new/step3';">上一步</button>
+                    <button class="save-button" type="submit">確認送出</button>
+                </div>
             </form>
         </div>
     </div>
@@ -146,40 +139,6 @@
                 modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
             }
         }
-
-        // 計算總價格
-        function calculateTotalPrice() {
-            const priceElements = document.querySelectorAll(".price");
-            let total = 0;
-
-            priceElements.forEach(priceElement => {
-                const price = parseFloat(priceElement.dataset.price) || 0;
-                const quantity = parseInt(priceElement.dataset.quantity) || 1;
-                total += price * quantity;
-            });
-
-            document.getElementById("totalPrice").textContent = Math.round(total);
-        }
-
-        // 頁面載入時計算總價
-        document.addEventListener("DOMContentLoaded", function () {
-            calculateTotalPrice();
-        });
-
-        document.getElementById('step4-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: '確認送出訂單？',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: '確定',
-                cancelButtonText: '取消'
-            }).then((res) => {
-                if (res.isConfirmed) {
-                    e.target.submit();
-                }
-            });
-        });
     </script>
     <script src="/static/js/notification.js"></script>
 </body>

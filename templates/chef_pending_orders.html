@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待接單訂單 - 味你而煮</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/ChefUnOrder.css') }}">
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">味你而煮</div>
+        <div class="nav-links">
+            <a href="{{ url_for('chef_dashboard') }}">首頁</a>
+            <a href="{{ url_for('chef_profile') }}">我的頁面</a>
+            <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
+
+            <!-- 新增下拉選單 -->
+            <div class="dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                <div class="dropdown-content" id="orderDropdown">
+                    <a href="{{ url_for('chef_accepted_orders') }}">待完成訂單</a>
+                    <a href="{{ url_for('chef_completed_orders') }}">已完成訂單</a>
+                    <a href="{{ url_for('chef_negotiating_orders') }}">議價中訂單</a>
+                    <a href="{{ url_for('chef_cancelled_orders') }}">已取消訂單</a>
+                </div>
+            </div>
+
+            <a href="#">客服聯絡</a>
+        </div>
+        <div class="user-info">
+            {% if user %}
+            <img
+                src="{{ avatar_url }}"
+                alt="頭像"
+                class="avatar"
+            />
+            <div class="user-text">
+                <div class="name">{{ user.name }}</div>
+                <div class="email">{{ user.email }}</div>
+            </div>
+            
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            {% else %}
+            <a href="{{ url_for('login') }}">登入/註冊</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="search-bar">
+        <input type="text" placeholder="搜尋訂單" id="searchInput" onkeyup="searchOrders()">
+    </div>
+    
+    <div class="title-filter-container">
+        <div class="maintext">待接單訂單</div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterOrders('newest')">近到遠</button>
+            <button class="filter-btn" onclick="filterOrders('oldest')">遠到近</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        {% if pending_orders %}
+            {% for order in pending_orders %}
+            <div class="order-card" data-date="{{ order.preferred_time.strftime('%Y/%m/%d') if order.preferred_time else '' }}">
+                <p><strong>訂單編號</strong><br>#{{ order.order_number }}</p>
+                <p>
+                    預定日期：{{ order.preferred_time.strftime('%Y/%m/%d') if order.preferred_time else '未指定' }}<br>
+                    地址：{{ order.delivery_address if order.delivery_address else '未指定' }}<br>
+                    預估價格：NT${{ "{:,.0f}".format(order.total_amount) if order.total_amount > 0 else '待議價' }}
+                </p>
+                <button class="order-btn" onclick="viewOrderDetail('{{ order.id }}')">查看詳細訂單資訊</button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-orders">
+                <p>目前沒有待接訂單</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleDropdown() {
+            document.getElementById("orderDropdown").classList.toggle("show");
+        }
+
+        // 點擊其他地方時關閉下拉選單
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        function viewOrderDetail(orderId) {
+            window.location.href = `/chef/order/${orderId}`;
+        }
+
+        function searchOrders() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const cards = document.getElementsByClassName('order-card');
+            
+            for (let card of cards) {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        }
+
+        // 等待 DOM 加載完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化時設置默認排序
+            filterOrders('newest');
+        });
+
+        function filterOrders(type) {
+            console.log('開始排序，類型：', type);
+            
+            const container = document.querySelector('.container');
+            const cards = Array.from(container.getElementsByClassName('order-card'));
+            const filterButtons = document.querySelectorAll('.filter-btn');
+
+            // 更新按鈕狀態
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === (type === 'newest' ? '近到遠' : '遠到近')) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // 創建一個包含日期和卡片的數組
+            const cardsWithDates = cards.map(card => {
+                const dateStr = card.getAttribute('data-date');
+                console.log('找到日期：', dateStr);
+                
+                // 將日期轉換為時間戳
+                let timestamp = 0;
+                if (dateStr) {
+                    const [year, month, day] = dateStr.split('/');
+                    timestamp = new Date(year, parseInt(month) - 1, day).getTime();
+                }
+                
+                return {
+                    element: card,
+                    timestamp: timestamp
+                };
+            });
+
+            // 根據時間戳排序
+            cardsWithDates.sort((a, b) => {
+                if (type === 'newest') {
+                    return b.timestamp - a.timestamp;
+                } else {
+                    return a.timestamp - b.timestamp;
+                }
+            });
+
+            // 移除所有卡片
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+
+            // 重新插入排序後的卡片
+            cardsWithDates.forEach(item => {
+                container.appendChild(item.element);
+            });
+
+            console.log('排序完成');
+        }
+    </script>
+</body>
+
+</html> 

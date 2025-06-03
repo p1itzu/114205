@@ -109,11 +109,6 @@
                                 <input type="text" id="customized" placeholder="請填寫需要的備註事項" />
                             </div>
                             <br>
-                            <div>
-                                <label class="bold-text">價格</label><br>
-                                <input type="number" id="dish-price" placeholder="金額" min="0" required />
-                            </div>
-                            <br>
                             <div class="button-container">
                                 <button class="back" type="button" onclick="goToPreviousDish()">⭠</button>
                                 <button class="next" type="button" onclick="goToNextDish()">⭢</button>
@@ -173,9 +168,8 @@
             const spiciness = document.querySelector('.spiciness-button.active')?.dataset.value || 'none';
             const oilLevel = parseInt(document.querySelector('.oillevel-button.active')?.dataset.value) || 0;
             const aroma = parseInt(document.querySelector('.aroma-button.active')?.dataset.value) || 0;
-            const price = parseInt(document.getElementById('dish-price')?.value) || 0;
 
-            dishData[currentDishIndex] = { name, portion, ingredients, special, customized, salinity, spiciness, oilLevel, aroma, price };
+            dishData[currentDishIndex] = { name, portion, ingredients, special, customized, salinity, spiciness, oilLevel, aroma };
             localStorage.setItem('dishData', JSON.stringify(dishData));
         }
 
@@ -187,7 +181,6 @@
             document.getElementById('ingredients').value = d.ingredients || '';
             document.getElementById('special').value = d.special || '';
             document.getElementById('customized').value = d.customized || '';
-            document.getElementById('dish-price').value = d.price || '';
             ['salinity','spiciness','oilLevel','aroma'].forEach(type => {
                 document.querySelectorAll(`.${type}-button`).forEach(b => b.classList.remove('active'));
                 document.querySelector(`.${type}-button[data-value='${d[type]}']`)?.classList.add('active');

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/ChefMain.css') }}">
+    <title>廚師管理頁面 - 味你而煮</title>
+    <script>
+        function generateCalendar() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+            document.getElementById("calendar-header").innerText = monthNames[month] + " " + year;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            let calendarHTML = "<div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>";
+            for (let i = 0; i < firstDay; i++) {
+                calendarHTML += "<div></div>";
+            }
+            for (let day = 1; day <= daysInMonth; day++) {
+                calendarHTML += `<div>${day}</div>`;
+            }
+            document.getElementById("calendar").innerHTML = calendarHTML;
+        }
+
+        function editProfile() {
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function showFoodPhotos() {
+            document.getElementById('foodPhotosModal').style.display = 'block';
+        }
+
+        function closeFoodPhotosModal() {
+            document.getElementById('foodPhotosModal').style.display = 'none';
+        }
+
+        function toggleDropdown() {
+            document.getElementById("orderDropdown").classList.toggle("show");
+        }
+
+        // 點擊其他地方時關閉下拉選單
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        // 提交編輯表單
+        async function submitEdit(event) {
+            event.preventDefault();
+            const formData = new FormData(document.getElementById('editForm'));
+            
+            try {
+                const response = await fetch('/chef/profile/update', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    alert('資料更新成功！');
+                    location.reload();
+                } else {
+                    alert('更新失敗，請稍後再試。');
+                }
+            } catch (error) {
+                alert('更新失敗，請稍後再試。');
+            }
+        }
+
+        window.onload = function () {
+            generateCalendar();
+        };
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div class="site-name">味你而煮</div>
+            <div class="nav-links">
+                <a href="{{ url_for('chef_dashboard') }}">首頁</a>
+                <a href="{{ url_for('chef_main') }}">我的頁面</a>
+                <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
+
+                <!-- 下拉選單 -->
+                <div class="dropdown">
+                    <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
+                    <div class="dropdown-content" id="orderDropdown">
+                        <a href="{{ url_for('chef_accepted_orders') }}">待完成訂單</a>
+                        <a href="{{ url_for('chef_completed_orders') }}">已完成訂單</a>
+                        <a href="{{ url_for('chef_negotiating_orders') }}">議價中訂單</a>
+                        <a href="{{ url_for('chef_cancelled_orders') }}">已取消訂單</a>
+                    </div>
+                </div>
+
+                <a href="#contact">客服聯絡</a>
+            </div>
+            <div class="user-info">
+                <img src="{{ current_user.avatar_url or url_for('static', path='imgs/chef.png') }}" alt="頭像" class="avatar" />
+                <div class="user-text">
+                    <div class="name">{{ current_user.name }}</div>
+                    <div class="email">{{ current_user.email }}</div>
+                </div>
+                <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="box profile">
+                <div class="profile-content">
+                    <button class="edit-button" onclick="editProfile()">編輯</button>
+                    <div class="profile-image">
+                        <img id="chef-photo" src="{{ current_user.avatar_url or url_for('static', path='imgs/chef.png') }}" alt="廚師照片">
+                    </div>
+                    <div class="profile-text">
+                        <h2 id="chef-name">{{ current_user.name }}</h2>
+                        <p><strong>聯絡方式：</strong>{{ current_user.phone or '未設定' }}</p>
+                        <p><strong>廚房地址：</strong>{{ chef_profile.kitchen_address or '未設定' }}</p>
+                        <p><strong>專業證照：</strong>
+                            {% if chef_profile.certificate_name %}
+                                <span class="underline">{{ chef_profile.certificate_name }}</span>
+                                {% if chef_profile.certificate_verified %}
+                                    <span class="verified">✓ 已認證</span>
+                                {% else %}
+                                    <span class="pending">⏳ 待審核</span>
+                                {% endif %}
+                            {% else %}
+                                未設定
+                            {% endif %}
+                        </p>
+                        <p><strong>料理專長：</strong>
+                            {% if chef_specialties %}
+                                {% for specialty in chef_specialties %}
+                                    <span class="specialty-tag">{{ specialty.specialty }}</span>
+                                {% endfor %}
+                            {% else %}
+                                未設定
+                            {% endif %}
+                        </p>
+                        <p><strong>招牌菜：</strong>
+                            {% if signature_dishes %}
+                                {% for dish in signature_dishes %}
+                                    {{ dish.dish_name }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                未設定
+                            {% endif %}
+                        </p>
+                        <p><strong>經驗年數：</strong>{{ chef_profile.experience_years or '未設定' }}年</p>
+                        <p><strong>平均評分：</strong>
+                            {% if chef_profile.average_rating > 0 %}
+                                ⭐ {{ "%.1f"|format(chef_profile.average_rating) }} ({{ chef_profile.total_reviews }}則評價)
+                            {% else %}
+                                暫無評價
+                            {% endif %}
+                        </p>
+                        <p><strong>食物照：</strong></p>
+                        <button class="view-photos-btn" onclick="showFoodPhotos()">查看上傳照片</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box square-box notifications">
+                <div class="notification-icon">🔔</div>
+                <h3>最新通知</h3>
+                <ul>
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                            <li><a href="#">{{ notification.message }}</a></li>
+                        {% endfor %}
+                    {% else %}
+                        <li>暫無新通知</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="right-section">
+                <div class="box square-box calendar-box">
+                    <div class="calendar-header" id="calendar-header"></div>
+                    <div id="calendar" class="calendar"></div>
+                </div>
+                <div class="orders">
+                    <h3>今日訂單</h3>
+                    {% if recent_orders %}
+                        {% for order in recent_orders %}
+                            <div class="order-item">
+                                <a href="{{ url_for('chef_order_detail', order_id=order.id) }}">
+                                    訂單編號 #{{ order.order_number }}
+                                </a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="order-item">暫無訂單</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 編輯模態框 -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditModal()">&times;</span>
+                    <h2>編輯簡介</h2>
+                    <form id="editForm" onsubmit="submitEdit(event)">
+                        <label for="name">姓名：</label>
+                        <input type="text" id="name" name="name" value="{{ current_user.name }}" required><br><br>
+                        
+                        <label for="phone">聯絡方式：</label>
+                        <input type="text" id="phone" name="phone" value="{{ current_user.phone or '' }}"><br><br>
+                        
+                        <label for="kitchen_address">廚房地址：</label>
+                        <input type="text" id="kitchen_address" name="kitchen_address" value="{{ chef_profile.kitchen_address or '' }}"><br><br>
+                        
+                        <label for="certificate_name">專業證照：</label>
+                        <input type="text" id="certificate_name" name="certificate_name" value="{{ chef_profile.certificate_name or '' }}"><br><br>
+                        
+                        <label for="specialties">料理專長（用逗號分隔）：</label>
+                        <input type="text" id="specialties" name="specialties" 
+                               value="{% for specialty in chef_specialties %}{{ specialty.specialty }}{% if not loop.last %}, {% endif %}{% endfor %}"><br><br>
+                        
+                        <label for="experience_years">經驗年數：</label>
+                        <input type="number" id="experience_years" name="experience_years" value="{{ chef_profile.experience_years or '' }}" min="0"><br><br>
+                        
+                        <label for="description">自我介紹：</label>
+                        <textarea id="description" name="description" rows="4">{{ chef_profile.description or '' }}</textarea><br><br>
+                        
+                        <label for="photo">上傳新照片：</label>
+                        <input type="file" id="photo" name="photo" accept="image/*"><br><br>
+                        
+                        <label for="certificate_photo">上傳證照：</label>
+                        <input type="file" id="certificate_photo" name="certificate_photo" accept="image/*"><br><br>
+                        
+                        <input type="submit" value="保存">
+                    </form>
+                </div>
+            </div>
+
+            <!-- 食物照片模態框 -->
+            <div id="foodPhotosModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeFoodPhotosModal()">&times;</span>
+                    <h2>食物照片</h2>
+                    <div class="food-photos-container">
+                        {% if signature_dishes %}
+                            {% for dish in signature_dishes %}
+                                {% if dish.image_url %}
+                                    <div class="food-photo-item">
+                                        <img src="{{ dish.image_url }}" alt="{{ dish.dish_name }}" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+                                        <p><strong>{{ dish.dish_name }}</strong></p>
+                                        <p>{{ dish.description }}</p>
+                                        <p>建議價格：${{ dish.price }}</p>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <p>尚未上傳食物照片</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 設定小視窗（共用） -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <h2 class="title">設定</h2>
+            <div class="section2">
+                <h3>帳號</h3>
+                <div class="account-info">
+                    <img src="{{ current_user.avatar_url or url_for('static', path='imgs/chef.png') }}" alt="Avatar" class="avatar">
+                    <div class="account-text">
+                        <p class="name">{{ current_user.name }}</p>
+                        <p class="sub-text">個人資料</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section2">
+                <h3>其他</h3>
+                <form action="{{ url_for('logout') }}" method="get" style="display:inline">
+                    <button class="logout-btn">
+                        <span>↩️ 登出</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切換設定視窗
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            if (modal.classList.contains('show')) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            } else {
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+            }
+        }
+
+        // 點擊視窗外部關閉
+        window.onclick = function (event) {
+            const settingsModal = document.getElementById('settings-modal');
+            if (event.target === settingsModal) {
+                toggleSettingsModal();
+            }
+        };
+    </script>
+</body>
+</html> 

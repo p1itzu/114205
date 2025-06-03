@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>已完成訂單 - 味你而煮</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/ChefUnOrder.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="site-name">味你而煮</div>
+        <div class="nav-links">
+            <a href="{{ url_for('chef_dashboard') }}">首頁</a>
+            <a href="{{ url_for('chef_profile') }}">我的頁面</a>
+            <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
+            <a href="{{ url_for('chef_accepted_orders') }}">我的訂單</a>
+            <a href="#">客服聯絡</a>
+        </div>
+        <div class="user-info">
+            <div class="username">{{ current_user.email }}</div>
+            <a href="/auth/logout" style="color: #B3811C; text-decoration: none; margin-left: 15px;">登出</a>
+        </div>
+    </div>
+    
+    <div class="search-bar">
+        <input type="text" placeholder="搜尋訂單" id="searchInput" onkeyup="searchOrders()">
+    </div>
+    
+    <div class="title-filter-container">
+        <div class="maintext">已完成訂單</div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterOrders('newest')">近到遠</button>
+            <button class="filter-btn" onclick="filterOrders('oldest')">遠到近</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        {% if completed_orders %}
+            {% for order in completed_orders %}
+            <div class="order-card" data-date="{{ order.completed_at.strftime('%Y/%m/%d') if order.completed_at else '' }}">
+                <p><strong>訂單編號</strong><br>#{{ order.order_number }}</p>
+                <p>
+                    完成日期：{{ order.completed_at.strftime('%Y/%m/%d') if order.completed_at else '未指定' }}<br>
+                    地區：{{ order.delivery_address.split(' ')[0] if order.delivery_address else '未指定' }}<br>
+                    地址：{{ order.delivery_address if order.delivery_address else '未指定' }}<br>
+                    總金額：NT${{ "{:,.0f}".format(order.total_amount) if order.total_amount > 0 else '0' }}
+                </p>
+                <button class="order-btn" onclick="viewOrderDetail('{{ order.id }}')">查看訂單詳情</button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-orders">
+                <p>目前沒有已完成的訂單</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function viewOrderDetail(orderId) {
+            window.location.href = `/chef/order/${orderId}`;
+        }
+
+        function searchOrders() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const cards = document.getElementsByClassName('order-card');
+            
+            for (let card of cards) {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            filterOrders('newest');
+        });
+
+        function filterOrders(type) {
+            const container = document.querySelector('.container');
+            const cards = Array.from(container.getElementsByClassName('order-card'));
+            const filterButtons = document.querySelectorAll('.filter-btn');
+
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === (type === 'newest' ? '近到遠' : '遠到近')) {
+                    btn.classList.add('active');
+                }
+            });
+
+            const cardsWithDates = cards.map(card => {
+                const dateStr = card.getAttribute('data-date');
+                let timestamp = 0;
+                if (dateStr) {
+                    const [year, month, day] = dateStr.split('/');
+                    timestamp = new Date(year, parseInt(month) - 1, day).getTime();
+                }
+                
+                return {
+                    element: card,
+                    timestamp: timestamp
+                };
+            });
+
+            cardsWithDates.sort((a, b) => {
+                if (type === 'newest') {
+                    return b.timestamp - a.timestamp;
+                } else {
+                    return a.timestamp - b.timestamp;
+                }
+            });
+
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+
+            cardsWithDates.forEach(item => {
+                container.appendChild(item.element);
+            });
+        }
+    </script>
+</body>
+</html> 

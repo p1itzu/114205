@@ -5,13 +5,14 @@ from datetime import datetime
 import enum
 
 class OrderStatus(enum.Enum):
-    PENDING = "pending"          # 待接單
-    ACCEPTED = "accepted"        # 已接單
-    PREPARING = "preparing"      # 準備中
-    READY = "ready"             # 已完成
-    DELIVERING = "delivering"    # 配送中
-    COMPLETED = "completed"      # 已完成
-    CANCELLED = "cancelled"      # 已取消
+    PENDING = "pending"              # 待接單
+    NEGOTIATING = "negotiating"      # 議價中
+    ACCEPTED = "accepted"            # 已接單（議價完成）
+    PREPARING = "preparing"          # 準備中
+    READY = "ready"                 # 已完成
+    DELIVERING = "delivering"        # 配送中
+    COMPLETED = "completed"          # 已完成
+    CANCELLED = "cancelled"          # 已取消
 
 class DeliveryMethod(enum.Enum):
     PICKUP = "pickup"           # 自取
@@ -55,6 +56,9 @@ class Order(Base):
     # 價格資訊
     total_amount = Column(Float, default=0.0)
     delivery_fee = Column(Float, default=0.0)
+    original_amount = Column(Float, nullable=True)    # 原始報價
+    negotiated_amount = Column(Float, nullable=True)  # 議價金額
+    negotiation_count = Column(Integer, default=0)    # 議價次數
     
     # 備註
     customer_notes = Column(Text, nullable=True)  # 客戶備註
@@ -69,6 +73,7 @@ class Order(Base):
     chef = relationship("User", back_populates="orders_as_chef", foreign_keys=[chef_id])
     dishes = relationship("OrderDish", back_populates="order", cascade="all, delete-orphan")
     status_history = relationship("OrderStatusHistory", back_populates="order", cascade="all, delete-orphan")
+    negotiations = relationship("Negotiation", back_populates="order", cascade="all, delete-orphan")
     review = relationship("Review", back_populates="order", uselist=False)
 
 class OrderDish(Base):
@@ -116,3 +121,24 @@ class OrderStatusHistory(Base):
     
     # 關聯
     order = relationship("Order", back_populates="status_history")
+
+class Negotiation(Base):
+    __tablename__ = "negotiations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    
+    # 議價資訊
+    proposed_amount = Column(Float, nullable=False)    # 提議金額
+    proposed_by = Column(String(20), nullable=False)   # 提議人（chef/customer）
+    message = Column(Text, nullable=True)              # 議價說明
+    
+    # 狀態
+    is_accepted = Column(Boolean, nullable=True)       # 是否被接受（None=待回應）
+    response_message = Column(Text, nullable=True)     # 回應訊息
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    responded_at = Column(DateTime, nullable=True)
+    
+    # 關聯
+    order = relationship("Order", back_populates="negotiations")

@@ -1,18 +1,26 @@
-from fastapi import APIRouter, Request, Form, HTTPException, Depends, status
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Request, Form, HTTPException, Depends, status, File, UploadFile
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 import uuid
+import os
 
 from database import get_db
 from models.user import User
-from models.order import Order, OrderStatus, OrderDish, DeliveryMethod, SpiceLevel, SaltLevel
+from models.order import Order, OrderStatus, OrderDish, DeliveryMethod, SpiceLevel, SaltLevel, Negotiation, OrderStatusHistory
 from utils.dependencies import require_customer, common_template_params
+from utils.security import get_password_hash, verify_password
+from pydantic import BaseModel
 
 router = APIRouter(dependencies=[Depends(require_customer)])
 templates = Jinja2Templates(directory="templates")
+
+class NegotiationResponse(BaseModel):
+    is_accepted: bool
+    response_message: Optional[str] = None
+    counter_amount: Optional[float] = None
 
 # 訂單列表
 @router.get("/orders/list", name="customer_order_list")
@@ -43,7 +51,8 @@ def order_detail(
     
     order = db.query(Order).options(
         joinedload(Order.customer),
-        joinedload(Order.dishes)
+        joinedload(Order.dishes),
+        joinedload(Order.negotiations)
     ).filter(
         Order.id == order_id, 
         Order.customer_id == current_user.id
@@ -75,8 +84,9 @@ def get_step0(request: Request, commons=Depends(common_template_params), db: Ses
             else:
                 chef.chef_profile.specialties_display = '一般料理'
             
-            # 計算平均評價（後續可以實現）
-            chef.chef_profile.average_rating = 4.5  # 暫時設定
+            # 使用數據庫中的真實評價數據
+            # chef.chef_profile.average_rating 和 total_reviews 已在數據庫中
+            pass
         else:
             # 為沒有chef_profile的廚師創建一個臨時profile對象
             class TempProfile:
@@ -84,6 +94,7 @@ def get_step0(request: Request, commons=Depends(common_template_params), db: Ses
                     self.kitchen_address = '未設定'
                     self.specialties_display = '一般料理'
                     self.average_rating = None
+                    self.total_reviews = 0
                     self.experience_years = None
             
             chef.chef_profile = TempProfile()
@@ -104,7 +115,7 @@ def post_step0(
     chef = db.query(User).filter(User.id == chef_id, User.role == "chef").first()
     if not chef:
         raise HTTPException(status_code=400, detail="所選廚師不存在")
-    
+
     # 將選擇的廚師ID保存到session
     request.session["step0"] = {
         "chef_id": chef_id,
@@ -177,7 +188,6 @@ def post_step2(
     request: Request,
     dish_names: List[str] = Form(...),
     quantities: List[int] = Form(...),
-    unit_prices: List[float] = Form(...),
     salt_levels: List[str] = Form(...),
     spice_levels: List[str] = Form(...),
     include_onions: List[bool] = Form([]),
@@ -203,8 +213,8 @@ def post_step2(
         dishes.append({
             "dish_name": dish_names[i],
             "quantity": quantities[i],
-            "unit_price": unit_prices[i],
-            "dish_price": unit_prices[i],  # 保持兼容性
+            "unit_price": 0,  # 設置默認價格為0，由廚師後續定價
+            "dish_price": 0,  # 保持兼容性
             "salt_level": salt_levels[i],
             "spice_level": spice_levels[i],
             "include_onion": i < len(include_onions) and include_onions[i],
@@ -224,14 +234,10 @@ def post_step2(
 def get_step3(request: Request, commons=Depends(common_template_params)):
     if "step0" not in request.session or "step1" not in request.session or "step2" not in request.session:
         return RedirectResponse(url="/customer/orders/new/step0", status_code=status.HTTP_302_FOUND)
-    
+
     step0 = request.session["step0"]
     step1 = request.session["step1"]
     dishes = request.session["step2"]["dishes"]
-    
-    # 計算總金額
-    total_amount = sum(dish["unit_price"] * dish["quantity"] for dish in dishes)
-    delivery_fee = 50.0 if step1["delivery_method"] == "delivery" else 0.0
     
     return templates.TemplateResponse(
         "add_order_step3.html",
@@ -240,10 +246,7 @@ def get_step3(request: Request, commons=Depends(common_template_params)):
             "request": request,
             "step0": step0,
             "step1": step1,
-            "dishes": dishes,
-            "total_amount": total_amount,
-            "delivery_fee": delivery_fee,
-            "final_total": total_amount + delivery_fee
+            "dishes": dishes
         }
     )
 
@@ -259,11 +262,11 @@ def post_step3(request: Request):
 def get_step4(request: Request, commons=Depends(common_template_params)):
     if "step0" not in request.session or "step1" not in request.session or "step2" not in request.session:
         return RedirectResponse(url="/customer/orders/new/step0", status_code=status.HTTP_302_FOUND)
-    
+
     step0 = request.session["step0"]
     step1 = request.session["step1"]
     dishes = request.session["step2"]["dishes"]
-    
+
     return templates.TemplateResponse(
         "add_order_step4.html",
         {
@@ -284,14 +287,14 @@ def post_step4(
 ):
     if "step0" not in request.session or "step1" not in request.session or "step2" not in request.session:
         raise HTTPException(status_code=400, detail="資料不完整")
-    
+
     step0 = request.session["step0"]
     step1 = request.session["step1"]
     dishes = request.session["step2"]["dishes"]
     
     try:
-        # 計算總金額
-        total_amount = sum(dish["unit_price"] * dish["quantity"] for dish in dishes)
+        # 計算總金額 - 設為0，由廚師後續定價
+        total_amount = 0  
         delivery_fee = 50.0 if step1["delivery_method"] == "delivery" else 0.0
         
         # 創建訂單
@@ -307,19 +310,19 @@ def post_step4(
             total_amount=total_amount,
             delivery_fee=delivery_fee,
             customer_notes=step1.get("customer_notes")
-        )
+    )
         
         db.add(order)
         db.commit()
         db.refresh(order)
-        
+
         # 創建訂單菜品
         for dish_data in dishes:
             order_dish = OrderDish(
                 order_id=order.id,
                 dish_name=dish_data["dish_name"],
                 quantity=dish_data["quantity"],
-                unit_price=dish_data["unit_price"],
+                unit_price=0,  # 設為0，由廚師後續定價
                 salt_level=SaltLevel(dish_data["salt_level"]),
                 spice_level=SpiceLevel(dish_data["spice_level"]),
                 include_onion=dish_data.get("include_onion", True),
@@ -333,12 +336,12 @@ def post_step4(
             db.add(order_dish)
         
         db.commit()
-        
+
         # 清除 session 數據
         request.session.pop("step0", None)
         request.session.pop("step1", None)
         request.session.pop("step2", None)
-        
+
         return RedirectResponse(
             url=f"/customer/order/{order.id}?success=1", 
             status_code=status.HTTP_302_FOUND
@@ -347,5 +350,198 @@ def post_step4(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"創建訂單失敗：{str(e)}")
+
+# 更新顧客個人資料
+@router.post("/profile/update")
+async def update_customer_profile(
+    name: str = Form(...),
+    phone: Optional[str] = Form(None),
+    current_password: Optional[str] = Form(None),
+    new_password: Optional[str] = Form(None),
+    avatar: Optional[UploadFile] = File(None),
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    try:
+        # 更新基本資料
+        current_user.name = name
+        if phone:
+            current_user.phone = phone
+        
+        # 處理密碼更新
+        if new_password:
+            if not current_password:
+                return JSONResponse(
+                    status_code=400,
+                    content={"success": False, "message": "請輸入目前密碼"}
+                )
+            
+            # 驗證目前密碼（OAuth用戶可能沒有密碼）
+            if current_user.hashed_password and not verify_password(current_password, current_user.hashed_password):
+                return JSONResponse(
+                    status_code=400,
+                    content={"success": False, "message": "目前密碼錯誤"}
+                )
+            
+            # 設置新密碼
+            current_user.hashed_password = get_password_hash(new_password)
+        
+        # 處理頭像上傳
+        if avatar and avatar.filename:
+            # 確保uploads目錄存在
+            os.makedirs("static/uploads/avatars", exist_ok=True)
+            
+            # 生成唯一檔名
+            file_extension = avatar.filename.split('.')[-1] if '.' in avatar.filename else 'jpg'
+            filename = f"{uuid.uuid4()}.{file_extension}"
+            file_path = f"static/uploads/avatars/{filename}"
+            
+            # 儲存檔案
+            with open(file_path, "wb") as buffer:
+                content = await avatar.read()
+                buffer.write(content)
+            
+            current_user.avatar_url = f"/static/uploads/avatars/{filename}"
+        
+        # 更新時間戳
+        current_user.updated_at = datetime.utcnow()
+        
+        db.commit()
+        
+        return JSONResponse(content={"success": True, "message": "個人資料更新成功！"})
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"更新失敗：{str(e)}"}
+        )
+
+# 顧客回應議價
+@router.post("/order/{order_id}/respond_negotiation/{negotiation_id}")
+def respond_negotiation(
+    order_id: int,
+    negotiation_id: int,
+    response_data: NegotiationResponse,
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    # 獲取訂單
+    order = db.query(Order).filter(Order.id == order_id).first()
+    
+    if not order:
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "message": "訂單不存在"}
+        )
+    
+    # 檢查權限
+    if order.customer_id != current_user.id:
+        return JSONResponse(
+            status_code=403,
+            content={"success": False, "message": "無權操作此訂單"}
+        )
+    
+    # 獲取議價記錄
+    negotiation = db.query(Negotiation).filter(
+        Negotiation.id == negotiation_id,
+        Negotiation.order_id == order_id
+    ).first()
+    
+    if not negotiation:
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "message": "議價記錄不存在"}
+        )
+    
+    # 檢查是否已回應
+    if negotiation.is_accepted is not None:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "此議價已回應過"}
+        )
+    
+    try:
+        # 更新議價記錄
+        negotiation.is_accepted = response_data.is_accepted
+        negotiation.response_message = response_data.response_message
+        negotiation.responded_at = datetime.utcnow()
+        
+        if response_data.is_accepted:
+            # 顧客接受議價，訂單狀態改為已接單
+            order.status = OrderStatus.ACCEPTED
+            order.total_amount = negotiation.proposed_amount
+            
+            # 記錄狀態歷史
+            status_history = OrderStatusHistory(
+                order_id=order.id,
+                old_status=OrderStatus.NEGOTIATING,
+                new_status=OrderStatus.ACCEPTED,
+                notes=f"顧客接受議價：NT${negotiation.proposed_amount}"
+            )
+            db.add(status_history)
+            
+            message = "議價已接受，訂單確認成功！"
+            
+        else:
+            # 顧客拒絕議價
+            action = "拒絕"
+            
+            # 如果顧客提供了再議價金額，創建新的議價記錄
+            if response_data.counter_amount and response_data.counter_amount > 0:
+                order.negotiation_count += 1
+                
+                # 創建顧客的再議價記錄
+                counter_negotiation = Negotiation(
+                    order_id=order.id,
+                    proposed_amount=response_data.counter_amount,
+                    proposed_by="customer",
+                    message=response_data.response_message,
+                    created_at=datetime.utcnow()
+                )
+                db.add(counter_negotiation)
+                
+                status_history = OrderStatusHistory(
+                    order_id=order.id,
+                    old_status=OrderStatus.NEGOTIATING,
+                    new_status=OrderStatus.NEGOTIATING,
+                    notes=f"顧客拒絕議價並提出再議價：NT${response_data.counter_amount}"
+                )
+                message = "已提交再議價，等待廚師回應"
+                
+            else:
+                # 單純拒絕，檢查議價次數
+                if order.negotiation_count >= 2:
+                    order.status = OrderStatus.CANCELLED
+                    status_history = OrderStatusHistory(
+                        order_id=order.id,
+                        old_status=OrderStatus.NEGOTIATING,
+                        new_status=OrderStatus.CANCELLED,
+                        notes="議價次數用盡，訂單自動取消"
+                    )
+                    message = "議價已拒絕，訂單已取消"
+                else:
+                    status_history = OrderStatusHistory(
+                        order_id=order.id,
+                        old_status=OrderStatus.NEGOTIATING,
+                        new_status=OrderStatus.NEGOTIATING,
+                        notes=f"顧客拒絕議價：NT${negotiation.proposed_amount}"
+                    )
+                    message = "議價已拒絕，可等待廚師再次議價"
+            
+            db.add(status_history)
+        
+        db.commit()
+        
+        return JSONResponse(
+            content={"success": True, "message": message}
+        )
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"回應失敗：{str(e)}"}
+        )
 
 

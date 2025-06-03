@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未授權 - 味你而煮</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f6c25f 0%, #e0a93d 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .error-code {
+            font-size: 72px;
+            font-weight: bold;
+            color: #B3811C;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .error-title {
+            font-size: 28px;
+            color: #5b4636;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .error-details {
+            background-color: #fff3e0;
+            border-left: 4px solid #f6c25f;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .error-details p {
+            margin: 5px 0;
+            color: #5b4636;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f6c25f, #e0a93d);
+            color: white;
+            box-shadow: 0 4px 15px rgba(246, 194, 95, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(246, 194, 95, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #B3811C;
+            border: 2px solid #f6c25f;
+        }
+
+        .btn-secondary:hover {
+            background: #f6c25f;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .help-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .help-title {
+            font-size: 18px;
+            color: #5b4636;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .help-list {
+            text-align: left;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .help-list li {
+            margin: 8px 0;
+            padding-left: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .error-container {
+                padding: 30px 20px;
+            }
+            
+            .error-code {
+                font-size: 60px;
+            }
+            
+            .error-title {
+                font-size: 24px;
+            }
+            
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+                justify-content: center;
+            }
+        }
+
+        .chef-illustration {
+            margin: 20px 0;
+            font-size: 100px;
+            opacity: 0.8;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">🔒</div>
+        <div class="error-code">401</div>
+        <h1 class="error-title">未授權訪問</h1>
+        <p class="error-message">抱歉，您沒有權限訪問此頁面。請重新登入。</p>
+        
+        <div class="error-details">
+            <p><strong>可能的原因：</strong></p>
+            <p>• 您尚未登入系統</p>
+            <p>• 登入已過期，需要重新登入</p>
+            <!-- <p>• 您的帳戶權限不足</p>
+            <p>• 您嘗試訪問不屬於您角色的頁面</p> -->
+        </div>
+
+        <div class="chef-illustration">👨‍🍳</div>
+
+        <div class="actions">
+            <a href="/auth/login" class="btn btn-primary">
+                🔑 重新登入
+            </a>
+            <a href="/" class="btn btn-secondary">
+                🏠 回到首頁
+            </a>
+        </div>
+
+        <!-- <div class="help-section">
+            <h3 class="help-title">需要幫助？</h3>
+            <ul class="help-list">
+                <li>如果您是廚師，請確保使用廚師帳戶登入</li>
+                <li>如果您是客戶，請確保使用正確的客戶帳戶</li>
+                <li>如果問題持續存在，請聯繫客服團隊</li>
+                <li>檢查您的網路連線是否正常</li>
+            </ul>
+        </div> -->
+    </div>
+
+    <script>
+        // 3秒後自動顯示額外幫助信息
+        setTimeout(() => {
+            const helpSection = document.querySelector('.help-section');
+            helpSection.style.animation = 'fadeInUp 0.5s ease-out';
+        }, 3000);
+
+        // 如果是從登入頁面跳轉來的，顯示特殊提示
+        if (document.referrer.includes('/auth/login')) {
+            const errorMessage = document.querySelector('.error-message');
+            errorMessage.innerHTML += '<br><br><strong>提示：</strong>請檢查您的登入資訊是否正確。';
+        }
+    </script>
+</body>
+</html> 

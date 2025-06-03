@@ -7,15 +7,35 @@
   <link rel="stylesheet" href="/static/css/login.css">
   <style>
     #successModal { display: none; }
-    .error { color: #d32f2f; margin: 10px 0; padding: 10px; background-color: #ffeaea; border-radius: 5px; }
-    .success { color: #2e7d32; margin: 10px 0; padding: 10px; background-color: #e8f5e8; border-radius: 5px; }
+    .error { 
+      color: #d32f2f; 
+      margin: 10px 0; 
+      padding: 10px; 
+      background-color: #ffeaea; 
+      border-radius: 5px; 
+      transition: opacity 0.5s ease-out;
+    }
+    .error.fade-out {
+      opacity: 0;
+    }
+    .success { 
+      color: #2e7d32; 
+      margin: 10px 0; 
+      padding: 10px; 
+      background-color: #e8f5e8; 
+      border-radius: 5px; 
+      transition: opacity 0.5s ease-out;
+    }
+    .success.fade-out {
+      opacity: 0;
+    }
     .resend-form { margin-top: 15px; padding: 15px; background-color: #fff3cd; border-radius: 5px; }
     .resend-button { background-color: #ff9800; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
     .resend-button:hover { background-color: #f57c00; }
     
     /* Google 登入按鈕美化 - 恢復精美設計 */
     .google-button {
-      width: 100%;
+      /* width: 100%; */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -107,7 +127,7 @@
       </form>
 
       {% if error %}
-        <p class="error">{{ error }}</p>
+        <p class="error" id="error-message">{{ error }}</p>
         
         {% if show_resend %}
         <div class="resend-form">
@@ -123,13 +143,14 @@
       {% endif %}
       
       {% if success %}
-        <p class="success">{{ success }}</p>
+        <p class="success" id="success-message">{{ success }}</p>
       {% endif %}
 
       <div class="divider"><span>或</span></div>
       <a href="{{ url_for('login_google') }}" class="google-button">
-        <div class="google-icon"></div>
-        使用 Google 登入
+        <!-- <div class="google-icon"></div> -->
+        <img src="{{ url_for('static', path='imgs/google icon.png') }}" alt="" width="25" height="25" />
+          使用 Google 登入
       </a>
       
     </div>
@@ -141,6 +162,26 @@
   </div>
 
   <script src="/static/js/notification.js"></script>
+  <script>
+    function autoHideMessage(elementId, delay = 5000) {
+      const element = document.getElementById(elementId);
+      if (element) {
+        setTimeout(() => {
+          element.classList.add('fade-out');
+          // 完全移除元素
+          setTimeout(() => {
+            element.style.display = 'none';
+          }, 500); // 等待淡出動畫完成
+        }, delay);
+      }
+    }
+
+    // 頁面加載後自動隱藏錯誤和成功訊息
+    document.addEventListener('DOMContentLoaded', function() {
+      autoHideMessage('error-message', 5000);   // 5秒後隱藏錯誤訊息
+      autoHideMessage('success-message', 5000); // 5秒後隱藏成功訊息
+    });
+  </script>
 </body>
 </html>
 

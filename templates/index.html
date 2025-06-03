@@ -17,7 +17,7 @@
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
             <a href="CookingMethod.html">料理方式建議</a>
-            <a href="{{ url_for('order_step1') }}">新增訂單</a>
+            <a href="{{ url_for('order_step0') }}">新增訂單</a>
             <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
             {% else %}
@@ -103,9 +103,9 @@
                     <span>↩️ 登出</span>
                 </button>
                 </form>
-                <button class="delete-btn">
+                <!-- <button class="delete-btn">
                     🗑️ 刪除帳號
-                </button>
+                </button> -->
             </div>
         </div>
     </div>
@@ -114,26 +114,38 @@
         <div class="modal-content profile-content">
             <h2 class="title">個人資料編輯</h2>
 
-            <div class="profile-container">
-                <!-- 頭像區塊 -->
-                <div class="avatar-section">
-                    <img id="profile-avatar" class="profile-avatar" src="static/imgs/chef.png" alt="個人頭像">
-                    <input type="file" id="avatar-input" accept="image/*" style="display: none;">
-                    <button class="edit-avatar-btn">個人頭像編輯</button>
+            <form id="profile-form" enctype="multipart/form-data">
+                <div class="profile-container">
+                    <!-- 頭像區塊 -->
+                    <div class="avatar-section">
+                        <img id="profile-avatar" class="profile-avatar" src="{{ avatar_url }}" alt="個人頭像">
+                        <input type="file" id="avatar-input" name="avatar" accept="image/*" style="display: none;">
+                        <button type="button" class="edit-avatar-btn">個人頭像編輯</button>
+                    </div>
+
+                    <!-- 輸入表單 -->
+                    <div class="form-section">
+                        <label>姓名：</label> 
+                        <input type="text" name="name" placeholder="請輸入姓名" value="{{ user.name }}" required>
+                        
+                        <label>電子郵件：</label> 
+                        <input type="email" placeholder="請輸入電子郵件" value="{{ user.email }}" readonly style="background-color: #f0f0f0;">
+                        
+                        <label>電話：</label> 
+                        <input type="tel" name="phone" placeholder="請輸入電話" value="{{ user.phone or '' }}">
+                        
+                        <label>目前密碼：</label> 
+                        <input type="password" name="current_password" placeholder="修改密碼時請輸入目前密碼">
+                        
+                        <label>新密碼：</label> 
+                        <input type="password" name="new_password" placeholder="請輸入新密碼（不修改請留空）">
+                    </div>
                 </div>
 
-                <!-- 輸入表單 -->
-                <div class="form-section">
-                    <label>姓名：</label> <input type="text" placeholder="請輸入姓名">
-                    <label>電子郵件：</label> <input type="email" placeholder="請輸入電子郵件">
-                    <label>電話：</label> <input type="tel" placeholder="請輸入電話">
-                    <label>密碼：</label> <input type="password" placeholder="請輸入密碼">
-                </div>
-            </div>
-
-            <!-- 儲存按鈕 -->
-            <button class="save-btn">儲存變更</button>
-            <button class="close-btn" onclick="toggleProfileModal()">返回</button>
+                <!-- 儲存按鈕 -->
+                <button type="submit" class="save-btn">儲存變更</button>
+                <button type="button" class="close-btn" onclick="toggleProfileModal()">返回</button>
+            </form>
         </div>
     </div>
 
@@ -204,23 +216,57 @@
             const avatarInput = document.getElementById("avatar-input");
             const profileAvatar = document.getElementById("profile-avatar");
             const editAvatarBtn = document.querySelector(".edit-avatar-btn");
+            const profileForm = document.getElementById("profile-form");
 
             // 點擊按鈕時，打開文件選擇視窗
-            editAvatarBtn.addEventListener("click", function () {
-                avatarInput.click();
-            });
+            if (editAvatarBtn) {
+                editAvatarBtn.addEventListener("click", function () {
+                    avatarInput.click();
+                });
+            }
 
-            // 當用戶選擇圖片時
-            avatarInput.addEventListener("change", function (event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        profileAvatar.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+            // 當用戶選擇圖片時，預覽圖片
+            if (avatarInput) {
+                avatarInput.addEventListener("change", function (event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            profileAvatar.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // 處理表單提交
+            if (profileForm) {
+                profileForm.addEventListener("submit", async function (event) {
+                    event.preventDefault();
+                    
+                    const formData = new FormData(profileForm);
+                    
+                    try {
+                        const response = await fetch('/customer/profile/update', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            alert('個人資料更新成功！');
+                            // 重新載入頁面以顯示更新後的資料
+                            location.reload();
+                        } else {
+                            alert('更新失敗：' + result.message);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('更新失敗，請稍後再試。');
+                    }
+                });
+            }
         });
     </script>
     <script src="static/js/notification.js"></script>

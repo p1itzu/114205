@@ -1,0 +1,635 @@
+/* 基本樣式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans TC', Arial, sans-serif;
+    background-color: #FFF8F0;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 導航欄樣式 */
+.navbar {
+    background: linear-gradient(135deg, #F9C765, #F7D28C);
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(179, 129, 28, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 100%;
+    padding: 15px 20px;
+}
+
+.site-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #B3811C;
+    font-family: 'Noto Serif TC', serif;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.nav-links a {
+    color: #B3811C;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #8B661A;
+    transform: translateY(-2px);
+}
+
+/* 下拉選單樣式 */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    background: none;
+    border: none;
+    color: #B3811C;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dropdown-btn:hover {
+    color: #8B661A;
+    transform: translateY(-2px);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    top: 100%;
+    left: 0;
+}
+
+.dropdown-content a {
+    color: #333 !important;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-content a:hover {
+    background-color: #F9C765;
+    transform: none;
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #B3811C;
+}
+
+.user-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-text .name {
+    font-weight: 600;
+    color: #B3811C;
+    font-size: 14px;
+}
+
+.user-text .email {
+    font-size: 12px;
+    color: #8B661A;
+}
+
+.settings-icon {
+    width: 24px;
+    height: 24px;
+    background-image: url('../imgs/settings.png');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.settings-icon:hover {
+    transform: rotate(90deg);
+}
+
+/* 主要內容區域 */
+.content {
+    flex: 1;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.box {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #F9C765;
+}
+
+/* 個人檔案區域 */
+.profile {
+    grid-row: span 2;
+}
+
+.profile-content {
+    position: relative;
+}
+
+.edit-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #B3811C;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.edit-button:hover {
+    background: #8B661A;
+    transform: translateY(-2px);
+}
+
+.profile-image {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-image img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #F9C765;
+}
+
+.profile-text h2 {
+    color: #B3811C;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 24px;
+}
+
+.profile-text p {
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.profile-text strong {
+    color: #B3811C;
+}
+
+.underline {
+    text-decoration: underline;
+    color: #B3811C;
+}
+
+.verified {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.pending {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.specialty-tag {
+    background: #F9C765;
+    color: #B3811C;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    margin-right: 5px;
+    display: inline-block;
+    margin-bottom: 3px;
+}
+
+.view-photos-btn {
+    background: #F9C765;
+    color: #B3811C;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.view-photos-btn:hover {
+    background: #B3811C;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* 通知區域 */
+.notifications {
+    grid-column: 2;
+}
+
+.notification-icon {
+    font-size: 2em;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.notifications h3 {
+    color: #B3811C;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.notifications ul {
+    list-style: none;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notifications li {
+    margin-bottom: 8px;
+    padding: 8px;
+    background: #FFF8F0;
+    border-radius: 8px;
+    border-left: 3px solid #F9C765;
+}
+
+.notifications a {
+    color: #555;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.notifications a:hover {
+    color: #B3811C;
+}
+
+/* 右側區域 */
+.right-section {
+    grid-column: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 日曆樣式 */
+.calendar-box {
+    flex: 1;
+}
+
+.calendar-header {
+    text-align: center;
+    color: #B3811C;
+    font-weight: bold;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    text-align: center;
+}
+
+.calendar div {
+    padding: 8px 4px;
+    font-size: 0.9em;
+    background: #FFF8F0;
+    border-radius: 4px;
+}
+
+.calendar div:nth-child(-n+7) {
+    background: #F9C765;
+    color: #B3811C;
+    font-weight: bold;
+}
+
+/* 訂單區域 */
+.orders h3 {
+    color: #B3811C;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.order-item {
+    background: #FFF8F0;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border-left: 3px solid #F9C765;
+    transition: all 0.3s ease;
+}
+
+.order-item:hover {
+    background: #F9C765;
+    transform: translateX(5px);
+}
+
+.order-item a {
+    color: #555;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.order-item:hover a {
+    color: #B3811C;
+}
+
+/* 模態框樣式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #B3811C;
+}
+
+.modal h2 {
+    color: #B3811C;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* 表單樣式 */
+.modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal label {
+    color: #B3811C;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.modal input,
+.modal textarea {
+    padding: 10px;
+    border: 2px solid #F9C765;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.modal input:focus,
+.modal textarea:focus {
+    outline: none;
+    border-color: #B3811C;
+}
+
+.modal input[type="submit"] {
+    background: #B3811C;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.modal input[type="submit"]:hover {
+    background: #8B661A;
+    transform: translateY(-2px);
+}
+
+/* 食物照片樣式 */
+.food-photos-container {
+    display: grid;
+    gap: 20px;
+}
+
+.food-photo-item {
+    border: 1px solid #F9C765;
+    border-radius: 10px;
+    padding: 15px;
+    background: #FFF8F0;
+}
+
+.food-photo-item p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.food-photo-item strong {
+    color: #B3811C;
+}
+
+/* 設定模態框樣式 */
+.settings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.settings-modal.show {
+    display: flex;
+}
+
+.settings-modal .modal-content {
+    background-color: #C5933D;
+    padding: 30px;
+    border-radius: 15px;
+    width: 320px;
+    color: white;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.settings-modal.show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.section2 {
+    margin-bottom: 20px;
+}
+
+.section2 h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.account-info {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.account-text {
+    margin-left: 10px;
+}
+
+.account-text .name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.sub-text {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* 響應式設計 */
+@media (max-width: 1024px) {
+    .content {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+    }
+    
+    .profile {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    
+    .notifications {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    
+    .right-section {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        flex-direction: row;
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .content {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+    
+    .profile {
+        grid-column: 1;
+        grid-row: auto;
+    }
+    
+    .right-section {
+        flex-direction: column;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 2% auto;
+        padding: 20px;
+    }
+} 
