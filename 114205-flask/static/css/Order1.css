@@ -256,13 +256,8 @@ button {
     min-width: 120px;
 }
 
-.order-btn:first-child {
-    background-color: #888;
-    color: white;
-}
-
-.order-btn:last-child {
-    background-color: #4CAF50;
+.order-btn {
+    background-color: #F9C765;
     color: white;
 }
 
