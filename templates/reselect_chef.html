@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/css/SearchChef.css" rel="stylesheet" />
     <link href="/static/css/notification.css" rel="stylesheet" />
-    <title>Step0 - 選擇廚師</title>
+    <title>重新選擇廚師</title>
 </head>
 
 <body>
@@ -57,9 +57,32 @@
     <div class="content-container">
         <!-- 左側滾動區塊 -->
         <div class="main-content">
-            <h2>選擇廚師</h2>
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <a href="{{ url_for('order_detail', order_id=order.id) }}" style="text-decoration: none; color: #ff6b35; margin-right: 15px;">
+                    <button style="background: #ff6b35; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">
+                        ← 返回訂單詳情
+                    </button>
+                </a>
+                <h2 style="margin: 0;">重新選擇廚師</h2>
+            </div>
             
-            <!-- 新增篩選下拉式選單 -->
+            <div style="background: #fff3cd; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ffeaa7;">
+                <h4 style="color: #856404; margin-top: 0;">📋 訂單資訊</h4>
+                <p style="color: #856404; margin: 5px 0;"><strong>訂單編號：</strong>{{ order.order_number }}</p>
+                <p style="color: #856404; margin: 5px 0;"><strong>菜品數量：</strong>{{ order.dishes|length }} 道菜</p>
+                <p style="color: #856404; margin: 5px 0;"><strong>配送方式：</strong>{{ '外送' if order.delivery_method.value == 'delivery' else '自取' }}</p>
+                <p style="color: #856404; margin: 5px 0;"><strong>說明：</strong>
+                    {% if reason == "廚師拒絕接單" %}
+                        廚師拒絕接單，請重新選擇廚師
+                    {% elif reason == "議價失敗" %}
+                        議價失敗，請重新選擇廚師
+                    {% else %}
+                        請重新選擇廚師
+                    {% endif %}
+                </p>
+            </div>
+            
+            <!-- 篩選下拉式選單 -->
             <div class="filter-container">
                 <label for="regionFilter">服務地區：</label>
                 <select id="regionFilter" class="styled-select" onchange="filterChefsByRegion()">
@@ -99,67 +122,65 @@
                 </select>
             </div>
 
+            <!-- 廚師列表 -->
             <div class="chef-list" id="chefList">
-                {% for chef in chefs %}
-                <div class="chef-card" data-region="{{ chef.chef_profile.kitchen_address or '未設定' }}" data-specialty="{{ chef.chef_profile.specialties_display or '一般料理' }}">
-                    <table>
-                        <tr>
-                            <td class="chef-img">
-                                <img src="{{ chef.avatar_url or '/static/imgs/chef.png' }}" alt="廚師照片" class="chef-img">
-                            </td>
-                            <td>
-                                <div class="chef-info">
-                                    <h3>{{ chef.name }}</h3>
-                                    <p>專長：{{ chef.chef_profile.specialties_display or '一般料理' }}</p>
-                                    <p>服務地區：{{ chef.chef_profile.kitchen_address or '未設定' }}</p>
-                                    <p>評價：
-                                        {% if chef.chef_profile.average_rating and chef.chef_profile.average_rating > 0 %}
-                                            {% for i in range(5) %}
-                                                {% if i < chef.chef_profile.average_rating %}★{% else %}☆{% endif %}
-                                            {% endfor %}
-                                            ({{ "%.1f"|format(chef.chef_profile.average_rating) }})
-                                        {% else %}
-                                            <span style="color: #999;">尚無評價</span>
+                {% if chefs %}
+                    {% for chef in chefs %}
+                    <div class="chef-card" 
+                         data-region="{{ chef.chef_profile.kitchen_address or '未設定' }}"
+                         data-specialty="{{ chef.chef_profile.specialties_display or '一般料理' }}">
+                        <table>
+                            <tr>
+                                <td class="chef-img">
+                                    <img src="{{ chef.avatar_url or '/static/imgs/chef.png' }}" alt="廚師照片" class="chef-img">
+                                </td>
+                                <td>
+                                    <div class="chef-info">
+                                        <h3>{{ chef.name }}</h3>
+                                        <p>專長：{{ chef.chef_profile.specialties_display or '一般料理' }}</p>
+                                        <p>服務地區：{{ chef.chef_profile.kitchen_address or '未設定' }}</p>
+                                        <p>評價：
+                                            {% if chef.chef_profile.average_rating and chef.chef_profile.average_rating > 0 %}
+                                                {% for i in range(5) %}
+                                                    {% if i < chef.chef_profile.average_rating %}★{% else %}☆{% endif %}
+                                                {% endfor %}
+                                                ({{ "%.1f"|format(chef.chef_profile.average_rating) }})
+                                            {% else %}
+                                                <span style="color: #999;">尚無評價</span>
+                                            {% endif %}
+                                        </p>
+                                        {% if chef.chef_profile.experience_years %}
+                                        <p>經驗：{{ chef.chef_profile.experience_years }}年</p>
                                         {% endif %}
-                                    </p>
-                                    {% if chef.chef_profile.experience_years %}
-                                    <p>經驗：{{ chef.chef_profile.experience_years }}年</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <button class="order-btn" data-chef-id="{{ chef.id }}" data-chef-name="{{ chef.name }}" onclick="selectChef(this.dataset.chefId, this.dataset.chefName)">選擇此廚師</button>
+                                    {% if chef.chef_profile %}
+                                    <button class="order-btn" data-chef-id="{{ chef.id }}" onclick="viewChefProfile(this.dataset.chefId)">查看詳細資料</button>
                                     {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <form method="post" action="{{ url_for('order_step0') }}" style="display: inline;">
-                                    <input type="hidden" name="chef_id" value="{{ chef.id }}">
-                                    <button type="submit" class="order-btn">選擇此廚師</button>
-                                </form>
-                                {% if chef.chef_profile %}
-                                <button class="order-btn" onclick="viewChefProfile('{{ chef.id }}')">查看詳細資料</button>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                {% endfor %}
-                
-                <!-- 如果沒有廚師資料 -->
-                {% if not chefs %}
-                <div class="no-chefs-message">
-                    <p>目前沒有可選擇的廚師。</p>
-                </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-chefs-message">
+                        <p>目前沒有可用的廚師</p>
+                    </div>
                 {% endif %}
             </div>
         </div>
 
         <!-- 右側固定區塊 -->
         <div class="fixed-sidebar">
-            <h3>訂製流程</h3>
-            <p>尋找合適的廚師</p>
-            <p>填寫基本資訊</p>
-            <p>設計菜單內容</p>
-            <p>確認訂單詳情</p>
-            <p>提交訂單</p>
+            <h3>重新選擇廚師</h3>
+            <p>選擇合適的廚師</p>
+            <p>確認廚師資訊</p>
+            <p>重新提交訂單</p>
+            <p>等待廚師回應</p>
         </div>
     </div>
 
@@ -194,7 +215,7 @@
         </div>
     </div>
 
-    <!-- 第二個個人資料視窗 -->
+    <!-- 個人資料視窗 -->
     <div class="settings-modal" id="profile-modal">
         <div class="modal-content profile-content">
             <h2 class="title">個人資料編輯</h2>
@@ -234,20 +255,72 @@
         </div>
     </div>
 
-    <!-- 進度條 -->
-    <div class="progress-bar">
-        <div class="step active">選擇廚師</div>
-        <div class="line"></div>
-        <div class="step">第1步</div>
-        <div class="line"></div>
-        <div class="step">第2步</div>
-        <div class="line"></div>
-        <div class="step">第3步</div>
-        <div class="line"></div>
-        <div class="step">第4步</div>
-    </div>
-
+    <!-- 載入通知 JS -->
+    <script src="/static/js/notification.js"></script>
+    
     <script>
+        // 篩選功能
+        function filterChefsByRegion() {
+            const selectedRegion = document.getElementById('regionFilter').value;
+            const chefCards = document.querySelectorAll('.chef-card');
+            
+            chefCards.forEach(card => {
+                const region = card.getAttribute('data-region');
+                if (selectedRegion === 'all' || region.includes(selectedRegion)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function filterChefsBySpecialty() {
+            const selectedSpecialty = document.getElementById('specialtyFilter').value;
+            const chefCards = document.querySelectorAll('.chef-card');
+            
+            chefCards.forEach(card => {
+                const specialty = card.getAttribute('data-specialty');
+                if (selectedSpecialty === 'all' || specialty.includes(selectedSpecialty)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 選擇廚師
+        function selectChef(chefId, chefName) {
+            if (confirm(`確定要選擇 ${chefName} 作為您的廚師嗎？`)) {
+                const formData = new FormData();
+                formData.append('chef_id', chefId);
+                
+                fetch(`/customer/order/{{ order.id }}/reselect_chef`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        }
+                    } else {
+                        alert('重新選擇失敗：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('系統錯誤，請稍後再試');
+                });
+            }
+        }
+
+        // 查看廚師詳細資料
+        function viewChefProfile(chefId) {
+            alert('查看廚師詳細資料功能開發中');
+        }
+
         // 切換設定視窗
         function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
@@ -264,23 +337,7 @@
             }
         }
 
-        // 切換個人資料視窗
-        function toggleProfileModal() {
-            const profileModal = document.getElementById('profile-modal');
-            if (profileModal.classList.contains('show')) {
-                profileModal.classList.remove('show');
-                setTimeout(() => {
-                    profileModal.style.display = 'none';
-                }, 300);
-            } else {
-                profileModal.style.display = 'flex';
-                setTimeout(() => {
-                    profileModal.classList.add('show');
-                }, 10);
-            }
-        }
-
-        // 點擊視窗外部關閉
+        
         window.onclick = function (event) {
             const settingsModal = document.getElementById('settings-modal');
             const profileModal = document.getElementById('profile-modal');
@@ -292,102 +349,62 @@
                 toggleProfileModal();
             }
         };
-
-        // 頭像上傳功能
-        document.addEventListener("DOMContentLoaded", function () {
-            const avatarInput = document.getElementById("avatar-input");
-            const profileAvatar = document.getElementById("profile-avatar");
-            const editAvatarBtn = document.querySelector(".edit-avatar-btn");
-            const profileForm = document.getElementById("profile-form");
-
-            if (editAvatarBtn) {
-                editAvatarBtn.addEventListener("click", function () {
-                    avatarInput.click();
-                });
+        // 切換個人資料視窗
+        function toggleProfileModal() {
+            const settingsModal = document.getElementById('settings-modal');
+            const profileModal = document.getElementById('profile-modal');
+            
+            if (profileModal.style.display === 'block') {
+                profileModal.style.display = 'none';
+                settingsModal.style.display = 'block';
+            } else {
+                settingsModal.style.display = 'none';
+                profileModal.style.display = 'block';
             }
+        }
 
-            if (avatarInput) {
-                avatarInput.addEventListener("change", function (event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function (e) {
-                            profileAvatar.src = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
+        // 頭像編輯按鈕事件
+        document.querySelector('.edit-avatar-btn').addEventListener('click', function() {
+            document.getElementById('avatar-input').click();
+        });
 
-            // 處理個人資料編輯表單提交
-            if (profileForm) {
-                profileForm.addEventListener("submit", async function (event) {
-                    event.preventDefault();
-                    
-                    const formData = new FormData(profileForm);
-                    
-                    try {
-                        const response = await fetch('/profile/update', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        
-                        const result = await response.json();
-                        
-                        if (result.success) {
-                            alert('個人資料更新成功！');
-                            location.reload();
-                        } else {
-                            alert('更新失敗：' + result.message);
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('更新失敗，請稍後再試。');
-                    }
-                });
+        // 頭像選擇事件
+        document.getElementById('avatar-input').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-avatar').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
         });
 
-        // 地區篩選功能
-        function filterChefsByRegion() {
-            const selectedRegion = document.getElementById('regionFilter').value;
-            const selectedSpecialty = document.getElementById('specialtyFilter').value;
-            filterChefs(selectedRegion, selectedSpecialty);
-        }
-
-        // 專長篩選功能
-        function filterChefsBySpecialty() {
-            const selectedRegion = document.getElementById('regionFilter').value;
-            const selectedSpecialty = document.getElementById('specialtyFilter').value;
-            filterChefs(selectedRegion, selectedSpecialty);
-        }
-
-        // 通用篩選函數
-        function filterChefs(region, specialty) {
-            const chefCards = document.querySelectorAll('.chef-card');
+        // 個人資料更新
+        document.getElementById('profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            chefCards.forEach(card => {
-                const cardRegion = card.getAttribute('data-region');
-                const cardSpecialty = card.getAttribute('data-specialty');
-                
-                const regionMatch = region === 'all' || cardRegion.includes(region);
-                const specialtyMatch = specialty === 'all' || cardSpecialty.includes(specialty);
-                
-                if (regionMatch && specialtyMatch) {
-                    card.style.display = 'block';
+            const formData = new FormData(this);
+            
+            fetch('/profile/update', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('個人資料更新成功！');
+                    toggleProfileModal();
+                    location.reload();
                 } else {
-                    card.style.display = 'none';
+                    alert('更新失敗：' + result.message);
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('系統錯誤，請稍後再試');
             });
-        }
-
-        // 查看廚師詳細資料
-        function viewChefProfile(chefId) {
-            // 可以實現廚師詳細資料頁面
-            alert('廚師詳細資料功能開發中...');
-        }
+        });
     </script>
-    <script src="/static/js/notification.js"></script>
 </body>
-
 </html> 

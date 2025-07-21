@@ -12,6 +12,7 @@ class OrderStatus(enum.Enum):
     READY = "ready"                 # 製作完成
     COMPLETED = "completed"          # 交付完成
     CANCELLED = "cancelled"          # 已取消
+    RESELECTING_CHEF = "reselecting_chef"  # 重新選擇廚師
 
 class DeliveryMethod(enum.Enum):
     PICKUP = "pickup"           # 自取

@@ -10,6 +10,7 @@ import os
 from database import get_db
 from models.user import User
 from models.order import Order, OrderStatus, OrderDish, DeliveryMethod, SpiceLevel, SaltLevel, Negotiation, OrderStatusHistory
+from models.review import Review
 from utils.dependencies import require_customer, common_template_params
 from utils.security import get_password_hash, verify_password
 from pydantic import BaseModel
@@ -17,10 +18,28 @@ from pydantic import BaseModel
 router = APIRouter(dependencies=[Depends(require_customer)])
 templates = Jinja2Templates(directory="templates")
 
+# 料理方式建議頁面
+@router.get("/cooking_method", name="cooking_method")
+def cooking_method(
+    request: Request,
+    commons=Depends(common_template_params),
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    return templates.TemplateResponse("cooking_method.html", {
+        **commons,
+        "request": request,
+        "current_user": current_user
+    })
+
 class NegotiationResponse(BaseModel):
     is_accepted: bool
     response_message: Optional[str] = None
     counter_amount: Optional[float] = None
+
+class ReviewRequest(BaseModel):
+    rating: int
+    content: Optional[str] = None
 
 # 訂單列表
 @router.get("/orders/list", name="customer_order_list")
@@ -123,6 +142,152 @@ def get_step0(request: Request, commons=Depends(common_template_params), db: Ses
         "request": request, 
         "chefs": chefs
     })
+
+# 重新選擇廚師
+@router.get("/order/{order_id}/reselect_chef", name="reselect_chef")
+def reselect_chef(
+    order_id: int,
+    request: Request,
+    commons=Depends(common_template_params),
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    from sqlalchemy.orm import joinedload
+    from models.chef import ChefProfile, ChefSpecialty
+    
+    # 獲取訂單
+    order = db.query(Order).filter(
+        Order.id == order_id,
+        Order.customer_id == current_user.id
+    ).first()
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="訂單不存在")
+    
+    # 檢查訂單狀態
+    if order.status != OrderStatus.RESELECTING_CHEF:
+        raise HTTPException(status_code=400, detail="此訂單不需要重新選擇廚師")
+    
+    # 獲取所有可用的廚師（排除之前拒絕的廚師）
+    chefs = db.query(User).outerjoin(ChefProfile, User.id == ChefProfile.user_id).filter(
+        User.role == "chef"
+    ).options(joinedload(User.chef_profile)).all()
+    
+    # 為每個廚師添加頭像URL和專長顯示
+    for chef in chefs:
+        if hasattr(chef, 'chef_profile') and chef.chef_profile:
+            # 獲取專長列表
+            specialties = db.query(ChefSpecialty).filter(ChefSpecialty.chef_id == chef.chef_profile.id).all()
+            if specialties:
+                chef.chef_profile.specialties_display = ', '.join([s.specialty for s in specialties])
+            else:
+                chef.chef_profile.specialties_display = '一般料理'
+        else:
+            # 為沒有chef_profile的廚師創建一個臨時profile對象
+            class TempProfile:
+                def __init__(self):
+                    self.kitchen_address = '未設定'
+                    self.specialties_display = '一般料理'
+                    self.average_rating = None
+                    self.total_reviews = 0
+                    self.experience_years = None
+            
+            chef.chef_profile = TempProfile()
+    
+    # 檢查訂單狀態歷史來判斷原因
+    latest_history = db.query(OrderStatusHistory).filter(
+        OrderStatusHistory.order_id == order.id,
+        OrderStatusHistory.new_status == OrderStatus.RESELECTING_CHEF
+    ).order_by(OrderStatusHistory.created_at.desc()).first()
+    
+    # 根據歷史記錄判斷原因
+    reason = "其他原因"
+    if latest_history and latest_history.notes:
+        if "拒絕接單" in latest_history.notes:
+            reason = "廚師拒絕接單"
+        elif "議價失敗" in latest_history.notes or "拒絕最終定價" in latest_history.notes or "議價次數用盡" in latest_history.notes:
+            reason = "議價失敗"
+        elif "拒絕顧客再議價" in latest_history.notes:
+            reason = "議價失敗"
+    
+    return templates.TemplateResponse("reselect_chef.html", {
+        **commons,
+        "request": request,
+        "order": order,
+        "chefs": chefs,
+        "reason": reason
+    })
+
+@router.post("/order/{order_id}/reselect_chef")
+def post_reselect_chef(
+    order_id: int,
+    chef_id: int = Form(...),
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    # 獲取訂單
+    order = db.query(Order).filter(
+        Order.id == order_id,
+        Order.customer_id == current_user.id
+    ).first()
+    
+    if not order:
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "message": "訂單不存在"}
+        )
+    
+    # 檢查訂單狀態
+    if order.status != OrderStatus.RESELECTING_CHEF:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "此訂單不需要重新選擇廚師"}
+        )
+    
+    # 檢查廚師是否存在
+    chef = db.query(User).filter(
+        User.id == chef_id,
+        User.role == "chef"
+    ).first()
+    
+    if not chef:
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "message": "廚師不存在"}
+        )
+    
+    try:
+        # 更新訂單
+        old_status = order.status
+        order.chef_id = chef_id
+        order.status = OrderStatus.PENDING
+        order.negotiation_count = 0  # 重置議價次數
+        
+        # 記錄狀態歷史
+        status_history = OrderStatusHistory(
+            order_id=order.id,
+            old_status=old_status,
+            new_status=OrderStatus.PENDING,
+            notes=f"顧客重新選擇廚師：{chef.name} ({chef.email})"
+        )
+        db.add(status_history)
+        
+        db.commit()
+        
+        return JSONResponse(
+            content={
+                "success": True,
+                "message": "重新選擇廚師成功！",
+                "redirect_url": f"/customer/order/{order_id}"
+            }
+        )
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"重新選擇廚師失敗：{str(e)}"}
+        )
 
 @router.post("/orders/new/step0")
 def post_step0(
@@ -531,14 +696,15 @@ def respond_negotiation(
             else:
                 # 單純拒絕，檢查議價次數
                 if order.negotiation_count >= 2:
-                    order.status = OrderStatus.CANCELLED
+                    order.status = OrderStatus.RESELECTING_CHEF
+                    order.chef_id = None  # 清除廚師分配，讓顧客重新選擇
                     status_history = OrderStatusHistory(
                         order_id=order.id,
                         old_status=OrderStatus.NEGOTIATING,
-                        new_status=OrderStatus.CANCELLED,
-                        notes="議價次數用盡，訂單自動取消"
+                        new_status=OrderStatus.RESELECTING_CHEF,
+                        notes="議價次數用盡，顧客可重新選擇廚師"
                     )
-                    message = "議價已拒絕，訂單已取消"
+                    message = "議價已拒絕，您可以重新選擇廚師"
                 else:
                     status_history = OrderStatusHistory(
                         order_id=order.id,
@@ -668,16 +834,17 @@ def respond_final_pricing(
             message = "已接受最終定價，訂單確認成功！"
             
         else:
-            # 顧客拒絕最終定價 → 訂單取消
-            order.status = OrderStatus.CANCELLED
+            # 顧客拒絕最終定價 → 重新選擇廚師
+            order.status = OrderStatus.RESELECTING_CHEF
+            order.chef_id = None  # 清除廚師分配，讓顧客重新選擇
             
             status_history = OrderStatusHistory(
                 order_id=order.id,
                 old_status=OrderStatus.NEGOTIATING,
-                new_status=OrderStatus.CANCELLED,
-                notes=f"顧客拒絕最終定價，訂單取消"
+                new_status=OrderStatus.RESELECTING_CHEF,
+                notes=f"顧客拒絕最終定價，可重新選擇廚師"
             )
-            message = "已拒絕最終定價，訂單已取消"
+            message = "已拒絕最終定價，您可以重新選擇廚師"
         
         db.add(status_history)
         db.commit()
@@ -691,6 +858,86 @@ def respond_final_pricing(
         return JSONResponse(
             status_code=500,
             content={"success": False, "message": f"操作失敗：{str(e)}"}
+        )
+
+# 提交評分
+@router.post("/order/{order_id}/review")
+def submit_review(
+    order_id: int,
+    review_data: ReviewRequest,
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    # 獲取訂單
+    order = db.query(Order).filter(
+        Order.id == order_id,
+        Order.customer_id == current_user.id
+    ).first()
+    
+    if not order:
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "message": "訂單不存在"}
+        )
+    
+    # 檢查訂單狀態
+    if order.status != OrderStatus.COMPLETED:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "只有已完成的訂單才能評價"}
+        )
+    
+    # 檢查是否已經評價過
+    existing_review = db.query(Review).filter(Review.order_id == order_id).first()
+    if existing_review:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "此訂單已經評價過"}
+        )
+    
+    # 驗證評分
+    if review_data.rating < 1 or review_data.rating > 5:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "評分必須在1-5之間"}
+        )
+    
+    try:
+        # 創建評價記錄
+        review = Review(
+            order_id=order.id,
+            reviewer_id=current_user.id,
+            reviewee_id=order.chef_id,
+            rating=review_data.rating,
+            content=review_data.content or "",
+            created_at=datetime.utcnow()
+        )
+        db.add(review)
+        
+        # 更新廚師的平均評分
+        if order.chef and order.chef.chef_profile:
+            # 計算該廚師的平均評分
+            chef_reviews = db.query(Review).filter(Review.reviewee_id == order.chef_id).all()
+            if chef_reviews:
+                total_rating = sum(r.rating for r in chef_reviews) + review_data.rating
+                total_reviews = len(chef_reviews) + 1
+                avg_rating = total_rating / total_reviews
+                
+                # 更新廚師資料
+                order.chef.chef_profile.average_rating = round(avg_rating, 1)
+                order.chef.chef_profile.total_reviews = total_reviews
+        
+        db.commit()
+        
+        return JSONResponse(
+            content={"success": True, "message": "評價提交成功！"}
+        )
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"評價提交失敗：{str(e)}"}
         )
 
 @router.post("/order/{order_id}/confirm_received")

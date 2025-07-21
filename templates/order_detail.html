@@ -11,6 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/css/orderDetail.css" rel="stylesheet" />
     <link href="/static/css/notification.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
     <title>代做菜媒合平台</title>
 </head>
 
@@ -20,7 +22,7 @@
         <div class="nav-links">
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
-            <a href="CookingMethod.html">料理方式建議</a>
+            <a href="/customer/cooking_method">料理方式建議</a>
             <a href="{{ url_for('order_step1') }}">新增訂單</a>
             <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
@@ -63,6 +65,15 @@
         <div class="section">
             <div class="section2">
                 <h3>訂單編號 : #{{ order.id }}</h3>
+                {% if order.status.value == 'reselecting_chef' %}
+                <div class="status-bar" style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 5px;">
+                    <div class="status active" style="background: #ff6b35; color: white; width: 100%; text-align: center;">🔄 需要重新選擇廚師</div>
+                </div>
+                {% elif order.status.value == 'cancelled' %}
+                <div class="status-bar" style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px;">
+                    <div class="status active" style="background: #dc3545; color: white; width: 100%; text-align: center;">❌ 訂單已取消</div>
+                </div>
+                {% else %}
                 <div class="status-bar">
                     <!-- 根據訂單狀態顯示進度 -->
                     <div class="status {% if order.status.value == 'pending' %}active{% endif %}">等待回應</div>
@@ -72,6 +83,7 @@
                     <div class="status {% if order.status.value == 'ready' %}active{% endif %}">製作完成</div>
                     <div class="status {% if order.status.value == 'completed' %}active{% endif %}">交付完成</div>
                 </div>
+                {% endif %}
             </div>
             <br>
             <div class="detail">
@@ -201,15 +213,67 @@
                             <h4>等待廚師接單...</h4>
                             <p style="color: #666;">您的訂單已提交，等待廚師回應</p>
                         </div>
+                    {% elif order.status.value == 'reselecting_chef' %}
+                        <div class="price-negotiation">
+                            <h4 style="color: #ff6b35;">🔄 需要重新選擇廚師</h4>
+                            <p style="color: #666; margin: 10px 0;">由於廚師拒絕接單或議價失敗，您需要重新選擇廚師</p>
+                            <p style="color: #666; margin: 10px 0;">請點擊下方按鈕重新選擇廚師，我們將為您找到其他合適的廚師</p>
+                            <div style="text-align: center; margin-top: 15px;">
+                                <a href="{{ url_for('reselect_chef', order_id=order.id) }}" 
+                                   style="background: #ff6b35; color: white; text-decoration: none; padding: 15px 30px; border-radius: 5px; font-weight: bold; display: inline-block;">
+                                    重新選擇廚師
+                                </a>
+                            </div>
+                        </div>
                     {% elif order.status.value == 'cancelled' %}
                         <div class="price-negotiation">
                             <h4 style="color: #dc3545;">訂單已取消</h4>
                         </div>
                     {% elif order.status.value == 'completed' %}
-                        <div class="price-negotiation">
-                            <h4 style="color: #607D8B;">交付完成</h4>
-                            <p style="color: #666;">訂單已完成，感謝您的使用</p>
-                        </div>
+                        {% if order.review %}
+                            <!-- 已經有評價，顯示評價結果 -->
+                            <div class="price-negotiation">
+                                <h4 style="color: #607D8B;">交付完成</h4>
+                                <p style="color: #666;">訂單已完成，感謝您的使用</p>
+                                <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                                    <p style="color: #28a745; font-weight: bold;">✓ 您已評價此訂單</p>
+                                    <p style="color: #666; margin: 5px 0;">評分：
+                                        {% for i in range(1, 6) %}
+                                            {% if i <= order.review.rating %}
+                                                <span style="color: #e3ab3b;">★</span>
+                                            {% else %}
+                                                <span style="color: #ccc;">★</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                    {% if order.review.content %}
+                                        <p style="color: #666; margin: 5px 0;">評價內容：{{ order.review.content }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <!-- 未評價，顯示廚師資訊 -->
+                            <div class="chef-container">
+                                <img src="{{ order.chef.avatar_url or '/static/imgs/chef.png' }}" alt="廚師照片" class="chef-img">
+                                <div class="chef-info">
+                                    <h3>{{ order.chef.name or '廚師' }}</h3>
+                                    <p>專長：{{ order.chef.chef_profile.description or '一般料理' if order.chef.chef_profile else '一般料理' }}</p>
+                                    <p>評價：
+                                        {% if order.chef.chef_profile and order.chef.chef_profile.average_rating %}
+                                            {% for i in range(1, 6) %}
+                                                {% if i <= order.chef.chef_profile.average_rating %}
+                                                    <span style="color: #e3ab3b;">★</span>
+                                                {% else %}
+                                                    <span style="color: #ccc;">★</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <span style="color: #ccc;">尚無評價</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
                     {% else %}
                         <div class="price-negotiation">
                             <h4>訂單狀態：{{ order.status.value }}</h4>
@@ -218,24 +282,41 @@
                 </div>
                 
                 <div class="extra-right">
-                    <p>價錢明細:</p>
-                    {% for dish in order.dishes %}
-                        <p>{{ loop.index }}. {{ dish.dish_name }} 
-                        {% if dish.unit_price > 0 %}
-                        × {{ dish.quantity }} NT${{ dish.unit_price | int }}
-                        {% else %}
-                        × {{ dish.quantity }} 待定價
-                        {% endif %}
-                        </p>
-                    {% endfor %}
-                    {% if order.delivery_fee > 0 %}
-                        <p>外送費 NT${{ order.delivery_fee | int }}</p>
-                    {% endif %}
-                    <hr>
-                    {% if order.total_amount > 0 %}
-                        <p><strong>總計 NT${{ (order.total_amount + order.delivery_fee) | int }}</strong></p>
+                    {% if order.status.value == 'completed' and not order.review %}
+                        <!-- 顯示評分界面 -->
+                        <h4 style="color: #333; margin-bottom: 15px;">給予此廚師評價！</h4>
+                        <form id="reviewForm">
+                            <textarea id="reviewComment" placeholder="您的寶貴意見..." class="text-input" rows="3"></textarea>
+                            <div class="star-rating">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                                <button type="button" class="btn-submit" onclick="submitReview()">送出</button>
+                            </div>
+                        </form>
                     {% else %}
-                        <p><strong>總計：待定價</strong></p>
+                        <!-- 顯示價錢明細 -->
+                        <p>價錢明細:</p>
+                        {% for dish in order.dishes %}
+                            <p>{{ loop.index }}. {{ dish.dish_name }} 
+                            {% if dish.unit_price > 0 %}
+                            × {{ dish.quantity }} NT${{ dish.unit_price | int }}
+                            {% else %}
+                            × {{ dish.quantity }} 待定價
+                            {% endif %}
+                            </p>
+                        {% endfor %}
+                        {% if order.delivery_fee > 0 %}
+                            <p>外送費 NT${{ order.delivery_fee | int }}</p>
+                        {% endif %}
+                        <hr>
+                        {% if order.total_amount > 0 %}
+                            <p><strong>總計 NT${{ (order.total_amount + order.delivery_fee) | int }}</strong></p>
+                        {% else %}
+                            <p><strong>總計：待定價</strong></p>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -258,6 +339,111 @@
     <script>
         // 從DOM獲取訂單ID
         const orderId = parseInt(document.body.getAttribute('data-order-id'));
+        
+        // 評分功能
+        let selectedRating = 0;
+        const stars = document.querySelectorAll('.star');
+        
+        // 初始化星星評分功能
+        if (stars.length > 0) {
+            stars.forEach(star => {
+                star.addEventListener('click', function () {
+                    selectedRating = parseInt(this.getAttribute('data-value'));
+                    updateStars();
+                });
+                
+                star.addEventListener('mouseenter', function () {
+                    const hoverRating = parseInt(this.getAttribute('data-value'));
+                    highlightStars(hoverRating);
+                });
+                
+                star.addEventListener('mouseleave', function () {
+                    updateStars();
+                });
+            });
+        }
+        
+        function updateStars() {
+            stars.forEach(star => {
+                if (parseInt(star.getAttribute('data-value')) <= selectedRating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+        
+        function highlightStars(rating) {
+            stars.forEach(star => {
+                if (parseInt(star.getAttribute('data-value')) <= rating) {
+                    star.style.color = '#e3ab3b';
+                } else {
+                    star.style.color = '#ccc';
+                }
+            });
+        }
+        
+        // 提交評分
+        function submitReview() {
+            const comment = document.getElementById('reviewComment').value;
+            
+            if (selectedRating === 0) {
+                Swal.fire({
+                    title: "請選擇評分",
+                    text: "請點擊星星給予評分",
+                    icon: "warning",
+                    customClass: {
+                        confirmButton: "swal-custom-button"
+                    }
+                });
+                return;
+            }
+            
+            fetch(`/customer/order/${orderId}/review`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rating: selectedRating,
+                    content: comment
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: "您的訂單已結束，感謝您的支持",
+                        icon: "success",
+                        customClass: {
+                            confirmButton: "swal-custom-button"
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: "評價失敗",
+                        text: data.message || "系統錯誤，請稍後再試",
+                        icon: "error",
+                        customClass: {
+                            confirmButton: "swal-custom-button"
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: "評價失敗",
+                    text: "網路錯誤，請稍後再試",
+                    icon: "error",
+                    customClass: {
+                        confirmButton: "swal-custom-button"
+                    }
+                });
+            });
+        }
         
         function toggleSettingsModal() {
             const modal = document.getElementById('settings-modal');
@@ -449,13 +635,16 @@
             const negotiateBtn = document.querySelector(".btn-negotiate"); // 再議價按鈕
             const agreeBtn = document.querySelector(".btn-agree"); // 同意按鈕
             const priceInput = document.querySelector(".price-input"); // 金額輸入欄
-            const textInput = document.querySelector(".text-input"); // 理由輸入欄
+            const counterOfferSection = document.getElementById("counter-offer-section"); // 再議價區域
             const submitBtn = document.querySelector(".submit-btn"); // 送出按鈕
             const noteText = document.querySelector(".note"); // *注意：僅此一次議價機會*
 
-            // 如果元素存在，設置初始狀態
+            // 如果元素存在，設置初始狀態（只針對議價界面的元素）
             if (priceInput) priceInput.style.display = "none";
-            if (textInput) textInput.style.display = "none";
+            if (counterOfferSection) {
+                const textInput = counterOfferSection.querySelector(".text-input"); // 只選擇議價區域內的文本輸入
+                if (textInput) textInput.style.display = "none";
+            }
             if (submitBtn) submitBtn.style.display = "none";
             if (noteText) noteText.style.display = "none";
 
@@ -463,15 +652,19 @@
             if (negotiateBtn) {
                 negotiateBtn.addEventListener("click", function () {
                     if (priceInput) priceInput.style.display = "block";
-                    if (textInput) textInput.style.display = "block";
+                    if (counterOfferSection) {
+                        const textInput = counterOfferSection.querySelector(".text-input");
+                        if (textInput) textInput.style.display = "block";
+                    }
                     if (noteText) noteText.style.display = "block";
                 });
             }
 
             // 當使用者輸入內容時，顯示「送出」按鈕
             function checkInput() {
-                if (priceInput && textInput && submitBtn) {
-                    if (priceInput.value.trim() !== "" || textInput.value.trim() !== "") {
+                if (priceInput && counterOfferSection && submitBtn) {
+                    const textInput = counterOfferSection.querySelector(".text-input");
+                    if (textInput && (priceInput.value.trim() !== "" || textInput.value.trim() !== "")) {
                         submitBtn.style.display = "block";
                     } else {
                         submitBtn.style.display = "none";
@@ -481,7 +674,10 @@
 
             // 監聽輸入框變化
             if (priceInput) priceInput.addEventListener("input", checkInput);
-            if (textInput) textInput.addEventListener("input", checkInput);
+            if (counterOfferSection) {
+                const textInput = counterOfferSection.querySelector(".text-input");
+                if (textInput) textInput.addEventListener("input", checkInput);
+            }
 
             // 點擊「同意」時，隱藏所有輸入欄、送出按鈕與提示文字
             if (agreeBtn) {
@@ -490,7 +686,10 @@
                     acceptNegotiation(negotiationId);
                     
                     if (priceInput) priceInput.style.display = "none";
-                    if (textInput) textInput.style.display = "none";
+                    if (counterOfferSection) {
+                        const textInput = counterOfferSection.querySelector(".text-input");
+                        if (textInput) textInput.style.display = "none";
+                    }
                     if (submitBtn) submitBtn.style.display = "none";
                     if (noteText) noteText.style.display = "none";
                 });

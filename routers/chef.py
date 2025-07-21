@@ -222,23 +222,23 @@ def reject_order(
         )
     
     try:
-        # 記錄拒絕原因到狀態歷史，並將訂單狀態改為取消
+        # 記錄拒絕原因到狀態歷史，並將訂單狀態改為重新選擇廚師
         old_status = order.status
-        order.status = OrderStatus.CANCELLED
-        order.chef_id = None  # 清除廚師分配，讓其他廚師可以接單
+        order.status = OrderStatus.RESELECTING_CHEF
+        order.chef_id = None  # 清除廚師分配，讓顧客重新選擇
         
         status_history = OrderStatusHistory(
             order_id=order.id,
             old_status=old_status,
-            new_status=OrderStatus.CANCELLED,
-            notes=f"廚師 {current_user.email} 拒絕接單，原因：{reject_data.reason}"
+            new_status=OrderStatus.RESELECTING_CHEF,
+            notes=f"廚師 {current_user.email} 拒絕接單，原因：{reject_data.reason}。顧客可重新選擇廚師"
         )
         db.add(status_history)
         
         db.commit()
         
         return JSONResponse(
-            content={"success": True, "message": "拒絕成功"}
+            content={"success": True, "message": "拒絕成功，顧客可重新選擇廚師"}
         )
         
     except Exception as e:
@@ -873,15 +873,16 @@ def respond_counter_offer(
             message = "已接受顧客議價，訂單確認成功！"
             
         else:
-            # 廚師拒絕顧客的再議價，訂單取消
-            order.status = OrderStatus.CANCELLED
+            # 廚師拒絕顧客的再議價，讓顧客重新選擇廚師
+            order.status = OrderStatus.RESELECTING_CHEF
+            order.chef_id = None  # 清除廚師分配，讓顧客重新選擇
             status_history = OrderStatusHistory(
                 order_id=order.id,
                 old_status=OrderStatus.NEGOTIATING,
-                new_status=OrderStatus.CANCELLED,
-                notes=f"廚師拒絕顧客再議價，訂單取消"
+                new_status=OrderStatus.RESELECTING_CHEF,
+                notes=f"廚師拒絕顧客再議價，顧客可重新選擇廚師"
             )
-            message = "已拒絕顧客議價，訂單取消"
+            message = "已拒絕顧客議價，顧客可重新選擇廚師"
         
         db.add(status_history)
         db.commit()

@@ -20,7 +20,7 @@
         <div class="nav-links">
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
-            <a href="CookingMethod.html">料理方式建議</a>
+            <a href="/customer/cooking_method">料理方式建議</a>
             <a href="{{ url_for('order_step0') }}">新增訂單</a>
             <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
             <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
