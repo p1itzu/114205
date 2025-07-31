@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 import uuid
 import os
+import shutil
 
 from database import get_db
 from models.user import User
@@ -554,14 +555,21 @@ async def update_customer_profile(
         
         # 處理密碼更新
         if new_password:
+            # OAuth2用戶不能修改密碼
+            if current_user.oauth_provider:
+                return JSONResponse(
+                    status_code=400,
+                    content={"success": False, "message": "OAuth2登入用戶無法修改密碼，請前往您的Google帳戶設定"}
+                )
+            
             if not current_password:
                 return JSONResponse(
                     status_code=400,
                     content={"success": False, "message": "請輸入目前密碼"}
                 )
             
-            # 驗證目前密碼（OAuth用戶可能沒有密碼）
-            if current_user.hashed_password and not verify_password(current_password, current_user.hashed_password):
+            # 驗證目前密碼
+            if not current_user.hashed_password or not verify_password(current_password, current_user.hashed_password):
                 return JSONResponse(
                     status_code=400,
                     content={"success": False, "message": "目前密碼錯誤"}
@@ -592,7 +600,14 @@ async def update_customer_profile(
         
         db.commit()
         
-        return JSONResponse(content={"success": True, "message": "個人資料更新成功！"})
+        # 準備響應並更新cookies
+        response = JSONResponse(content={"success": True, "message": "個人資料更新成功！"})
+        
+        # 更新頭像cookie（如果有新頭像）
+        if avatar and avatar.filename and current_user.avatar_url:
+            response.set_cookie(key="avatar_url", value=current_user.avatar_url, httponly=False)
+        
+        return response
         
     except Exception as e:
         db.rollback()
@@ -992,5 +1007,132 @@ def confirm_received(
             status_code=500,
             content={"success": False, "message": f"操作失敗：{str(e)}"}
         )
+
+
+# 身心障礙者/高齡者驗證申請頁面
+@router.get("/special-needs-verification")
+def special_needs_verification_page(
+    request: Request,
+    commons=Depends(common_template_params),
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    return templates.TemplateResponse("special_needs_verification.html", {
+        **commons,
+        "request": request,
+        "current_user": current_user
+    })
+
+
+# 提交身心障礙者/高齡者驗證申請
+@router.post("/special-needs-verification")
+async def submit_special_needs_verification(
+    request: Request,
+    special_needs_type: str = Form(...),
+    document_image: UploadFile = File(...),
+    commons=Depends(common_template_params),
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    try:
+        # 檢查是否已經有申請記錄
+        if current_user.special_needs_type:
+            return templates.TemplateResponse("special_needs_verification.html", {
+                **commons,
+                "request": request,
+                "current_user": current_user,
+                "error": "您已經提交過申請，請勿重複申請"
+            })
+        
+        # 驗證申請類型
+        if special_needs_type not in ['disability', 'elderly']:
+            return templates.TemplateResponse("special_needs_verification.html", {
+                **commons,
+                "request": request,
+                "current_user": current_user,
+                "error": "無效的申請類型"
+            })
+        
+        # 驗證檔案類型
+        if not document_image.content_type.startswith('image/'):
+            return templates.TemplateResponse("special_needs_verification.html", {
+                **commons,
+                "request": request,
+                "current_user": current_user,
+                "error": "請上傳圖片檔案（JPG、PNG 格式）"
+            })
+        
+        # 檢查檔案大小 (10MB)
+        content = await document_image.read()
+        if len(content) > 10 * 1024 * 1024:
+            return templates.TemplateResponse("special_needs_verification.html", {
+                **commons,
+                "request": request,
+                "current_user": current_user,
+                "error": "檔案大小不能超過 10MB"
+            })
+        
+        # 創建上傳目錄
+        upload_dir = "static/uploads/special_needs"
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # 生成唯一檔名
+        file_extension = document_image.filename.split('.')[-1] if '.' in document_image.filename else 'jpg'
+        filename = f"special_needs_{current_user.id}_{uuid.uuid4().hex[:8]}.{file_extension}"
+        file_path = os.path.join(upload_dir, filename)
+        
+        # 保存檔案
+        with open(file_path, "wb") as buffer:
+            buffer.write(content)
+        
+        # 更新用戶資料
+        current_user.special_needs_type = special_needs_type
+        current_user.special_needs_document_url = f"/static/uploads/special_needs/{filename}"
+        current_user.special_needs_verified = False  # 待審核
+        current_user.special_needs_applied_at = datetime.utcnow()
+        
+        db.commit()
+        
+        return templates.TemplateResponse("special_needs_verification.html", {
+            **commons,
+            "request": request,
+            "current_user": current_user,
+            "success": "申請已成功提交！我們將在 1-3 個工作天內完成審核，審核結果將透過電子郵件通知您。"
+        })
+        
+    except Exception as e:
+        # 如果保存失敗，刪除檔案
+        if 'file_path' in locals() and os.path.exists(file_path):
+            os.remove(file_path)
+        
+        db.rollback()
+        
+        return templates.TemplateResponse("special_needs_verification.html", {
+            **commons,
+            "request": request,
+            "current_user": current_user,
+            "error": f"申請提交失敗：{str(e)}"
+        })
+
+
+# 查看身心障礙者/高齡者驗證狀態
+@router.get("/special-needs-status")
+def special_needs_status_page(
+    request: Request,
+    commons=Depends(common_template_params),
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    # 計算預計完成時間（申請後3個工作天）
+    estimated_completion = None
+    if current_user.special_needs_applied_at:
+        estimated_completion = current_user.special_needs_applied_at + timedelta(days=3)
+    
+    return templates.TemplateResponse("special_needs_status.html", {
+        **commons,
+        "request": request,
+        "current_user": current_user,
+        "estimated_completion": estimated_completion
+    })
 
 

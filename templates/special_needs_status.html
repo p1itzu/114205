@@ -1,17 +1,208 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-Hant">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="static/css/index.css" rel="stylesheet" />
-    <link href="static/css/notification.css" rel="stylesheet" />
-    <title>代做菜媒合平台</title>
-    
+    <title>驗證狀態查看 - 味你而煮</title>
+    <link rel="stylesheet" href="/static/css/my-order.css" />
+    <link rel="stylesheet" href="/static/css/notification.css" />
     <style>
-        /* 現代化設定模態窗口樣式 */
+        .status-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header-section h1 {
+            color: #5b4636;
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .header-section p {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        .status-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .status-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .status-card.pending {
+            border-color: #ff9800;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        }
+        
+        .status-card.approved {
+            border-color: #4caf50;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+        }
+        
+        .status-card.rejected {
+            border-color: #f44336;
+            background: linear-gradient(135deg, #ffeaea 0%, #ffcdd2 100%);
+        }
+        
+        .status-card.not-applied {
+            border-color: #e0e0e0;
+            background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+            text-align: center;
+        }
+        
+        .status-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .status-badge {
+            font-size: 48px;
+            margin-right: 20px;
+        }
+        
+        .status-info h2 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .status-info p {
+            margin: 0;
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .status-details {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .detail-row:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: #5b4636;
+            min-width: 120px;
+        }
+        
+        .detail-value {
+            color: #666;
+            text-align: right;
+        }
+        
+        .document-preview {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .document-image {
+            max-width: 300px;
+            max-height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .document-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .action-buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #f6c25f, #e0a93d);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(246, 194, 95, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 1px solid #2196f3;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            color: #1976d2;
+            font-size: 16px;
+        }
+        
+        .info-box h3 {
+            margin: 0 0 15px 0;
+            color: #1976d2;
+            font-size: 18px;
+        }
+        
+        .info-box ul {
+            margin: 15px 0 0 25px;
+            line-height: 1.8;
+        }
+        
+        /* 設定模態窗口額外樣式 */
         .modal {
             display: none;
             position: fixed;
@@ -369,7 +560,6 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 120px;
         }
         
         .btn-save:hover {
@@ -377,61 +567,71 @@
             box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
         }
         
-        .btn-save:disabled {
-            opacity: 0.6;
-            transform: none;
-            cursor: not-allowed;
-        }
-        
         .btn-cancel {
-            background: linear-gradient(135deg, #6c757d, #5a6268);
+            background: #6c757d;
             color: white;
             border: none;
             padding: 12px 30px;
             border-radius: 25px;
             font-size: 16px;
-            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 120px;
         }
         
         .btn-cancel:hover {
+            background: #5a6268;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+        }
+        
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .status-container {
+                margin: 20px;
+                padding: 25px;
+            }
+            
+            .header-section h1 {
+                font-size: 28px;
+            }
+            
+            .status-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .status-badge {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                text-align: left;
+            }
+            
+            .detail-value {
+                text-align: left;
+                margin-top: 5px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 導航欄 -->
     <div class="navbar">
         <div class="site-name">味你而煮</div>
         <div class="nav-links">
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
-                {% if user.role and user.role.value == 'chef' %}
-                <!-- 廚師專用導航 -->
-                <a href="{{ url_for('chef_dashboard') }}">總覽</a>
-                <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
-                
-                <!-- 廚師的我的訂單下拉選單 -->
-                <div class="dropdown" style="position: relative; display: inline-block;">
-                    <button class="dropdown-btn" onclick="toggleDropdown()" style="background: none; border: none; color: #B3811C; font-size: 18px; font-weight: bold; cursor: pointer; padding: 10px 20px; font-family: Arial, sans-serif; border-radius: 5px;">我的訂單 ▾</button>
-                    <div class="dropdown-content" id="orderDropdown" style="display: none; position: absolute; background-color: white; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 5px; top: 100%;">
-                        <a href="{{ url_for('chef_accepted_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">待完成訂單</a>
-                        <a href="{{ url_for('chef_completed_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已完成訂單</a>
-                        <a href="{{ url_for('chef_negotiating_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">議價中訂單</a>
-                        <a href="{{ url_for('chef_cancelled_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已取消訂單</a>
-                    </div>
-                </div>
-                
-                <a href="#">客服聯絡</a>
-                {% else %}
-                <!-- 顧客專用導航 -->
-                <a href="/customer/cooking_method">料理方式建議</a>
-                <a href="{{ url_for('order_step0') }}">新增訂單</a>
-                <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
-                <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
-                {% endif %}
+            <a href="/customer/cooking_method">料理方式建議</a>
+            <a href="{{ url_for('order_step0') }}">新增訂單</a>
+            <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
             {% else %}
             <a href="{{ url_for('index') }}">關於我們</a>
             <a href="{{ url_for('index') }}">料理方式建議</a>
@@ -449,47 +649,191 @@
                 <div class="name">{{ user.name }}</div>
                 <div class="email">{{ user.email }}</div>
             </div>
-            
             <div class="settings-icon" onclick="toggleSettingsModal()"></div>
             {% else %}
             <a href="{{ url_for('login') }}">登入/註冊</a>
             {% endif %}
         </div>
     </div>
-    <div class="content">
-        <h1>歡迎來到我們的網站</h1>
-        <p>這是一個代做菜的媒合平台。</p>
-    </div>
-    <div class="content">
-        <div class="section">
-            <h3>平台簡介</h3>
-            <p>
-                平台旨在為忙碌的現代人提供便捷的餐食解決方案。無論是因工作繁忙、聚會需要，或是單純想享受家常美味卻無暇下廚，平台都能幫助用戶快速找到合適的代做菜服務。
-                <br><br>
-                使用者只需透過簡單的操作，即可瀏覽多樣菜單、預約代做菜服務，並選擇自取或外送。平台同時提供代做菜師傅資訊與評價，保障用戶的選擇品質與餐食安全。
-                <br><br>
-                我們致力於打造一個 <strong>方便、快速、安全</strong> 的用餐媒合體驗，讓每一位用戶都能輕鬆享受美味料理，減少生活煩惱。
-            </p>
+
+    <!-- 主要內容 -->
+    <div class="status-container">
+        <div class="header-section">
+            <div class="status-icon">📋</div>
+            <h1>驗證狀態查看</h1>
+            <p>查看您的身心障礙者/高齡者驗證申請狀態</p>
         </div>
-        <div class="section">
-            <h3>流程介紹</h3>
-            <p>1. 選擇角色（廚師 / 顧客）</p>
-            <p>2. 瀏覽或上架菜單</p>
-            <p>3. 下單或接單</p>
-            <p>4. 完成訂單並留下評價</p>
-        </div>
-        <div class="section">
-            <h3>最新公告</h3>
-            <p>春節期間訂單調整時間請提前查詢！</p>
+        
+        {% if current_user.special_needs_type %}
+            <!-- 已申請的狀態 -->
+            {% if current_user.special_needs_verified %}
+                <!-- 已通過驗證 -->
+                <div class="status-card approved">
+                    <div class="status-header">
+                        <div class="status-badge">✅</div>
+                        <div class="status-info">
+                            <h2>驗證已通過</h2>
+                            <p>恭喜您！您的申請已經通過審核</p>
+                        </div>
+                    </div>
+                    
+                    <div class="status-details">
+                        <div class="detail-row">
+                            <div class="detail-label">申請類型：</div>
+                            <div class="detail-value">
+                                {% if current_user.special_needs_type == 'disability' %}
+                                    身心障礙者驗證
+                                {% else %}
+                                    高齡者驗證
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">申請時間：</div>
+                            <div class="detail-value">{{ current_user.special_needs_applied_at.strftime('%Y年%m月%d日') }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">驗證狀態：</div>
+                            <div class="detail-value">✅ 已通過審核</div>
+                        </div>
+                    </div>
+                    
+                    {% if current_user.special_needs_document_url %}
+                    <div class="document-preview">
+                        <p><strong>提交的證明文件：</strong></p>
+                        <img src="{{ current_user.special_needs_document_url }}" 
+                             alt="證明文件" 
+                             class="document-image"
+                             onclick="window.open(this.src, '_blank')">
+                        <p style="font-size: 14px; color: #666; margin-top: 10px;">點擊圖片可放大查看</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="info-box">
+                    <h3>🎉 您已享有的權益：</h3>
+                    <ul>
+                        <li>專屬客服優先服務</li>
+                        <li>訂單優惠折扣</li>
+                        <li>客製化料理建議</li>
+                        <li>無障礙配送服務（如適用）</li>
+                    </ul>
+                </div>
+                
+            {% else %}
+                <!-- 審核中 -->
+                <div class="status-card pending">
+                    <div class="status-header">
+                        <div class="status-badge">⏳</div>
+                        <div class="status-info">
+                            <h2>審核中</h2>
+                            <p>您的申請正在審核中，請耐心等候</p>
+                        </div>
+                    </div>
+                    
+                    <div class="status-details">
+                        <div class="detail-row">
+                            <div class="detail-label">申請類型：</div>
+                            <div class="detail-value">
+                                {% if current_user.special_needs_type == 'disability' %}
+                                    身心障礙者驗證
+                                {% else %}
+                                    高齡者驗證
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">申請時間：</div>
+                            <div class="detail-value">{{ current_user.special_needs_applied_at.strftime('%Y年%m月%d日') }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">審核狀態：</div>
+                            <div class="detail-value">⏳ 審核中</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">預計完成：</div>
+                            <div class="detail-value">
+                                {% if estimated_completion %}
+                                    {{ estimated_completion.strftime('%Y年%m月%d日') }} 前
+                                {% else %}
+                                    審核中
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if current_user.special_needs_document_url %}
+                    <div class="document-preview">
+                        <p><strong>提交的證明文件：</strong></p>
+                        <img src="{{ current_user.special_needs_document_url }}" 
+                             alt="證明文件" 
+                             class="document-image"
+                             onclick="window.open(this.src, '_blank')">
+                        <p style="font-size: 14px; color: #666; margin-top: 10px;">點擊圖片可放大查看</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="info-box">
+                    <h3>📝 審核須知：</h3>
+                    <ul>
+                        <li>審核時間：1-3 個工作天</li>
+                        <li>審核結果將透過電子郵件通知</li>
+                        <li>如有疑問，請聯繫客服 (02) 1234-5678</li>
+                        <li>請確保提交的文件清晰可見</li>
+                    </ul>
+                </div>
+            {% endif %}
+            
+        {% else %}
+            <!-- 尚未申請 -->
+            <div class="status-card not-applied">
+                <div class="status-header">
+                    <div class="status-badge">📝</div>
+                    <div class="status-info">
+                        <h2>尚未申請驗證</h2>
+                        <p>您還沒有提交身心障礙者或高齡者驗證申請</p>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h3>💡 申請驗證的好處：</h3>
+                    <ul>
+                        <li>享有專屬優惠與折扣</li>
+                        <li>優先客服支援</li>
+                        <li>客製化服務建議</li>
+                        <li>無障礙配送選項（如適用）</li>
+                    </ul>
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="/customer/special-needs-verification" class="btn btn-primary">
+                        立即申請驗證
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="action-buttons">
+            <a href="{{ url_for('customer_order_list') }}" class="btn btn-secondary">
+                返回我的訂單
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                返回首頁
+            </a>
         </div>
     </div>
 
+    <!-- Footer -->
     <div class="footer">
-        © 2025 網站名稱. All rights reserved.<br>
-        聯絡我們：official@example.com | 電話：02-12345678900
+        © 2024 味你而煮. All rights reserved.<br>
+        聯絡我們：service@homecook.com | 電話：(02) 1234-5678
     </div>
 
-    <!-- 現代化設定彈窗 -->
+    <!-- 通知中心 -->
+    {% include 'notification_component.html' %}
+
+    <!-- 設定彈窗 -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -506,17 +850,19 @@
                             <div class="account-email">{{ user.email }}</div>
                         </div>
                     </div>
-                    <div class="setting-item" onclick="showProfileEditor()">
-                        <div class="setting-icon">👤</div>
-                        <div class="setting-text">
-                            <div class="setting-title">編輯個人資料</div>
-                            <div class="setting-desc">修改姓名、頭像或密碼</div>
-                        </div>
-                        <div class="setting-arrow">→</div>
-                    </div>
                 </div>
                 
                 <hr>
+                
+                <!-- 功能選項 -->
+                <div class="setting-item" onclick="showProfileEditor()">
+                    <div class="setting-icon">👤</div>
+                    <div class="setting-text">
+                        <div class="setting-title">個人資料編輯</div>
+                        <div class="setting-desc">修改姓名、電話、密碼等資訊</div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
                 
                 <div class="setting-item" onclick="window.location.href='/customer/special-needs-verification'">
                     <div class="setting-icon">🏥</div>
@@ -549,6 +895,7 @@
             </div>
         </div>
     </div>
+
     <!-- 個人資料編輯彈窗 -->
     <div id="profileModal" class="modal">
         <div class="modal-content">
@@ -631,19 +978,9 @@
         </div>
     </div>
 
-    <!-- 通知中心視窗 -->
-    <div class="notification-center" id="notificationCenter">
-        <div class="notification-header">
-            <span>通知中心</span>
-            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
-        </div>
-        <ul class="notification-list" id="notificationList">
-            <!-- 通知項目會動態添加在這裡 -->
-        </ul>
-    </div>
-
-    <script>
-        // 現代化設定模態窗口功能
+    <script src="/static/js/notification.js"></script>
+    <script>        
+        // 設定模態窗口功能
         function toggleSettingsModal() {
             const modal = document.getElementById('settingsModal');
             modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
@@ -754,44 +1091,18 @@
             if (event.target === profileModal) {
                 profileModal.style.display = 'none';
             }
-            
-            // 關閉廚師下拉選單（如果點擊的不是下拉按鈕）
-            if (!event.target.matches('.dropdown-btn')) {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.style.display === 'block') {
-                        openDropdown.style.display = 'none';
-                    }
-                }
-            }
         }
         
-        // 廚師下拉選單切換函數
-        function toggleDropdown() {
-            const dropdown = document.getElementById("orderDropdown");
-            if (dropdown) {
-                if (dropdown.style.display === 'block') {
-                    dropdown.style.display = 'none';
-                } else {
-                    dropdown.style.display = 'block';
-                }
-            }
-        }
-
-        // 為下拉按鈕添加hover效果
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdownBtn = document.querySelector('.dropdown-btn');
-            if (dropdownBtn) {
-                dropdownBtn.addEventListener('mouseenter', function() {
-                    this.style.backgroundColor = '#f9e4ba';
-                });
-                dropdownBtn.addEventListener('mouseleave', function() {
-                    this.style.backgroundColor = 'transparent';
-                });
+        // 頭像預覽功能
+        document.getElementById('avatar-input').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-avatar').src = e.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
             }
         });
     </script>
-    <script src="static/js/notification.js"></script>
 </body>
 </html>

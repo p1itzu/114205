@@ -1,20 +1,251 @@
 <!DOCTYPE html>
-<html lang="zh">
-
+<html lang="zh-Hant">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap"
-        rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ url_for('static', path='css/notification.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', path='css/cookingMethod.css') }}" rel="stylesheet" />
-    <title>料理方式建議 - 代做菜媒合平台</title>
-    
+    <title>身心障礙者/高齡者驗證 - 味你而煮</title>
+    <link rel="stylesheet" href="/static/css/my-order.css" />
+    <link rel="stylesheet" href="/static/css/notification.css" />
     <style>
-        /* 現代化設定模態窗口樣式 */
+        .verification-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header-section h1 {
+            color: #5b4636;
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .header-section p {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        .verification-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .form-section {
+            margin: 30px 0;
+        }
+        
+        .form-group {
+            margin-bottom: 30px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            color: #5b4636;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+        
+        .verification-type-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .verification-option {
+            flex: 1;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .verification-option:hover {
+            border-color: #f6c25f;
+            background-color: #fff9ec;
+        }
+        
+        .verification-option.selected {
+            border-color: #f6c25f;
+            background-color: #fff9ec;
+            box-shadow: 0 4px 15px rgba(246, 194, 95, 0.2);
+        }
+        
+        .verification-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .option-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .option-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #5b4636;
+            margin-bottom: 8px;
+        }
+        
+        .option-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #f6c25f;
+            background-color: #fff9ec;
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #f6c25f;
+            background-color: #fff9ec;
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 60px;
+            color: #ccc;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .upload-text {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        .upload-hint {
+            color: #999;
+            font-size: 16px;
+        }
+        
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .preview-area {
+            margin-top: 25px;
+            display: none;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 1px solid #2196f3;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            color: #1976d2;
+            font-size: 16px;
+        }
+        
+        .info-box strong {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .info-box ul {
+            margin: 15px 0 0 25px;
+            line-height: 1.8;
+        }
+        
+        .submit-section {
+            margin-top: 50px;
+            text-align: center;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #f6c25f, #e0a93d);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(246, 194, 95, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .error-message {
+            background-color: #ffeaea;
+            border: 1px solid #f44336;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            color: #c62828;
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        .success-message {
+            background-color: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            color: #2e7d32;
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        /* 設定模態窗口額外樣式 */
         .modal {
             display: none;
             position: fixed;
@@ -372,7 +603,6 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 120px;
         }
         
         .btn-save:hover {
@@ -380,33 +610,51 @@
             box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
         }
         
-        .btn-save:disabled {
-            opacity: 0.6;
-            transform: none;
-            cursor: not-allowed;
-        }
-        
         .btn-cancel {
-            background: linear-gradient(135deg, #6c757d, #5a6268);
+            background: #6c757d;
             color: white;
             border: none;
             padding: 12px 30px;
             border-radius: 25px;
             font-size: 16px;
-            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 120px;
         }
         
         .btn-cancel:hover {
+            background: #5a6268;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+        }
+        
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .verification-container {
+                margin: 20px;
+                padding: 25px;
+            }
+            
+            .verification-type-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-section h1 {
+                font-size: 28px;
+            }
+            
+            .header-section p {
+                font-size: 16px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
         }
     </style>
 </head>
-
 <body>
+    <!-- 導航欄 -->
     <div class="navbar">
         <div class="site-name">味你而煮</div>
         <div class="nav-links">
@@ -424,7 +672,11 @@
         </div>
         <div class="user-info">
             {% if user %}
-            <img src="{{ avatar_url }}" alt="頭像" class="avatar" />
+            <img
+                src="{{ avatar_url }}"
+                alt="頭像"
+                class="avatar"
+            />
             <div class="user-text">
                 <div class="name">{{ user.name }}</div>
                 <div class="email">{{ user.email }}</div>
@@ -436,92 +688,96 @@
         </div>
     </div>
 
-    <!-- 搜尋欄 -->
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="搜尋餐點...">
-        <button class="search-button" onclick="filterRecipes()">
-            <img src="{{ url_for('static', path='imgs/search.png') }}" alt="搜尋">
-        </button>
-        <button class="return-button" id="returnButton" onclick="showAllRecipes()" style="display: none;">
-            <span>返回全部</span>
-        </button>
-    </div>
-
-    <!-- 餐點列表 -->
-    <div class="recipe-grid">
-        <div class="recipe-card" onclick="showRecipeModal('印度烤餅')">
-            <img src="{{ url_for('static', path='imgs/印度烤餅.jpg') }}" alt="印度烤餅">
-            <h3>印度烤餅</h3>
+    <!-- 主要內容 -->
+    <div class="verification-container">
+        <div class="header-section">
+            <div class="verification-icon">🏥</div>
+            <h1>身心障礙者/高齡者驗證</h1>
+            <p>為了提供更好的服務與優惠，歡迎申請身心障礙者或高齡者驗證<br>
+            我們將為通過驗證的用戶提供專屬的優惠與貼心服務</p>
         </div>
-
-        <div class="recipe-card" onclick="showRecipeModal('日式炸豬排')">
-            <img src="{{ url_for('static', path='imgs/日式炸豬排.jpg') }}" alt="日式炸豬排">
-            <h3>日式炸豬排</h3>
+        
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
         </div>
-
-        <div class="recipe-card" onclick="showRecipeModal('泰式打拋豬')">
-            <img src="{{ url_for('static', path='imgs/泰式打拋豬.jpg') }}" alt="泰式打拋豬">
-            <h3>泰式打拋豬</h3>
+        {% endif %}
+        
+        {% if success %}
+        <div class="success-message">
+            {{ success }}
         </div>
-
-        <div class="recipe-card" onclick="showRecipeModal('韓式泡菜炒飯')">
-            <img src="{{ url_for('static', path='imgs/泡菜炒飯.jpg') }}" alt="韓式泡菜炒飯">
-            <h3>韓式泡菜炒飯</h3>
+        {% endif %}
+        
+        <div class="info-box">
+            <strong>📋 申請須知：</strong>
+            <ul>
+                <li><strong>身心障礙者：</strong>請上傳身心障礙手冊或證明文件</li>
+                <li><strong>高齡者（65歲以上）：</strong>請上傳身分證或其餘能證明年齡之文件</li>
+                <li>文件需清晰可見，支援 JPG、PNG 格式</li>
+                <li>檔案大小不超過 10MB</li>
+                <li>審核時間約需 1-3 個工作天</li>
+                <li>通過驗證後可享有專屬優惠與服務</li>
+            </ul>
         </div>
-
-        <div class="recipe-card" onclick="showRecipeModal('義式青醬麵')">
-            <img src="{{ url_for('static', path='imgs/義大利麵.jpg') }}" alt="義式青醬麵">
-            <h3>義式青醬麵</h3>
-        </div>
-
-        <div class="recipe-card" onclick="showRecipeModal('日式親子丼')">
-            <img src="{{ url_for('static', path='imgs/親子.jpg') }}" alt="日式親子丼">
-            <h3>日式親子丼</h3>
-        </div>
-    </div>
-
-    <!-- 食譜彈出視窗 -->
-    <div id="recipeModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="recipeName"></h2>
-                <span class="close" onclick="closeRecipeModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="recipe-section ingredients">
-                    <h3>材料</h3>
-                    <div class="copy-section">
-                        <div id="ingredientsList"></div>
-                        <button onclick="copyText('ingredientsList')" class="copy-button">
-                            <img src="{{ url_for('static', path='imgs/clone.png') }}" alt="複製">
-                        </button>
+        
+        <form action="/customer/special-needs-verification" method="post" enctype="multipart/form-data" id="verificationForm">
+            <div class="form-section">
+                <div class="form-group">
+                    <label>請選擇申請類型 *</label>
+                    <div class="verification-type-container">
+                        <div class="verification-option" onclick="selectOption('disability')">
+                            <input type="radio" name="special_needs_type" value="disability" id="disability" required>
+                            <div class="option-icon">♿</div>
+                            <div class="option-title">身心障礙者</div>
+                            <div class="option-description">持有身心障礙手冊或<br>相關證明文件者</div>
+                        </div>
+                        <div class="verification-option" onclick="selectOption('elderly')">
+                            <input type="radio" name="special_needs_type" value="elderly" id="elderly" required>
+                            <div class="option-icon">👴</div>
+                            <div class="option-title">高齡者</div>
+                            <div class="option-description">年滿65歲以上<br>之長者</div>
+                        </div>
                     </div>
                 </div>
-                <div class="recipe-section steps">
-                    <h3>作法</h3>
-                    <div class="copy-section">
-                        <div id="stepsList"></div>
-                        <button onclick="copyText('stepsList')" class="copy-button">
-                            <img src="{{ url_for('static', path='imgs/clone.png') }}" alt="複製">
-                        </button>
+                
+                <div class="form-group">
+                    <label>證明文件上傳 *</label>
+                    <div class="file-upload-area" id="uploadArea">
+                        <div class="upload-icon">📎</div>
+                        <div class="upload-text">點擊或拖拽上傳證明文件</div>
+                        <div class="upload-hint">支援 JPG、PNG 格式，最大 10MB</div>
+                        <input type="file" 
+                               id="document_image" 
+                               name="document_image" 
+                               accept="image/*" 
+                               class="file-input" 
+                               required>
+                    </div>
+                    <div class="preview-area" id="previewArea">
+                        <img id="previewImage" class="preview-image" alt="文件預覽">
                     </div>
                 </div>
             </div>
-        </div>
+            
+            <div class="submit-section">
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    提交申請
+                </button>
+            </div>
+        </form>
     </div>
 
-    <!-- 通知中心視窗 -->
-    <div class="notification-center" id="notificationCenter">
-        <div class="notification-header">
-            <span>通知中心</span>
-            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
-        </div>
-        <ul class="notification-list" id="notificationList">
-            <!-- 通知項目會動態添加在這裡 -->
-        </ul>
+    <!-- Footer -->
+    <div class="footer">
+        © 2024 味你而煮. All rights reserved.<br>
+        聯絡我們：service@homecook.com | 電話：(02) 1234-5678
     </div>
 
-    <!-- 現代化設定彈窗 -->
+    <!-- 通知中心 -->
+    {% include 'notification_component.html' %}
+
+    <!-- 設定彈窗 -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -538,17 +794,19 @@
                             <div class="account-email">{{ user.email }}</div>
                         </div>
                     </div>
-                    <div class="setting-item" onclick="showProfileEditor()">
-                        <div class="setting-icon">👤</div>
-                        <div class="setting-text">
-                            <div class="setting-title">編輯個人資料</div>
-                            <div class="setting-desc">修改姓名、頭像或密碼</div>
-                        </div>
-                        <div class="setting-arrow">→</div>
-                    </div>
                 </div>
                 
                 <hr>
+                
+                <!-- 功能選項 -->
+                <div class="setting-item" onclick="showProfileEditor()">
+                    <div class="setting-icon">👤</div>
+                    <div class="setting-text">
+                        <div class="setting-title">個人資料編輯</div>
+                        <div class="setting-desc">修改姓名、電話、密碼等資訊</div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
                 
                 <div class="setting-item" onclick="window.location.href='/customer/special-needs-verification'">
                     <div class="setting-icon">🏥</div>
@@ -664,318 +922,107 @@
         </div>
     </div>
 
-    <!-- 複製成功提示視窗 -->
-    <div class="copy-toast" id="copyToast">
-        <div class="toast-content">
-            <span>複製成功！</span>
-        </div>
-    </div>
-
-    <script src="{{ url_for('static', path='js/notification.js') }}"></script>
+    <script src="/static/js/notification.js"></script>
     <script>
-        // 食譜資料
-        const recipes = {
-            '印度烤餅': {
-                ingredients:
-`• 中筋麵粉：2 杯
-• 酵母粉：1 茶匙
-• 溫水：1/2 杯（約 40°C，微溫）
-• 砂糖：1 茶匙
-• 優格：1/4 杯（增添柔軟口感）
-• 橄欖油或植物油：2 湯匙
-• 鹽：1/2 茶匙
-• 大蒜碎（可選）：適量，增香用
-• 奶油或酥油（塗表面用）：適量`,
-                steps: 
-`1.準備發酵
-在溫水中加入乾酵母與糖，攪拌後靜置約 5~10分鐘，直到表面出現泡沫，表示酵母已活化。
-
-2.揉麵糰
-將中筋麵粉、鹽放入大碗中，加入優格、橄欖油，倒入發酵的酵母水。
-用手或攪拌機揉成光滑的麵糰，約 10分鐘，直到麵糰不黏手且有彈性。
-
-3.發酵
-將麵糰放入抹油的碗中，蓋上濕布或保鮮膜，靜置 1小時，讓麵糰發酵至兩倍大。
-
-4.整形
-發酵後，將麵糰取出排氣，分成 6等份，滾圓後擀成 橢圓形或圓形（約0.5公分厚）。
-
-5.煎烤烤餅
-平底鍋加熱（不放油），轉中高火，將麵餅放入鍋中。
-烤約 1~2分鐘，當底部出現焦斑、膨脹時翻面，再烤 1~2分鐘，直到兩面微焦且膨起即可。
-
-6.塗抹奶油（可選）
-出鍋後，可塗上一層融化奶油，撒上大蒜末或香菜，增加風味。`
-            },
-            '日式炸豬排': {
-                ingredients: `• 豬里肌肉：2片（約200g一片）
-• 鹽：適量
-• 黑胡椒：適量
-• 麵粉：1/2杯
-• 蛋液：2顆
-• 日式麵包粉：2杯
-• 高麗菜絲：200g（配菜用）
-• 炸油：適量
-
-醬汁：
-• 豬排醬：3大匙
-• 辣芥末：適量`,
-                steps: 
-`1.處理豬排
-將豬排的筋用刀切斷幾處，以防炸後捲曲。用肉錘或刀背輕輕敲打，使肉質更嫩。
-
-2.調味
-在豬排兩面均勻撒上鹽和黑胡椒，靜置約5分鐘入味。
-
-3.裹粉
-依序將豬排沾上 低筋麵粉 → 蛋液 → 麵包粉，確保每層都均勻覆蓋。
-
-4.靜置
-將裹好粉的豬排放置5~10分鐘，讓麵包粉固定，避免炸時脫落。
-
-5.炸豬排
-鍋中倒入足夠的油，加熱至 170~180°C（放一小塊麵包粉進去，約2秒內浮起即為適合的溫度）。
-將豬排放入油鍋，炸約 3~4分鐘，翻面後再炸 2~3分鐘，至表面金黃酥脆。
-
-6.瀝油
-取出炸好的豬排，放在廚房紙巾或瀝油架上，靜置約2分鐘，使內部肉汁回流，口感更佳。
-
-7.切片與擺盤
-將豬排切成約 2公分寬的條狀，搭配高麗菜絲、檸檬片和日式炸豬排醬（とんかつソース）食用。`
-            },
-            '泰式打拋豬': {
-                ingredients: `• 絞肉：300g
-• 蒜末：3-4瓣
-• 辣椒：2-3顆（依喜好調整）
-• 打拋葉：1把
-• 魚露：2大匙
-• 蠔油：1大匙
-• 醬油：1小匙
-• 糖：1小匙
-• 白胡椒粉：適量
-• 食用油：2大匙
-
-配菜：
-• 白飯
-• 荷包蛋`,
-                steps: `
-1.準備食材
-蒜頭與辣椒切末，洋蔥切絲，九層塔葉洗淨備用。
-
-2.熱鍋爆香
-鍋中倒入1大匙油，加熱後放入蒜末與辣椒，中小火炒香。
-
-3.炒肉
-加入絞豬肉，大火拌炒至變色，炒到肉稍微焦香。
-
-4.調味
-依序加入魚露、蠔油、醬油、砂糖，拌炒均勻後倒入2大匙水，讓肉吸收醬汁。
-
-5.加入九層塔
-起鍋前轉小火，加入九層塔葉，快速翻炒幾下至稍微軟化即可關火。
-
-6.盛盤
-與白飯一起盛盤，搭配煎好的荷包蛋享用。`
-            },
-            '韓式泡菜炒飯': {
-                ingredients: `• 白飯：2碗
-• 韓式泡菜：1杯（切小塊）
-• 豬肉絲：100g
-• 蔥花：2根
-• 蒜末：2瓣
-• 雞蛋：2顆
-• 香油：1小匙
-• 食用油：2大匙
-• 醬油：1大匙
-• 韓式辣椒粉：1小匙（可依口味調整）`,
-                steps: `
-1.炒香泡菜
-熱鍋加1大匙油，放入蒜末與洋蔥丁炒香。
-加入泡菜，炒至香氣釋放並帶有些許焦香。
-
-2.炒肉（可省略）
-若使用豬肉或午餐肉，加入鍋中拌炒至熟。
-
-3.加入白飯
-倒入白飯，用鍋鏟壓散，使飯均勻混合泡菜。
-
-4.調味
-加入韓式辣醬、醬油、砂糖（可選），翻炒均勻，使醬料包裹每顆米飯。
-
-5.收尾與盛盤
-起鍋前淋上芝麻油增添香氣，拌勻後關火。
-盛盤，撒上蔥花與白芝麻，可搭配煎好的荷包蛋享用。`
-            },
-            '義式青醬麵': {
-                ingredients: `青醬：
-• 羅勒葉：2把
-• 松子：30g
-• 蒜末：2-3瓣
-• 橄欖油：1/2杯
-• 帕瑪森起司：50g
-• 鹽：適量
-• 黑胡椒：適量
-
-麵條：
-• 義大利麵：200g
-• 櫻桃番茄：10顆
-• 橄欖油：適量`,
-                steps: `
-1. 製作青醬
-乾炒松子（可選）：中小火乾炒松子至微金黃，讓香氣更濃郁。
-攪拌青醬：將九層塔、松子、大蒜、帕瑪森起司放入調理機（或食物處理機），加入鹽與黑胡椒，倒入橄欖油，攪拌至濃稠醬狀。（不需攪拌過久，以保留清新口感）
-調整口味：若太稠可再加點橄欖油，味道可依個人口味增減鹽和黑胡椒。
-
-2. 煮義大利麵
-煮麵：大鍋加水煮沸，加入1小匙鹽，再放入義大利麵，依包裝時間煮至「彈牙」（約8~10分鐘）。
-瀝水：撈出義大利麵，保留約 50ml 煮麵水，以備混合青醬時使用。
-
-3. 拌炒義大利麵
-熱鍋，加入1小匙橄欖油，放入煮好的義大利麵，轉小火。
-倒入青醬，加入適量煮麵水，使醬汁更均勻地包裹麵條。快速拌勻後關火。
-
-4. 盛盤與裝飾
-將義大利麵盛入盤中，撒上帕瑪森起司，可再淋少許橄欖油提升香氣。
-
-`
-            },
-            '日式親子丼': {
-                ingredients: `• 雞腿肉：200g
-• 洋蔥：1/2顆
-• 雞蛋：3顆
-• 蔥花：2根
-
-調味料：
-• 醬油：3大匙
-• 味醂：2大匙
-• 日式高湯：200ml
-• 糖：1小匙
-
-配料：
-• 白飯：2碗
-• 海苔絲：適量`,
-                steps: `
-1.準備食材
-雞腿肉切塊，洋蔥切絲，雞蛋打散備用。
-
-2.煮醬汁與雞肉
-在鍋中加入醬油、味醂、清酒、砂糖與高湯，開中火加熱。
-放入洋蔥絲煮軟，再加入雞腿肉，煮至變色且熟透。
-
-3.加入蛋液
-轉小火，倒入 2/3 的蛋液，蓋上鍋蓋燜煮約 30秒~1分鐘，讓蛋液稍微凝固但仍保有滑嫩口感。
-最後再淋上剩餘的蛋液，讓表面呈現半熟狀態，熄火。
-
-4.盛盤與裝飾
-準備好白飯，將煮好的親子丼淋在飯上。
-可放上一顆 半熟蛋黃 提升濃郁度，撒上蔥花增添香氣。`
-            }
-        };
-
-        // 顯示食譜彈出視窗
-        function showRecipeModal(recipeName) {
-            document.getElementById('recipeModal').style.display = 'block';
-            document.getElementById('recipeName').textContent = recipeName;
-
-            // 填入對應的食譜內容
-            if (recipes[recipeName]) {
-                document.getElementById('ingredientsList').innerText = recipes[recipeName].ingredients;
-                document.getElementById('stepsList').innerText = recipes[recipeName].steps;
-            }
-        }
-
-        // 關閉食譜彈出視窗
-        function closeRecipeModal() {
-            document.getElementById('recipeModal').style.display = 'none';
-        }
-
-        // 複製文字功能
-        function copyText(elementId) {
-            const text = document.getElementById(elementId).innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                // 顯示複製成功提示視窗
-                const toast = document.getElementById('copyToast');
-                toast.classList.add('show');
-
-                // 2秒後自動隱藏提示視窗
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2000);
-
-                // 更改按鈕圖示
-                const button = event.currentTarget;
-                const originalImg = button.innerHTML;
-                button.innerHTML = '✓';
-                setTimeout(() => {
-                    button.innerHTML = originalImg;
-                }, 2000);
+        // 選項選擇功能
+        function selectOption(type) {
+            // 移除所有選中狀態
+            document.querySelectorAll('.verification-option').forEach(option => {
+                option.classList.remove('selected');
             });
+            
+            // 選中當前選項
+            event.currentTarget.classList.add('selected');
+            document.getElementById(type).checked = true;
         }
-
-        // 搜尋功能
-        function filterRecipes() {
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
-            const recipes = document.getElementsByClassName('recipe-card');
-            const returnButton = document.getElementById('returnButton');
-            let hasHiddenRecipes = false;
-
-            Array.from(recipes).forEach(recipe => {
-                const title = recipe.getElementsByTagName('h3')[0].textContent.toLowerCase();
-                if (title.includes(searchText)) {
-                    recipe.style.display = '';
-                } else {
-                    recipe.style.display = 'none';
-                    hasHiddenRecipes = true;
-                }
-            });
-
-            // 只有在有搜尋結果且有被隱藏的菜色時才顯示返回按鈕
-            returnButton.style.display = hasHiddenRecipes ? 'inline-block' : 'none';
-        }
-
-        // 顯示所有菜色
-        function showAllRecipes() {
-            const recipes = document.getElementsByClassName('recipe-card');
-            const returnButton = document.getElementById('returnButton');
-            const searchInput = document.getElementById('searchInput');
-
-            // 清空搜尋欄
-            searchInput.value = '';
-
-            // 顯示所有菜色
-            Array.from(recipes).forEach(recipe => {
-                recipe.style.display = '';
-            });
-
-            // 隱藏返回按鈕
-            returnButton.style.display = 'none';
-        }
-
-        // 添加按Enter鍵也能搜尋的功能
-        document.getElementById('searchInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                filterRecipes();
+        
+        // 文件上傳功能
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('document_image');
+        const previewArea = document.getElementById('previewArea');
+        const previewImage = document.getElementById('previewImage');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // 文件拖拽功能
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect(files[0]);
             }
         });
-
-        // 點擊視窗外關閉視窗
-        window.onclick = function (event) {
-            const modal = document.getElementById('recipeModal');
-            const settingsModal = document.getElementById('settingsModal');
-            const profileModal = document.getElementById('profileModal');
-
-            if (event.target == modal) {
-                modal.style.display = 'none';
+        
+        // 文件選擇
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
             }
-            if (event.target === settingsModal) {
-                settingsModal.style.display = 'none';
+        });
+        
+        function handleFileSelect(file) {
+            // 檢查文件類型
+            if (!file.type.startsWith('image/')) {
+                alert('請選擇圖片檔案');
+                return;
             }
-            if (event.target === profileModal) {
-                profileModal.style.display = 'none';
+            
+            // 檢查文件大小 (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('檔案大小不能超過 10MB');
+                return;
             }
+            
+            // 顯示預覽
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewArea.style.display = 'block';
+                
+                // 更新上傳區域樣式
+                uploadArea.style.border = '2px solid #4caf50';
+                uploadArea.style.backgroundColor = '#e8f5e8';
+                
+                // 更新顯示內容
+                const displayContent = uploadArea.querySelector('.file-display') || document.createElement('div');
+                displayContent.className = 'file-display';
+                displayContent.innerHTML = `
+                    <div style="color: #4caf50; font-size: 32px; margin-bottom: 15px;">✅</div>
+                    <div style="color: #4caf50; font-weight: bold; font-size: 18px;">文件已選擇</div>
+                    <div style="color: #666; font-size: 16px; margin-top: 8px;">${file.name}</div>
+                `;
+                
+                // 隱藏原始上傳提示
+                uploadArea.querySelector('.upload-icon').style.display = 'none';
+                uploadArea.querySelector('.upload-text').style.display = 'none';
+                uploadArea.querySelector('.upload-hint').style.display = 'none';
+                
+                // 添加新的顯示內容
+                if (!uploadArea.querySelector('.file-display')) {
+                    uploadArea.appendChild(displayContent);
+                }
+            };
+            reader.readAsDataURL(file);
         }
-
-        // 現代化設定模態窗口功能
+        
+        // 表單提交
+        document.getElementById('verificationForm').addEventListener('submit', function(e) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = '提交中...';
+        });
+        
+        // 設定模態窗口功能
         function toggleSettingsModal() {
             const modal = document.getElementById('settingsModal');
             modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
@@ -994,89 +1041,110 @@
         function closeProfileModal() {
             document.getElementById('profileModal').style.display = 'none';
         }
-
+        
         // 頭像預覽功能
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('avatar-input').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.getElementById('profile-avatar').src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            // 個人資料表單提交處理
-            document.getElementById('profile-form').addEventListener('submit', async function(e) {
-                e.preventDefault();
+        document.getElementById('avatar-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-avatar').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 個人資料表單提交處理
+        document.getElementById('profile-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('.btn-save');
+            const originalText = submitBtn.textContent;
+            
+            try {
+                // 顯示提交中狀態
+                submitBtn.disabled = true;
+                submitBtn.textContent = '儲存中...';
                 
-                const submitBtn = this.querySelector('.btn-save');
-                const originalText = submitBtn.textContent;
+                // 收集表單數據
+                const formData = new FormData();
+                formData.append('name', document.getElementById('name').value);
+                formData.append('phone', document.getElementById('phone').value || '');
                 
-                try {
-                    // 顯示提交中狀態
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = '儲存中...';
+                // 處理密碼（僅限非OAuth2用戶）
+                const currentPasswordInput = document.getElementById('current_password');
+                const newPasswordInput = document.getElementById('new_password');
+                
+                if (!currentPasswordInput.disabled && !newPasswordInput.disabled) {
+                    const currentPassword = currentPasswordInput.value;
+                    const newPassword = newPasswordInput.value;
                     
-                    // 收集表單數據
-                    const formData = new FormData();
-                    formData.append('name', document.getElementById('name').value);
-                    formData.append('phone', document.getElementById('phone').value || '');
-                    
-                    // 處理密碼（僅限非OAuth2用戶）
-                    const currentPasswordInput = document.getElementById('current_password');
-                    const newPasswordInput = document.getElementById('new_password');
-                    
-                    if (!currentPasswordInput.disabled && !newPasswordInput.disabled) {
-                        const currentPassword = currentPasswordInput.value;
-                        const newPassword = newPasswordInput.value;
-                        
-                        if (newPassword) {
-                            if (!currentPassword) {
-                                throw new Error('請輸入目前密碼');
-                            }
-                            formData.append('current_password', currentPassword);
-                            formData.append('new_password', newPassword);
+                    if (newPassword) {
+                        if (!currentPassword) {
+                            throw new Error('請輸入目前密碼');
                         }
+                        formData.append('current_password', currentPassword);
+                        formData.append('new_password', newPassword);
                     }
-                    
-                    // 處理頭像檔案
-                    const avatarFile = document.getElementById('avatar-input').files[0];
-                    if (avatarFile) {
-                        formData.append('avatar', avatarFile);
-                    }
-                    
-                    // 發送請求
-                    const response = await fetch('/customer/profile/update', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        alert('個人資料更新成功！');
-                        closeProfileModal();
-                        // 稍微延遲後重新載入頁面，確保數據庫更新完成
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 500);
-                    } else {
-                        throw new Error(result.message || '更新失敗');
-                    }
-                    
-                } catch (error) {
-                    alert('錯誤：' + error.message);
-                } finally {
-                    // 恢復按鈕狀態
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
                 }
-            });
+                
+                // 處理頭像檔案
+                const avatarFile = document.getElementById('avatar-input').files[0];
+                if (avatarFile) {
+                    formData.append('avatar', avatarFile);
+                }
+                
+                // 發送請求
+                const response = await fetch('/customer/profile/update', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('個人資料更新成功！');
+                    closeProfileModal();
+                    // 稍微延遲後重新載入頁面，確保數據庫更新完成
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    throw new Error(result.message || '更新失敗');
+                }
+                
+            } catch (error) {
+                alert('錯誤：' + error.message);
+            } finally {
+                // 恢復按鈕狀態
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+        
+        // 點擊模態窗口外部關閉
+        window.onclick = function(event) {
+            const settingsModal = document.getElementById('settingsModal');
+            const profileModal = document.getElementById('profileModal');
+            
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            if (event.target === profileModal) {
+                profileModal.style.display = 'none';
+            }
+        }
+        
+        // 頭像預覽功能
+        document.getElementById('avatar-input').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-avatar').src = e.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
         });
     </script>
 </body>
-
-</html> 
+</html>

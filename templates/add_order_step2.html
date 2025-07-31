@@ -241,6 +241,10 @@
         function deleteDish() { Swal.fire({ title:'確定刪除?', icon:'warning', showCancelButton:true }).then(res=>{ if(res.isConfirmed){ delete dishData[currentDishIndex]; const vals=Object.values(dishData); dishData={}; vals.filter(x=>x).forEach((x,i)=>dishData[i+1]=x); dishCount=Object.keys(dishData).length; if(currentDishIndex>dishCount) currentDishIndex=dishCount; renderDish(); localStorage.setItem('dishData',JSON.stringify(dishData)); }}); }
         function toggleNotification(){const m=document.getElementById('notificationCenter'); m.style.display=m.style.display==='flex'?'none':'flex';}
     </script>
+    
+    <!-- 通知中心 -->
+    {% include 'notification_component.html' %}
+    
     <script src="/static/js/notification.js"></script>
 </body>
 

@@ -32,6 +32,12 @@ class User(Base):
     verification_token = Column(String(255), nullable=True)
     verification_sent_at = Column(DateTime, nullable=True)
     
+    # 身心障礙者/高齡者驗證
+    special_needs_type = Column(String(50), nullable=True)  # 'disability' 或 'elderly'
+    special_needs_document_url = Column(String(500), nullable=True)  # 證明文件URL
+    special_needs_verified = Column(Boolean, default=False)  # 是否已驗證
+    special_needs_applied_at = Column(DateTime, nullable=True)  # 申請時間
+    
     # 時間戳記
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
