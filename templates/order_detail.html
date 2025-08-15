@@ -405,6 +405,10 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
         }
+
+        .price-negotiation {
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -518,8 +522,8 @@
                                 {% endif %}
                                 <p style="color: #d63384; font-weight: bold;">⚠️ 這是最後的議價機會</p>
                                 <div class="negotiation-buttons">
-                                    <button class="btn-agree" data-negotiation-id="{{ chef_final_pricing.id }}" onclick="acceptFinalPricing('{{ chef_final_pricing.id }}')">同意最終報價</button>
-                                    <button class="btn-reject" onclick="rejectFinalPricing('{{ chef_final_pricing.id }}')" style="background: #dc3545; color: white;">不同意並取消訂單</button>
+                                    <button class="btn-agree" data-negotiation-id="{{ chef_final_pricing.id }}" onclick="acceptFinalPricing('{{ chef_final_pricing.id }}')" style="width: 160px; height: 44px; font-size: 16px;">同意最終報價</button>
+                                    <button class="btn-reject" onclick="rejectFinalPricing('{{ chef_final_pricing.id }}')" style="background: #dc3545; color: white; width: 160px; font-size: 16px;">不同意並取消訂單</button>
                                 </div>
                             </div>
                             {% else %}
@@ -595,7 +599,7 @@
                             <h4 style="color: #9C27B0;">製作完成</h4>
                             <p style="color: #666;">餐點已完成，等待取餐</p>
                             <div style="text-align: center; margin-top: 15px;">
-                                <button onclick="confirmReceived()" style="background: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                                <button onclick="confirmReceived()" style="background: #28a745; color: white; width: 120px; margin-right: 220px; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold;">
                                     確認收貨完成
                                 </button>
                             </div>
@@ -612,7 +616,7 @@
                             <p style="color: #666; margin: 10px 0;">請點擊下方按鈕重新選擇廚師，我們將為您找到其他合適的廚師</p>
                             <div style="text-align: center; margin-top: 15px;">
                                 <a href="{{ url_for('reselect_chef', order_id=order.id) }}" 
-                                   style="background: #ff6b35; color: white; text-decoration: none; padding: 15px 30px; border-radius: 5px; font-weight: bold; display: inline-block;">
+                                   style="background: #ff6b35; color: white; text-decoration: none; width: 120px; margin-right: 220px; border-radius: 5px; font-size: 16px; font-weight: bold; display: inline-block;">
                                     重新選擇廚師
                                 </a>
                             </div>

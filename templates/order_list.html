@@ -477,7 +477,7 @@
             <span class="order-status">
                 <!-- Debug: 顯示原始狀態信息 -->
                 <!-- 狀態對象: {{ order.status }}, 狀態值: {{ order.status.value }} -->
-                <span class="status {{ order.status.value }}" style="background-color: #FF9800; color: white; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: bold;">
+                <span class="status {{ order.status.value }}" style="background-color: #FF9800; color: white; padding: 4px 12px; margin-top: 4px; border-radius: 15px; font-size: 12px; font-weight: bold;">
                     {% if order.status.value == 'pending' %}等待回應
                     {% elif order.status.value == 'negotiating' %}議價中
                     {% elif order.status.value == 'accepted' %}已接單
@@ -491,7 +491,7 @@
                 </span>
             </span>
         </div>
-        <p>
+        <p style="margin-top: -10px;height: max-content;">
             菜單列表：<br>
             {% for dish in order.dishes %}
                 {{ loop.index }}. {{ dish.dish_name }}<br>
@@ -502,7 +502,7 @@
             <a href="{{ url_for('reselect_chef', order_id=order.id) }}" 
                class="order-btn" 
                style="background: #ff6b35; color: white; text-decoration: none; font-weight: bold;">
-                重新選擇廚師
+                重選廚師
             </a>
             {% endif %}
             {% if chef_final_pricing %}
@@ -513,7 +513,7 @@
             </a>
             {% endif %}
             <button class="message-btn" onclick="openMessageBoard(this)">留言</button>
-            <a href="{{ url_for('order_detail', order_id=order.id) }}" class="order-btn">查看詳細訂單資訊</a>
+            <a href="{{ url_for('order_detail', order_id=order.id) }}" class="order-btn">訂單資訊</a>
         </div>
     </div>
     {% endfor %}
