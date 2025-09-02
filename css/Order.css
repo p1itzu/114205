@@ -1,17 +1,18 @@
-body {
-    background-color: #F3EBDD;
+body { 
+    background-color: #f3f7f0; /* 淺綠背景 */
     font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 100vh;
     overflow: hidden;
-
+    margin: 0;
+    padding: 0;
 }
 
 /* 導覽列樣式 */
 .navbar {
-    background-color: #F9C765;
+    background-color: #a0bd91; /* 主綠 */
     padding: 15px;
     display: flex;
     align-items: center;
@@ -27,7 +28,7 @@ body {
     font-size: 25px;
     font-weight: bold;
     padding-left: 20px;
-    color: #B3811C;
+    color: #2f3d28; /* 深綠字 */
 }
 
 .navbar .nav-links {
@@ -37,7 +38,7 @@ body {
 }
 
 .navbar a {
-    color: #B3811C;
+    color: #2f3d28; /* 深綠字 */
     text-decoration: none;
     padding: 10px 20px;
     font-size: 20px;
@@ -45,7 +46,7 @@ body {
 }
 
 .navbar a:hover {
-    background-color: #f9e4ba;
+    background-color: #c6d8b6; /* 淡綠 hover */
     border-radius: 5px;
 }
 
@@ -58,10 +59,11 @@ body {
 
 .user-info .username {
     font-size: 18px;
-    color: #B3811C;
+    color: #2f3d28; /* 深綠字 */
     font-weight: bold;
 }
 
+/* settings-icon 用深綠，hover 轉主綠 */
 .user-info .settings-icon {
     width: 20px;
     height: 20px;
@@ -70,92 +72,68 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     cursor: pointer;
+    filter: brightness(0) saturate(100%) invert(14%) sepia(16%) saturate(886%) hue-rotate(61deg) brightness(95%) contrast(90%);
+    transition: filter 0.3s ease;
+}
+.user-info .settings-icon:hover {
+    filter: brightness(0) saturate(100%) invert(64%) sepia(11%) saturate(454%) hue-rotate(61deg) brightness(93%) contrast(88%);
 }
 
+/* 卡片容器 */
 .container {
-    background-color: #F7F2E8;
+    background-color: #ffffff;
     width: 600px;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    margin-top: 85px;
-    /* 避免與導覽列重疊 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 85px;                 /* 避免與導覽列重疊 */
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 120px);
-    /* 讓 container 根據螢幕高度變化 */
-    max-height: 80vh;
-    /* 避免過長 */
+    height: calc(100vh - 120px);      /* 讓 container 根據螢幕高度變化 */
+    max-height: 80vh;                  /* 避免過長 */
 }
 
+/* 內容區（可捲動） */
 .content {
     padding: 15px;
     border-radius: 10px;
     margin-top: 10px;
     flex-grow: 1;
     overflow-y: auto;
-
-    background-color: #fff3e0;
-    /* 背景色 */
+    background-color: #f6faf4; /* 非純白，微綠更柔和 */
 }
 
 /* 自訂滾動條樣式 */
-.content::-webkit-scrollbar {
-    width: 8px;
-    /* 設定滾動條寬度 */
-}
+.content::-webkit-scrollbar { width: 8px; }
+.content::-webkit-scrollbar-thumb { background-color: #a0bd91; border-radius: 10px; }
+.content::-webkit-scrollbar-track { background-color: #e7efe2; border-radius: 10px; }
 
-.content::-webkit-scrollbar-thumb {
-    background-color: #d1d1d1;
-    /* 滾動條顏色 */
-    border-radius: 10px;
-    /* 滾動條圓角 */
-}
-
-.content::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
-    /* 滾動條背景 */
-    border-radius: 10px;
-}
-
+/* 返回鍵改為深綠 */
 .back-button {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #B3811C;
-    color: white;
+    background-color: #2f3d28; /* 深綠 */
+    color: #ffffff;
     padding: 5px 15px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
 }
+.back-button:hover { background-color: #243021; }
 
-.back-button:hover {
-    background-color: #8a6314;
-}
-
-/*.content {
-    background-color: #EDE3D1;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 10px;
-    flex-grow: 1;
-     讓 content 佔滿可用空間 
-    overflow-y: auto;
-     內部滾動 
-}*/
-
+/* 標題 */
 .title {
     font-size: 18px;
     font-weight: bold;
-    color: #666;
+    color: #2f3d28; /* 深綠 */
 }
 
+/* 底部按鈕 */
 .buttons {
     display: flex;
     justify-content: center;
-
 }
 
 button {
@@ -168,23 +146,33 @@ button {
 
 .reject {
     background-color: #888;
-    color: white;
+    color: #ffffff;
     margin-right: 10px;
 }
+.reject:hover { filter: brightness(0.9); }
 
 .accept {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #a0bd91; /* 主綠 */
+    color: #ffffff;
+    transition: background-color 0.2s ease;
 }
+.accept:hover { background-color: #8aa678; }
 
+/* SweetAlert 主題化 */
 .swal-custom-button {
-    background-color: #e67241 !important;
-    /* 變灰色 */
-    color: white !important;
+    background-color: #a0bd91 !important; /* 主綠 */
+    color: #ffffff !important;
+    border-radius: 6px !important;
+}
+.swal-custom-button:hover {
+    filter: brightness(0.95) !important;
+}
+.swal-custom-cancel {
+    background-color: #888 !important;    /* 灰色取消 */
+    color: #ffffff !important;
+    border-radius: 6px !important;
 }
 
-.swal-custom-cancel {
-    background-color: #888 !important;
-    /* 變綠色 */
-    color: white !important;
-}
+/* 讓 SweetAlert 標題也融入主題（非必需） */
+.swal2-popup .swal2-title { color: #2f3d28; }
+.swal2-styled:focus { box-shadow: none !important; }

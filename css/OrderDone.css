@@ -1,12 +1,12 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #FFF5DA;
+    background-color: #f0f6ec; /* 整體背景改成淡綠 */
     margin: 0;
     padding: 0;
 }
 
 .navbar {
-    background-color: #F9C765;
+    background-color: #a0bd91; /* 主色調 */
     padding: 15px;
     display: flex;
     align-items: center;
@@ -17,7 +17,7 @@ body {
     font-size: 20px;
     font-weight: bold;
     padding-left: 20px;
-    color: #B3811C;
+    color: #4a5a3d; /* 深綠文字 */
 }
 
 .navbar .nav-links {
@@ -27,7 +27,7 @@ body {
 }
 
 .navbar a {
-    color: #B3811C;
+    color: #4a5a3d; /* 深綠字 */
     text-decoration: none;
     padding: 10px 20px;
     font-size: 20px;
@@ -35,7 +35,7 @@ body {
 }
 
 .navbar a:hover {
-    background-color: #f9e4ba;
+    background-color: #c6d8b9; /* hover 淡綠 */
     border-radius: 5px;
 }
 
@@ -49,7 +49,7 @@ body {
 
 .user-info .username {
     font-size: 18px;
-    color: #B3811C;
+    color: #4a5a3d;
     font-weight: bold;
 }
 
@@ -57,11 +57,11 @@ body {
     width: 20px;
     height: 20px;
     background-image: url('../imgs/settings.png');
-    /* 確保圖片路徑正確 */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     cursor: pointer;
+    filter: brightness(0.6); /* 比主色深一點 */
 }
 
 .search-bar {
@@ -102,7 +102,7 @@ body {
     font-size: 12px;
     font-weight: bold;
     color: #ffffff;
-    background-color: #4773a0;
+    background-color: #6a8f5e; /* 深綠標籤 */
 }
 
 /* 星星評分樣式 */
@@ -110,7 +110,7 @@ body {
     position: absolute;
     top: 10px;
     right: 10px;
-    color: #FFB800;
+    color: #ffb800;
     font-size: 18px;
 }
 
@@ -121,22 +121,21 @@ body {
 .order-btn {
     width: 100%;
     padding: 10px;
-    background-color: #F9C765;
+    background-color: #a0bd91; /* 主綠 */
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.2s ease;
-
 }
 
 .order-btn:hover {
-    background-color: #f0d090;
+    background-color: #6a8f5e; /* hover 深綠 */
 }
 
 .maintext {
-    color: #B3811C;
+    color: #4a5a3d; /* 深綠文字 */
     text-decoration: none;
     padding: 10px 40px;
     font-size: 23px;
@@ -153,8 +152,8 @@ body {
 }
 
 .filter-btn {
-    background-color: #F9C765;
-    color: #B3811C;
+    background-color: #a0bd91;
+    color: #4a5a3d;
     border: none;
     padding: 8px 20px;
     border-radius: 20px;
@@ -165,11 +164,12 @@ body {
 }
 
 .filter-btn:hover {
-    background-color: #f0d090;
+    background-color: #6a8f5e;
+    color: #ffffff;
 }
 
 .filter-btn.active {
-    background-color: #B3811C;
+    background-color: #4a5a3d;
     color: white;
 }
 
@@ -181,7 +181,7 @@ body {
 .dropdown-btn {
     background-color: transparent;
     border: none;
-    color: #B3811C;
+    color: #4a5a3d;
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
@@ -199,7 +199,7 @@ body {
 }
 
 .dropdown-content a {
-    color: #B3811C;
+    color: #4a5a3d;
     padding: 10px 15px;
     text-decoration: none;
     display: block;
@@ -207,7 +207,7 @@ body {
 }
 
 .dropdown-content a:hover {
-    background-color: #f9e4ba;
+    background-color: #c6d8b9;
 }
 
 .show {

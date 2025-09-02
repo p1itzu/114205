@@ -1,0 +1,335 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f3f7f0; /* 淺綠 */
+    color: #2f3d28;            /* 深綠文字 */
+}
+
+/* Navbar */
+.navbar {
+    background-color: #a0bd91; /* 主綠 */
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar .site-name {
+    font-size: 20px;
+    font-weight: bold;
+    padding-left: 20px;
+    color: #2f3d28; /* 深綠字 */
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 15px;
+    margin: 0 auto;
+}
+
+.navbar a {
+    color: #2f3d28; /* 深綠字 */
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    background-color: #c6d8b6; /* 淡綠 hover */
+    border-radius: 5px;
+}
+
+/* 使用者資訊區 */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
+}
+
+.user-info .username {
+    font-size: 18px;
+    color: #2f3d28; /* 深綠字 */
+    font-weight: bold;
+}
+
+/* 深於主色的設定齒輪，hover 轉主綠 */
+.user-info .settings-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url('../imgs/settings.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    /* 深綠染色 */
+    filter: brightness(0) saturate(100%) invert(14%) sepia(16%) saturate(886%) hue-rotate(61deg) brightness(95%) contrast(90%);
+    transition: filter 0.25s ease;
+}
+.user-info .settings-icon:hover {
+    /* 主綠 */
+    filter: brightness(0) saturate(100%) invert(64%) sepia(11%) saturate(454%) hue-rotate(61deg) brightness(93%) contrast(88%);
+}
+
+.user-info .settings-icon:before {
+    background-image: url('../imgs/settings.png');
+    color: #fff;
+    font-size: 14px;
+}
+
+/* 內容區 */
+.content {
+    padding: 20px;
+    text-align: center;
+}
+
+/* 卡片/段落 */
+.section {
+    background-color: #ffffff;
+    padding: 20px;
+    margin: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    text-align: left;
+}
+.section2 { margin-bottom: 20px; }
+
+.section h3 {
+    font-size: 22px;
+    color: #2f3d28;
+    margin-bottom: 10px;
+    padding: 0 20px;
+}
+
+.section p {
+    font-size: 16px;
+    color: #4a5a42; /* 中深綠灰 */
+    margin-bottom: 10px;
+    padding: 0 20px;
+}
+
+/* Footer */
+div.footer {
+    height: 120px;
+    line-height: 60px;
+    text-align: center;
+    letter-spacing: 2px;
+    background-color: #a0bd91; /* 主綠 */
+    color: #2f3d28;           /* 深綠字 */
+    font-weight: bold;
+}
+.footer br { margin-bottom: 5px; }
+
+/* 設定視窗（遮罩） */
+.settings-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+/* 彈出視窗（小） */
+.settings-modal .modal-content {
+    background-color: #8aa678; /* 深一階主綠 */
+    padding: 30px;
+    border-radius: 15px;
+    width: 320px;
+    color: #ffffff;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+.settings-modal.show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* 彈跳視窗內容（大檔案用） */
+.profile-content {
+    background-color: #8aa678;
+    width: 400px !important;
+    max-width: 800px !important;
+    padding: 30px;
+    border-radius: 15px;
+    color: #ffffff;
+    margin: 0 auto;
+}
+.settings-modal.show { display: flex; }
+
+/* 左圖右表單排版 */
+.profile-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+}
+
+.avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #ffffff;
+}
+
+.edit-avatar-btn {
+    margin-top: 10px;
+    background: #c6d8b6; /* 淡綠 */
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #2f3d28;
+}
+.edit-avatar-btn:hover { background: #b7cba6; }
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.form-section label {
+    font-weight: bold;
+    color: #ffffff;
+}
+.form-section input {
+    width: 250px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #dbe5d5;
+    background: #f6faf4;
+    color: #2f3d28;
+}
+
+/* 儲存/返回按鈕 */
+.save-btn {
+    background: #2f3d28; /* 深綠 */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 16px;
+    display: block;
+    margin: 20px auto 0;
+}
+.save-btn:hover { filter: brightness(1.05); }
+
+.close-btn {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    background: #2f3d28;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 14px;
+}
+.close-btn:hover { filter: brightness(1.05); }
+
+/* Dropdown */
+.dropdown { position: relative; display: inline-block; }
+
+.dropdown-btn {
+    background-color: transparent;
+    border: none;
+    color: #2f3d28;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px 20px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: #2f3d28;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+    font-size: 18px;
+}
+.dropdown-content a:hover { background-color: #c6d8b6; }
+
+.show { display: block; }
+
+/* RWD 選單按鈕 */
+.menu-toggle {
+    display: none;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* 手機版 RWD */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+        font-size: 24px;
+        color: #2f3d28;
+        cursor: pointer;
+        margin-right: 20px;
+        background: none;
+        border: none;
+    }
+
+    .nav-links {
+        display: none;              /* 預設隱藏 */
+        flex-direction: column;
+        background-color: #a0bd91;  /* 主綠 */
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        z-index: 999;
+        padding: 10px 0;
+    }
+
+    .nav-links a,
+    .dropdown-btn {
+        padding: 10px 20px;
+        font-size: 18px;
+        color: #2f3d28;
+    }
+
+    /* 預設隱藏 */
+    #navLinks, #orderDropdown { display: none; }
+
+    /* 加上 .show 時垂直展開 */
+    #navLinks.show, #orderDropdown.show {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 每個選單項目 */
+    #navLinks a, #orderDropdown a {
+        display: block;
+        padding: 10px;
+        text-decoration: none;
+        color: #2f3d28;
+    }
+}

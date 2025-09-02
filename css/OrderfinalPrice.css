@@ -1,127 +1,132 @@
-body {
+body { 
     font-family: Arial, sans-serif;
-    background-color: #FFE7B7;
+    background-color: #f3f7f0; /* 淺綠背景 */
     margin: 0;
     padding: 0;
 }
 
 .container {
-display: flex;
-flex-direction: column;
-width: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
 /* 導覽列樣式 */
 .navbar {
-background-color: #F9C765;
-padding: 15px;
-display: flex;
-align-items: center;
-justify-content: space-between;
+    background-color: #a0bd91; /* 主綠 */
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .navbar .site-name {
-font-size: 20px;
-font-weight: bold;
-padding-left: 20px;
-color: #B3811C;
+    font-size: 20px;
+    font-weight: bold;
+    padding-left: 20px;
+    color: #2f3d28; /* 深綠字 */
 }
 
 .navbar .nav-links {
-display: flex;
-gap: 15px;
-margin: 0 auto;
+    display: flex;
+    gap: 15px;
+    margin: 0 auto;
 }
 
 .navbar a {
-color: #B3811C;
-text-decoration: none;
-padding: 10px 20px;
-font-size: 20px;
-font-weight: bold;
+    color: #2f3d28; /* 深綠字 */
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .navbar a:hover {
-background-color: #f9e4ba;
-border-radius: 5px;
+    background-color: #c6d8b6; /* 淡綠 hover */
+    border-radius: 5px;
 }
 
 /* 使用者資訊區 */
 .user-info {
-display: flex;
-align-items: center;
-gap: 10px;
-padding-right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
 }
 
 .user-info .username {
-font-size: 18px;
-color: #B3811C;
-font-weight: bold;
+    font-size: 18px;
+    color: #2f3d28; /* 深綠字 */
+    font-weight: bold;
 }
 
+/* settings-icon：深於主色，hover 轉主綠 */
 .user-info .settings-icon {
-width: 20px;
-height: 20px;
-background-image: url('../imgs/settings.png');
-background-size: cover;
-background-position: center;
-background-repeat: no-repeat;
-cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background-image: url('../imgs/settings.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    filter: brightness(0) saturate(100%) invert(14%) sepia(16%) saturate(886%) hue-rotate(61deg) brightness(95%) contrast(90%);
+    transition: filter 0.3s ease;
 }
-.dropdown {
-position: relative;
-display: inline-block;
+.user-info .settings-icon:hover {
+    filter: brightness(0) saturate(100%) invert(64%) sepia(11%) saturate(454%) hue-rotate(61deg) brightness(93%) contrast(88%);
 }
+
+/* 下拉選單 */
+.dropdown { position: relative; display: inline-block; }
 
 .dropdown-btn {
-background-color: transparent;
-border: none;
-color: #B3811C;
-font-size: 20px;
-font-weight: bold;
-cursor: pointer;
-padding: 10px 20px;
+    background-color: transparent;
+    border: none;
+    color: #2f3d28;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px 20px;
 }
 
 .dropdown-content {
-display: none;
-position: absolute;
-background-color: #fff;
-min-width: 160px;
-box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-border-radius: 5px;
-z-index: 1;
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    min-width: 160px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    z-index: 1;
 }
 
 .dropdown-content a {
-color: #B3811C;
-padding: 10px 15px;
-text-decoration: none;
-display: block;
-font-size: 18px;
+    color: #2f3d28;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+    font-size: 18px;
 }
 
-.dropdown-content a:hover {
-background-color: #f9e4ba;
-}
+.dropdown-content a:hover { background-color: #c6d8b6; }
+.show { display: block; }
 
-/* 新增的彈窗樣式 */
+/* 彈窗容器 */
 .modal-container {
     position: fixed;
     top: calc(50% + 40px);
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #f5f5f5;
+    background-color: #ffffff;
     width: 90%;
     max-width: 600px;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
     max-height: calc(100vh - 100px);
     overflow-y: auto;
 }
 
+/* 彈窗標頭 */
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -131,7 +136,7 @@ background-color: #f9e4ba;
 
 .modal-title {
     font-size: 20px;
-    color: #333;
+    color: #2f3d28; /* 深綠字 */
     font-weight: bold;
     margin: 0;
 }
@@ -139,9 +144,10 @@ background-color: #f9e4ba;
 .close-button {
     cursor: pointer;
     font-size: 24px;
-    color: #666;
+    color: #506047;
 }
 
+/* 基本資訊 */
 .info-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -150,49 +156,36 @@ background-color: #f9e4ba;
 }
 
 .info-label {
-    color: #666;
+    color: #506047;
     font-size: 14px;
     display: flex;
     align-items: center;
 }
 
 .info-value {
-    color: #333;
+    color: #2f3d28;
     font-size: 16px;
 }
 
+/* 菜單列表 */
 .menu-list {
     margin: 20px 0;
     max-height: 200px;
     overflow-y: auto;
     padding-right: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid #dbe5d5;
+    border-radius: 6px;
     padding: 10px;
+    background: #f6faf4;
 }
 
-/* 自定義滾動條樣式 */
-.menu-list::-webkit-scrollbar {
-    width: 8px;
-}
+/* 自訂滾動條 */
+.menu-list::-webkit-scrollbar { width: 8px; }
+.menu-list::-webkit-scrollbar-track { background: #e7efe2; border-radius: 4px; }
+.menu-list::-webkit-scrollbar-thumb { background: #a0bd91; border-radius: 4px; }
+.menu-list::-webkit-scrollbar-thumb:hover { background: #8aa678; }
 
-.menu-list::-webkit-scrollbar-track {
-    background: #8b8585;
-    border-radius: 4px;
-}
-
-.menu-list::-webkit-scrollbar-thumb {
-    background: #F9C765;
-    border-radius: 4px;
-}
-
-.menu-list::-webkit-scrollbar-thumb:hover {
-    background: #e5b65c;
-}
-
-.menu-item {
-    margin-bottom: 15px;
-}
+.menu-item { margin-bottom: 15px; }
 
 .menu-item-header {
     display: flex;
@@ -203,41 +196,24 @@ background-color: #f9e4ba;
 
 .price-input {
     width: 150px;
-    height: 30px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    height: 32px;
+    border: 1px solid #c7d6c3;
+    border-radius: 6px;
     padding: 0 10px;
     text-align: right;
+    outline: none;
+}
+.price-input:focus {
+    border-color: #a0bd91;
+    box-shadow: 0 0 0 2px rgba(160,189,145,0.2);
 }
 
 .system-price {
-    color: #666;
+    color: #6b7a63;
     font-size: 14px;
 }
 
-.footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-top: 20px;
-}
-
-.remark-section {
-    flex: 0 0 auto;
-    margin-right: 30px;
-    width: 250px;
-}
-
-.remark-input {
-    width: 100%;
-    height: 80px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 10px;
-    resize: none;
-    margin-top: 5px;
-}
-
+/* 兩欄區塊 */
 .price-section {
     padding: 10px;
     max-width: 100%;
@@ -245,41 +221,40 @@ background-color: #f9e4ba;
     margin-bottom: 10px;
 }
 
-.price-content {
-    width: 100%;
-}
+.price-content { width: 100%; }
 
 .two-column-layout {
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
+    gap: 20px;
 }
 
-.left-column {
-    width: 35%;
-}
-
+.left-column { width: 40%; }
 .right-column {
-    width: 55%;
+    width: 60%;
     padding-left: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* 🔹讓內部按鈕靠右 */
 }
 
-.customer-remark {
-    text-align: left;
-}
+/* 顧客備註 */
+.customer-remark { text-align: left; }
 
 .remark-label {
     font-size: 16px;
-    color: #000;
+    color: #2f3d28;
     margin: 5px 0;
 }
 
 .remark-text {
     font-size: 16px;
-    color: #000;
-    line-height: 1.4;
+    color: #2f3d28;
+    line-height: 1.5;
 }
 
+/* 價格資訊 */
 .price-info {
     display: flex;
     flex-direction: column;
@@ -288,73 +263,67 @@ background-color: #f9e4ba;
 }
 
 .price-row {
-    font-size: 20px;
-    font-weight: 800;
-    color: #000;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2f3d28;
 }
 
 .price-final {
     font-size: 22px;
     font-weight: 800;
-    color:#cc6300;
+    color: #2f3d28; /* 改為深綠，統一主題 */
     margin-bottom: 5px;
 }
 
 .price-note {
-    color: #666;
+    color: #6b7a63;
     font-size: 12px;
     margin: 5px 0;
 }
 
+/* 送出按鈕 */
 .confirm-button {
-    background-color: #FFB347;
-    color: #000;
+    background-color: #a0bd91; /* 主綠 */
+    color: #ffffff;
     border: none;
     padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 14px;
     cursor: pointer;
     display: inline-block;
-    margin-left: 150px;
+    margin-left: 0;
     white-space: nowrap;
+    transition: background-color 0.2s ease;
 }
-.show {
-display: block;
-}
+.confirm-button:hover { background-color: #8aa678; }
 
-.modal {
-display: none;
-position: fixed;
-z-index: 1000;
-left: 0;
-top: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.5);
+/* Modal 基本（如有用到） */
+.modal { 
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
 }
-
 .modal-content {
-background-color: #fefefe;
-margin: 5% auto;
-padding: 20px;
-border: 1px solid #888;
-width: 80%;
-max-width: 500px;
-border-radius: 8px;
-overflow: hidden;
-/* Prevent scrolling */
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #dbe5d5;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    overflow: hidden;
 }
-
 .close {
-color: #aaa;
-float: right;
-font-size: 28px;
-font-weight: bold;
+    color: #506047;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
 }
-
-.close:hover,
-.close:focus {
-color: #000;
-text-decoration: none;
-cursor: pointer;
+.close:hover, .close:focus {
+    color: #2f3d28;
+    text-decoration: none;
+    cursor: pointer;
 }

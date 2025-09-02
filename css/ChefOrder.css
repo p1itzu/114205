@@ -1,12 +1,12 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #FFF5DA;
+    background-color: #f3f7f0; /* 淺綠背景 */
     margin: 0;
     padding: 0;
 }
 
 .navbar {
-    background-color: #F9C765;
+    background-color: #a0bd91; /* 主綠色 */
     padding: 15px;
     display: flex;
     align-items: center;
@@ -17,7 +17,7 @@ body {
     font-size: 20px;
     font-weight: bold;
     padding-left: 20px;
-    color: #B3811C;
+    color: #2f3d28; /* 深綠字 */
 }
 
 .navbar .nav-links {
@@ -27,7 +27,7 @@ body {
 }
 
 .navbar a {
-    color: #B3811C;
+    color: #2f3d28; /* 深綠字 */
     text-decoration: none;
     padding: 10px 20px;
     font-size: 20px;
@@ -35,7 +35,7 @@ body {
 }
 
 .navbar a:hover {
-    background-color: #f9e4ba;
+    background-color: #c6d8b6; /* 淡綠 hover */
     border-radius: 5px;
 }
 
@@ -49,19 +49,24 @@ body {
 
 .user-info .username {
     font-size: 18px;
-    color: #B3811C;
+    color: #2f3d28; /* 深綠字 */
     font-weight: bold;
 }
 
+/* settings-icon 深綠，比主色調深 */
 .user-info .settings-icon {
     width: 20px;
     height: 20px;
     background-image: url('../imgs/settings.png');
-    /* 確保圖片路徑正確 */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     cursor: pointer;
+    filter: brightness(0) saturate(100%) invert(14%) sepia(16%) saturate(886%) hue-rotate(61deg) brightness(95%) contrast(90%);
+    transition: filter 0.3s ease;
+}
+.user-info .settings-icon:hover {
+    filter: brightness(0) saturate(100%) invert(64%) sepia(11%) saturate(454%) hue-rotate(61deg) brightness(93%) contrast(88%);
 }
 
 .search-bar {
@@ -74,7 +79,7 @@ body {
     width: 50%;
     padding: 10px;
     border-radius: 20px;
-    border: 3px solid #ffffff;
+    border: 3px solid #a0bd91; /* 主色邊框 */
 }
 
 .container {
@@ -94,22 +99,21 @@ body {
 .order-btn {
     width: 100%;
     padding: 10px;
-    background-color: #F9C765;
+    background-color: #a0bd91; /* 主綠 */
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.2s ease;
-
 }
 
 .order-btn:hover {
-    background-color: #f0d090;
+    background-color: #8aa678; /* 深綠 hover */
 }
 
 .maintext {
-    color: #B3811C;
+    color: #2f3d28; /* 深綠字 */
     text-decoration: none;
     padding: 10px 40px;
     font-size: 23px;
@@ -124,7 +128,7 @@ body {
 .dropdown-btn {
     background-color: transparent;
     border: none;
-    color: #B3811C;
+    color: #2f3d28; /* 深綠字 */
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
@@ -142,7 +146,7 @@ body {
 }
 
 .dropdown-content a {
-    color: #B3811C;
+    color: #2f3d28; /* 深綠字 */
     padding: 10px 15px;
     text-decoration: none;
     display: block;
@@ -150,7 +154,7 @@ body {
 }
 
 .dropdown-content a:hover {
-    background-color: #f9e4ba;
+    background-color: #c6d8b6; /* 淡綠 hover */
 }
 
 .show {

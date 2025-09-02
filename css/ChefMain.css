@@ -1,9 +1,9 @@
-body {
+body { 
     font-family: 'Noto Sans', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #FFE7B7;
-    color: #B3811C;
+    background-color: #f3f7f0; /* 淺綠背景 */
+    color: #2f3d28;            /* 深綠文字 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,7 +18,7 @@ body {
 
 /* 導覽列樣式 */
 .navbar {
-    background-color: #F9C765;
+    background-color: #a0bd91; /* 主綠色 */
     padding: 15px;
     display: flex;
     align-items: center;
@@ -29,7 +29,7 @@ body {
     font-size: 20px;
     font-weight: bold;
     padding-left: 20px;
-    color: #B3811C;
+    color: #2f3d28; /* 深綠字 */
 }
 
 .navbar .nav-links {
@@ -39,7 +39,7 @@ body {
 }
 
 .navbar a {
-    color: #B3811C;
+    color: #2f3d28;
     text-decoration: none;
     padding: 10px 20px;
     font-size: 20px;
@@ -47,7 +47,7 @@ body {
 }
 
 .navbar a:hover {
-    background-color: #f9e4ba;
+    background-color: #c6d8b6; /* 淡綠 hover */
     border-radius: 5px;
 }
 
@@ -61,20 +61,27 @@ body {
 
 .user-info .username {
     font-size: 18px;
-    color: #B3811C;
+    color: #2f3d28;
     font-weight: bold;
 }
 
+/* settings icon 比主色調深 */
 .user-info .settings-icon {
     width: 20px;
     height: 20px;
-    background-image: url('../imgs/settings.png');
+    background-image: url('../imgs/settings.png'); /* 仍用原圖 */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     cursor: pointer;
+    filter: brightness(0) saturate(100%) invert(14%) sepia(16%) saturate(886%) hue-rotate(61deg) brightness(95%) contrast(90%);
+    transition: filter 0.3s ease;
+}
+.user-info .settings-icon:hover {
+    filter: brightness(0) saturate(100%) invert(64%) sepia(11%) saturate(454%) hue-rotate(61deg) brightness(93%) contrast(88%);
 }
 
+/* 主要內容區 */
 .content {
     display: flex;
     justify-content: space-between;
@@ -83,11 +90,11 @@ body {
     margin-left: 20px;
     gap: 20px;
     align-items: stretch;
-    /* 讓內部元素等高 */
 }
 
+/* 共用盒子 */
 .box {
-    background-color: #FFFCE6;
+    background-color: #ffffff;
     padding: 15px;
     border-radius: 10px;
     display: flex;
@@ -120,18 +127,17 @@ body {
     width: 400px;
 }
 
+/* 行事曆 */
 .calendar-box {
     position: relative;
     height: auto;
-    /* 讓它根據內容調整高度 */
     padding-bottom: 10px;
-    /* 讓框比日期多出 10px */
     width: 300px;
     margin-left: 5px;
 }
 
 .calendar-header {
-    background-color: #F9C765;
+    background-color: #a0bd91;
     width: 100%;
     text-align: center;
     font-weight: bold;
@@ -140,6 +146,7 @@ body {
     height: 20px;
     line-height: 20px;
     border-radius: 5px 5px 0 0;
+    color: #2f3d28;
 }
 
 .calendar {
@@ -152,6 +159,7 @@ body {
     font-size: 16px;
 }
 
+/* 通知 */
 .notifications {
     margin-right: -35px;
     height: auto;
@@ -187,9 +195,10 @@ body {
     font-size: 24px;
 }
 
+/* 訂單 */
 .orders {
     margin-top: 15px;
-    background: rgba(255, 252, 230, 0.5);
+    background: rgba(160, 189, 145, 0.2);
     backdrop-filter: blur(10px);
     padding: 15px;
     border-radius: 12px;
@@ -198,7 +207,7 @@ body {
 }
 
 .order-item {
-    background-color: #FFFCE6;
+    background-color: #f6faf4;
     margin-bottom: 10px;
     border-radius: 5px;
     padding: 10px;
@@ -207,8 +216,9 @@ body {
 }
 
 .order-item:hover {
-    background-color: #F9C765;
+    background-color: #a0bd91;
     transform: scale(1.05);
+    color: white;
 }
 
 .order-item a {
@@ -217,23 +227,20 @@ body {
     font-weight: bold;
 }
 
+/* 個人簡介 */
 .profile-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* 讓內容置中 */
     text-align: center;
     width: 100%;
     padding: 20px;
     position: relative;
-    /* 讓編輯按鈕能夠絕對定位 */
 }
 
 .profile-image {
     order: -1;
-    /* 確保圖片優先排列在最上方 */
     margin-bottom: 10px;
-    /* 控制與文字的間距 */
 }
 
 .profile-image img {
@@ -271,18 +278,22 @@ body {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #F9C765;
+    background-color: #a0bd91;
     border: none;
     cursor: pointer;
     border-radius: 5px;
     padding: 5px 10px;
     margin-right: 20px;
+    color: #2f3d28;
+    font-weight: bold;
 }
 
 .edit-button:hover {
-    background-color: #f9a825;
+    background-color: #8aa678;
+    color: #fff;
 }
 
+/* 下拉選單 */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -291,7 +302,7 @@ body {
 .dropdown-btn {
     background-color: transparent;
     border: none;
-    color: #B3811C;
+    color: #2f3d28;
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
@@ -309,7 +320,7 @@ body {
 }
 
 .dropdown-content a {
-    color: #B3811C;
+    color: #2f3d28;
     padding: 10px 15px;
     text-decoration: none;
     display: block;
@@ -317,13 +328,14 @@ body {
 }
 
 .dropdown-content a:hover {
-    background-color: #f9e4ba;
+    background-color: #c6d8b6;
 }
 
 .show {
     display: block;
 }
 
+/* modal */
 .modal {
     display: none;
     position: fixed;
@@ -344,7 +356,6 @@ body {
     max-width: 500px;
     border-radius: 8px;
     overflow: hidden;
-    /* Prevent scrolling */
 }
 
 .close {
@@ -361,9 +372,10 @@ body {
     cursor: pointer;
 }
 
+/* 食物照按鈕 */
 .view-photos-btn {
-    background-color: #F9C765;
-    color: #B3811C;
+    background-color: #a0bd91;
+    color: #2f3d28;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -375,7 +387,8 @@ body {
 }
 
 .view-photos-btn:hover {
-    background-color: #f9e4ba;
+    background-color: #8aa678;
+    color: #fff;
 }
 
 .food-photos-container {
