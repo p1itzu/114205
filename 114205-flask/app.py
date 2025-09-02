@@ -4,6 +4,7 @@ import json
 import os
 import secrets  # 用於生成安全的 secret key
 from functools import wraps
+import datetime
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)  # 設定安全的 secret key
@@ -121,14 +122,117 @@ def route_after_login():
 @app.route('/CancelOrder')
 @login_required
 def route_cancel_order():
-    username = get_user_info()['username']
-    return render_template('CancelOrder.html', user_email=session.get('user_email'), username=username)
+    user_info = get_user_info()
+    if user_info.get('user_type') != 'chef':
+        flash('此頁面僅供廚師訪問。', 'error')
+        return redirect(url_for('route_chef_login'))
+
+    chef_id = user_info.get('chef_id')
+    if not chef_id: # 雖然上面的檢查應該已經處理了非廚師的情況，但保留以防萬一
+        flash('無法獲取廚師資訊，請重新登入。', 'error')
+        return redirect(url_for('route_chef_login'))
+
+    cancelled_orders = []
+    cancel_statuses = ['已拒絕', '訂單已取消 (顧客最終拒絕)']
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                o.order_id, 
+                o.service_date, 
+                o.service_time, 
+                o.order_status,
+                o.rejection_reason, 
+                c.username AS customer_name
+            FROM Orders o
+            JOIN Customer c ON o.customer_id = c.id
+            WHERE o.chef_id = %s AND o.order_status IN (%s, %s)
+            ORDER BY o.order_submit_time DESC
+        """
+        cursor.execute(query, (chef_id, cancel_statuses[0], cancel_statuses[1]))
+        orders_from_db = cursor.fetchall()
+        for order in orders_from_db:
+            if isinstance(order.get('service_date'), datetime.date):
+                order['formatted_service_date'] = order['service_date'].strftime('%Y/%m/%d')
+            else:
+                order['formatted_service_date'] = '日期未定'
+            cancelled_orders.append(order)
+    except Exception as e:
+        print(f"Error fetching cancelled orders for chef {chef_id}: {str(e)}")
+        flash('載入已取消訂單時發生錯誤。', 'error')
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+    
+    return render_template('CancelOrder.html', 
+                           user_email=session.get('user_email'), 
+                           username=user_info.get('username'), 
+                           orders=cancelled_orders,
+                           user_type='chef') # 明確傳遞 user_type 為 chef
 
 @app.route('/Charging')
 @login_required
 def route_charging():
-    username = get_user_info()['username']
-    return render_template('Charging.html', user_email=session.get('user_email'), username=username)
+    user_info = get_user_info()
+    if user_info.get('user_type') != 'chef':
+        flash('您沒有權限訪問此頁面。', 'error')
+        return redirect(url_for('route_chef_login')) 
+
+    chef_id = user_info.get('chef_id')
+    if not chef_id:
+        flash('無法獲取廚師資訊，請重新登入。', 'error')
+        return redirect(url_for('route_chef_login'))
+
+    conn = None
+    cursor = None
+    orders_to_price_or_negotiate = [] # 更通用的名稱
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        # 修改查詢以包含 '待估價' 和 '議價中-顧客回價' 狀態
+        query = """
+            SELECT 
+                o.order_id, 
+                o.service_date, 
+                o.initial_price_chef, 
+                o.customer_counter_price,
+                o.order_status, 
+                cust.username AS customer_name
+            FROM Orders o
+            JOIN Customer cust ON o.customer_id = cust.id
+            WHERE o.chef_id = %s AND (o.order_status = '待估價' OR o.order_status = '議價中-顧客回價')
+            ORDER BY o.order_submit_time DESC 
+        """
+        cursor.execute(query, (chef_id,))
+        orders_from_db = cursor.fetchall()
+
+        for order in orders_from_db:
+            if isinstance(order.get('service_date'), datetime.date):
+                order['formatted_service_date'] = order['service_date'].strftime('%Y/%m/%d')
+            else:
+                order['formatted_service_date'] = '日期未定'
+            orders_to_price_or_negotiate.append(order)
+
+    except Exception as e:
+        print(f"Error fetching charging/pending pricing orders for chef {chef_id}: {str(e)}")
+        flash('載入待處理訂單時發生錯誤，請稍後再試。', 'error')
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+    return render_template('Charging.html', 
+                           user_email=session.get('user_email'), 
+                           username=user_info.get('username'), 
+                           orders=orders_to_price_or_negotiate) # 更新傳遞的變數名稱
 
 @app.route('/ChefAfterLogin')
 @login_required
@@ -149,8 +253,67 @@ def route_chef_main():
 @app.route('/ChefOrder')
 @login_required
 def route_chef_order():
-    username = get_user_info()['username']
-    return render_template('ChefOrder.html', user_email=session.get('user_email'), username=username)
+    user_info = get_user_info()
+    chef_id = user_info.get('chef_id')
+    orders_in_progress = []
+
+    if user_info.get('user_type') != 'chef' or not chef_id:
+        flash('請以廚師身份登入以查看您的訂單。', 'warning')
+        return redirect(url_for('route_chef_login'))
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        query = """
+            SELECT 
+                o.order_id, 
+                o.service_date, 
+                o.service_time, 
+                o.final_price_chef,
+                cust.username AS customer_name,
+                o.order_status 
+            FROM Orders o
+            JOIN Customer cust ON o.customer_id = cust.id
+            WHERE o.chef_id = %s AND o.order_status = '廚師已確認，備餐中'
+            ORDER BY o.service_date ASC, o.service_time ASC
+        """
+        cursor.execute(query, (chef_id,))
+        orders_from_db = cursor.fetchall()
+
+        for order in orders_from_db:
+            if isinstance(order.get('service_date'), datetime.date):
+                order['formatted_service_date'] = order['service_date'].strftime('%Y/%m/%d')
+            else:
+                order['formatted_service_date'] = '日期未定'
+            
+            if isinstance(order.get('service_time'), datetime.timedelta):
+                td = order['service_time']
+                total_seconds = int(td.total_seconds())
+                hours = total_seconds // 3600
+                minutes = (total_seconds % 3600) // 60
+                order['formatted_service_time'] = f"{hours:02d}:{minutes:02d}"
+            elif order.get('service_time') is not None:
+                order['formatted_service_time'] = str(order['service_time'])
+            else:
+                order['formatted_service_time'] = '時間未定'
+            orders_in_progress.append(order)
+
+    except Exception as e:
+        print(f"Error fetching in-progress orders for chef {chef_id}: {str(e)}")
+        flash('載入進行中訂單時發生錯誤，請稍後再試。', 'error')
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+    return render_template('ChefOrder.html', 
+                           user_email=session.get('user_email'), 
+                           username=user_info.get('username'), 
+                           orders=orders_in_progress)
 
 @app.route('/ChefRegister')
 def route_chef_register():
@@ -225,8 +388,57 @@ def route_evaluate():
 @app.route('/my-order')
 @login_required
 def route_my_order():
-    username = get_user_info()['username']
-    return render_template('my-order.html', user_email=session.get('user_email'), username=username)
+    user_info = get_user_info()
+    customer_id = user_info.get('customer_id')
+    customer_orders = []
+
+    if user_info.get('user_type') != 'customer' or not customer_id:
+        # 如果不是顧客或無法獲取 customer_id，可以重定向或顯示錯誤
+        flash('您需要以顧客身份登入才能查看您的訂單。', 'warning')
+        return redirect(url_for('route_cus_login')) # 或 route_home
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        # 查詢屬於該顧客的所有訂單，並 JOIN Chef 表以獲取廚師名稱
+        # Orders 表應有 customer_id, chef_id. Chef 表應有 id, username.
+        query = """
+            SELECT o.*, ch.username AS chef_name
+            FROM Orders o
+            JOIN Chef ch ON o.chef_id = ch.id
+            WHERE o.customer_id = %s
+            ORDER BY o.order_submit_time DESC
+        """
+        cursor.execute(query, (customer_id,))
+        customer_orders_raw = cursor.fetchall()
+        customer_orders = [] # 初始化為空列表
+
+        if customer_orders_raw:
+            for order_raw in customer_orders_raw:
+                # order_raw 已經是字典，因為 cursor(dictionary=True)
+                # 獲取此訂單的菜品列表
+                cursor.execute("SELECT dish_name FROM OrderItems WHERE order_id = %s ORDER BY order_item_id", (order_raw['order_id'],))
+                items = cursor.fetchall()
+                order_raw['dishes'] = [item['dish_name'] for item in items] # 將菜名列表加入訂單字典
+                customer_orders.append(order_raw)
+
+    except Exception as e:
+        print(f"Error fetching orders for customer {customer_id}: {str(e)}")
+        flash('載入您的訂單時發生錯誤，請稍後再試。', 'error')
+        # 發生錯誤時，customer_orders 保持為空
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template('my-order.html', 
+                         user_email=session.get('user_email'), 
+                         username=user_info.get('username'), 
+                         orders=customer_orders) # 傳遞顧客的訂單列表
 
 @app.route('/Order/<order_id>')
 @login_required
@@ -291,17 +503,191 @@ def route_order(order_id):
                          customer=customer_info # 傳遞顧客資訊 (方便模板取用)
                          )
 
-@app.route('/Order1')
+@app.route('/Order1/<order_id>')
 @login_required
-def route_order1():
-    username = get_user_info()['username']
-    return render_template('Order1.html', user_email=session.get('user_email'), username=username)
+def route_order1(order_id):
+    user_info = get_user_info()
+    order_details = None
+    order_items_list = []
+    # customer_info = None # customer_phone 在 Orders 表中似乎沒有，需要 JOIN
 
-@app.route('/OrderfinalPrice')
+    # 驗證是否為廚師 (可選，如果此頁面設計為廚師專用)
+    # if user_info.get('user_type') != 'chef':
+    #     flash('您沒有權限訪問此頁面。', 'error')
+    #     return redirect(url_for('route_home')) # 或其他適當頁面
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 1. 查詢訂單基本資訊，並 JOIN Customer 表獲取顧客電話等
+        # Order1.html 用到的欄位：order.order_id, order.service_date, order.service_time,
+        # order.pickup_method, order.delivery_address, order.customer_phone (需要從 Customer 表獲取)
+        query_order = """
+            SELECT o.*, c.phone AS customer_phone 
+            FROM Orders o
+            JOIN Customer c ON o.customer_id = c.id
+            WHERE o.order_id = %s
+        """
+        # 如果需要限制只有該訂單的廚師能看，還需要加入 AND o.chef_id = %s
+        # chef_id = user_info.get('chef_id')
+        # cursor.execute(query_order, (order_id, chef_id))
+        cursor.execute(query_order, (order_id,))
+        order_details = cursor.fetchone()
+
+        if not order_details:
+            flash(f'找不到訂單 {order_id}。', 'error')
+            return redirect(url_for('route_chef_order')) # 或其他適合廚師的頁面
+
+        # 格式化日期和時間 (如果需要，類似 route_order_detail 中的做法)
+        if isinstance(order_details.get('service_date'), datetime.date):
+            order_details['formatted_service_date'] = order_details['service_date'].strftime('%Y-%m-%d') # Order1.html似乎直接用 service_date
+        else:
+            order_details['formatted_service_date'] = str(order_details.get('service_date', ''))
+
+        if isinstance(order_details.get('service_time'), datetime.timedelta):
+            td = order_details['service_time']
+            total_seconds = int(td.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            order_details['formatted_service_time'] = f"{hours:02d}:{minutes:02d}"
+        elif order_details.get('service_time') is not None:
+            order_details['formatted_service_time'] = str(order_details['service_time'])
+        else:
+            order_details['formatted_service_time'] = ''
+        
+        # Order1.html 直接使用 {{ order.service_date }} 和 {{ order.service_time }}，如果它們是正確的字串格式，則上面的格式化可能不需要或需要調整
+        # 確保傳遞給模板的 order 物件中 service_date 和 service_time 是 Order1.html 期望的格式
+        # 為簡化，暫時假設資料庫中的 service_date 和 service_time 已是合適的字串，或 Order1.html 能處理原始格式
+        # 但 customer_phone 是明確需要的
+
+        # 2. 如果訂單存在，查詢該訂單的所有菜品項目
+        # Order1.html 用到的菜品欄位: item.dish_name, item.quantity, 
+        # item.required_ingredients, item.cooking_method, item.seasoning_preferences, item.custom_notes
+        query_items = """
+            SELECT oi.dish_name, oi.quantity, oi.required_ingredients, oi.cooking_method, 
+                   oi.seasoning_preferences, oi.custom_notes 
+            FROM OrderItems oi
+            WHERE oi.order_id = %s
+            ORDER BY oi.order_item_id ASC
+        """
+        cursor.execute(query_items, (order_id,))
+        order_items_list = cursor.fetchall()
+
+    except Exception as e:
+        print(f"Error fetching details for Order1, order_id {order_id}: {str(e)}")
+        flash('載入訂單詳情時發生錯誤。', 'error')
+        # 考慮是否要重定向到更通用的錯誤頁面或廚師主頁
+        return redirect(url_for('route_chef_order')) 
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template('Order1.html', 
+                         user_email=session.get('user_email'), 
+                         username=user_info.get('username'),
+                         order=order_details,      # 傳遞訂單主體資訊
+                         items=order_items_list      # 傳遞菜品列表
+                         )
+
+@app.route('/OrderfinalPrice/<order_id>')
 @login_required
-def route_order_final_price():
-    username = get_user_info()['username']
-    return render_template('OrderfinalPrice.html', user_email=session.get('user_email'), username=username)
+def route_order_final_price(order_id):
+    user_info = get_user_info()
+    if user_info.get('user_type') != 'chef':
+        flash('您沒有權限訪問此頁面。', 'error')
+        return redirect(url_for('route_chef_login'))
+
+    chef_id = user_info.get('chef_id')
+    if not chef_id:
+        flash('無法獲取廚師資訊，請重新登入。', 'error')
+        return redirect(url_for('route_chef_login'))
+
+    conn = None
+    cursor = None
+    order_details = None
+    order_items_list = []
+    customer_info = {}
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 1. 查詢訂單基本資訊，並驗證是否屬於該廚師且狀態正確
+        query_order = """
+            SELECT 
+                o.order_id, o.customer_id, o.service_date, o.service_time, 
+                o.pickup_method, o.delivery_address, o.order_status, 
+                o.initial_price_chef, o.customer_counter_price, o.customer_reason,
+                cust.username AS customer_username, cust.phone AS customer_phone
+            FROM Orders o
+            JOIN Customer cust ON o.customer_id = cust.id
+            WHERE o.order_id = %s AND o.chef_id = %s
+        """
+        cursor.execute(query_order, (order_id, chef_id))
+        order_details = cursor.fetchone()
+
+        if not order_details:
+            flash(f'找不到訂單 {order_id} 或該訂單不屬於您。', 'error')
+            return redirect(url_for('route_charging')) # 回到議價中訂單列表
+
+        if order_details['order_status'] != '議價中-顧客回價':
+            flash(f'訂單 {order_id} 的狀態為 "{order_details["order_status"]}"，無法進行最終定價。', 'warning')
+            return redirect(url_for('route_charging'))
+
+        # 格式化日期和時間
+        if isinstance(order_details.get('service_date'), datetime.date):
+            order_details['formatted_service_date'] = order_details['service_date'].strftime('%Y/%m/%d')
+        else:
+            order_details['formatted_service_date'] = '未指定'
+
+        if isinstance(order_details.get('service_time'), datetime.timedelta):
+            td = order_details['service_time']
+            total_seconds = int(td.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            order_details['formatted_service_time'] = f"{hours:02d}:{minutes:02d}"
+        elif order_details.get('service_time') is not None:
+            order_details['formatted_service_time'] = str(order_details['service_time'])
+        else:
+            order_details['formatted_service_time'] = '未指定'
+        
+        customer_info = {
+            'username': order_details.get('customer_username'),
+            'phone': order_details.get('customer_phone')
+        }
+
+        # 2. 查詢該訂單的所有菜品項目 (包含廚師首次的單品估價 和 order_item_id)
+        query_items = """
+            SELECT oi.order_item_id, oi.dish_name, oi.chef_estimated_price_per_dish, oi.seasoning_preferences
+            FROM OrderItems oi
+            WHERE oi.order_id = %s
+            ORDER BY oi.order_item_id ASC
+        """
+        cursor.execute(query_items, (order_id,))
+        order_items_list = cursor.fetchall()
+
+    except Exception as e:
+        print(f"Error fetching order details for final pricing (order {order_id}, chef {chef_id}): {str(e)}")
+        flash('載入最終定價頁面時發生錯誤，請稍後再試。', 'error')
+        return redirect(url_for('route_charging'))
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template('OrderfinalPrice.html', 
+                           user_email=session.get('user_email'), 
+                           username=user_info.get('username'),
+                           order=order_details,
+                           items=order_items_list,
+                           customer=customer_info,
+                           order_id=order_id)
 
 @app.route('/OrderfinalPrice1')
 @login_required
@@ -315,11 +701,104 @@ def route_price_rules():
     username = get_user_info()['username']
     return render_template('PriceRules.html', user_email=session.get('user_email'), username=username)
 
-@app.route('/orderDetail')
+@app.route('/orderDetail/<order_id>')
 @login_required
-def route_order_detail():
-    username = get_user_info()['username']
-    return render_template('orderDetail.html', user_email=session.get('user_email'), username=username)
+def route_order_detail(order_id):
+    user_info = get_user_info()
+    customer_id = user_info.get('customer_id')
+    order_details = None
+    order_items_list = []
+    chef_info = None
+
+    if user_info.get('user_type') != 'customer' or not customer_id:
+        flash('請以顧客身份登入以查看訂單詳情。', 'warning')
+        return redirect(url_for('route_cus_login'))
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 1. 查詢訂單基本資訊，並驗證是否屬於當前顧客
+        # 確保查詢 Orders 表時包含新增的欄位: customer_counter_price, customer_reason, final_price_chef, chef_final_price_reason
+        # 假設 o.* 會包含這些新欄位，如果您的 Orders 表有很多欄位，明確列出會更清晰且高效
+        query_order = """
+            SELECT 
+                o.order_id, o.customer_id, o.chef_id, o.service_date, o.service_time, 
+                o.pickup_method, o.delivery_address, o.order_status, o.order_submit_time, 
+                o.initial_price_chef, o.customer_counter_price, 
+                o.final_price_chef, o.rejection_reason, o.customer_reason, o.chef_final_price_reason, 
+                c.username AS customer_username, c.phone AS customer_phone,
+                ch.username AS chef_username, ch.phone AS chef_phone
+            FROM Orders o
+            JOIN Customer c ON o.customer_id = c.id
+            JOIN Chef ch ON o.chef_id = ch.id
+            WHERE o.order_id = %s AND o.customer_id = %s
+        """
+        cursor.execute(query_order, (order_id, customer_id))
+        order_details = cursor.fetchone()
+
+        if not order_details:
+            flash(f'找不到訂單 {order_id} 或您沒有權限查看此訂單。', 'error')
+            return redirect(url_for('route_my_order'))
+
+        # 處理日期和時間格式化
+        if order_details:
+            # 格式化 service_date (datetime.date to string)
+            if isinstance(order_details.get('service_date'), datetime.date):
+                order_details['formatted_service_date'] = order_details['service_date'].strftime('%Y/%m/%d')
+            else:
+                order_details['formatted_service_date'] = '未指定' # 或其他預設值
+
+            # 格式化 service_time (datetime.timedelta to string HH:MM)
+            if isinstance(order_details.get('service_time'), datetime.timedelta):
+                td = order_details['service_time']
+                total_seconds = int(td.total_seconds())
+                hours = total_seconds // 3600
+                minutes = (total_seconds % 3600) // 60
+                order_details['formatted_service_time'] = f"{hours:02d}:{minutes:02d}"
+            elif order_details.get('service_time') is not None: # 如果是其他類型但非 None，嘗試轉為字串
+                order_details['formatted_service_time'] = str(order_details['service_time'])
+            else:
+                order_details['formatted_service_time'] = '未指定'
+
+        # 2. 如果訂單存在，查詢該訂單的所有菜品項目
+        # 包括廚師對每道菜的估價 (chef_estimated_price_per_dish)
+        query_items = """
+            SELECT oi.* 
+            FROM OrderItems oi
+            WHERE oi.order_id = %s
+            ORDER BY oi.order_item_id ASC
+        """
+        cursor.execute(query_items, (order_id,))
+        order_items_list = cursor.fetchall()
+
+        # 提取廚師資訊以便清晰傳遞
+        chef_info = {
+            'username': order_details.get('chef_username'),
+            'phone': order_details.get('chef_phone')
+            # 您可以根據需要添加更多廚師資訊，例如擅長領域等，如果 Chef 表中有這些欄位
+        }
+
+    except Exception as e:
+        print(f"Error fetching order details for {order_id} (customer view): {str(e)}")
+        flash('載入訂單詳情時發生錯誤，請稍後再試。', 'error')
+        return redirect(url_for('route_my_order'))
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return render_template('orderDetail.html', 
+                         user_email=session.get('user_email'), 
+                         username=user_info.get('username'),
+                         order=order_details,         # 訂單主體資訊 (已包含顧客和廚師部分資訊)
+                         items=order_items_list,      # 菜品列表 (包含廚師估價)
+                         chef=chef_info,              # 獨立的廚師資訊物件 (方便模板取用)
+                         order_id=order_id            # 直接傳遞 order_id，方便後續操作
+                         )
 
 @app.route('/orderDetail2')
 @login_required
@@ -336,8 +815,69 @@ def route_order_detail3():
 @app.route('/OrderDone')
 @login_required
 def route_order_done():
-    username = get_user_info()['username']
-    return render_template('OrderDone.html', user_email=session.get('user_email'), username=username)
+    user_info = get_user_info()
+    if user_info.get('user_type') != 'chef':
+        flash('此頁面僅供廚師訪問。', 'error')
+        return redirect(url_for('route_chef_login'))
+
+    chef_id = user_info.get('chef_id')
+    if not chef_id: # 同上，保留以防萬一
+        flash('無法獲取廚師資訊，請重新登入。', 'error')
+        return redirect(url_for('route_chef_login'))
+
+    completed_orders = []
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                o.order_id, 
+                o.service_date, 
+                o.service_time, 
+                o.final_price_chef,
+                c.username AS customer_name,
+                o.order_status
+            FROM Orders o
+            JOIN Customer c ON o.customer_id = c.id
+            WHERE o.chef_id = %s AND o.order_status = '訂單已完成'
+            ORDER BY o.order_submit_time DESC
+        """
+        cursor.execute(query, (chef_id,))
+        orders_from_db = cursor.fetchall()
+
+        for order in orders_from_db:
+            if isinstance(order.get('service_date'), datetime.date):
+                order['formatted_service_date'] = order['service_date'].strftime('%Y/%m/%d')
+            else:
+                order['formatted_service_date'] = '日期未定'
+            
+            if isinstance(order.get('service_time'), datetime.timedelta):
+                td = order['service_time']
+                total_seconds = int(td.total_seconds())
+                hours = total_seconds // 3600
+                minutes = (total_seconds % 3600) // 60
+                order['formatted_service_time'] = f"{hours:02d}:{minutes:02d}"
+            elif order.get('service_time') is not None:
+                order['formatted_service_time'] = str(order['service_time'])
+            else:
+                order['formatted_service_time'] = '時間未定'
+            completed_orders.append(order)
+    except Exception as e:
+        print(f"Error fetching completed orders for chef {chef_id}: {str(e)}")
+        flash('載入已完成訂單時發生錯誤。', 'error')
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+    
+    return render_template('OrderDone.html', 
+                           user_email=session.get('user_email'), 
+                           username=user_info.get('username'), 
+                           orders=completed_orders,
+                           user_type='chef') # 明確傳遞 user_type 為 chef
 
 @app.route('/OrderPrice/<order_id>')
 @login_required
@@ -844,17 +1384,12 @@ def update_profile():
 @app.route('/api/chef/order/<order_id>/accept', methods=['POST'])
 @login_required
 def api_chef_accept_order(order_id):
-    print(f"[DEBUG] /api/chef/order/{order_id}/accept 被調用")
-    print(f"[DEBUG] Session 內容: {session}")
     user_info = get_user_info()
-    print(f"[DEBUG] get_user_info() 返回: {user_info}")
 
     if user_info.get('user_type') != 'chef':
-        print(f"[DEBUG] user_type 檢查失敗: {user_info.get('user_type')}")
         return jsonify({'error': '僅廚師可以執行此操作'}), 403
 
     chef_id = user_info.get('chef_id')
-    print(f"[DEBUG] 獲取的 chef_id: {chef_id}")
     conn = None
     cursor = None
     try:
@@ -918,8 +1453,6 @@ def api_chef_reject_order(order_id):
             return jsonify({'error': '訂單狀態不正確，無法拒絕'}), 400
 
         # 更新訂單狀態為 '已拒絕'，並記錄原因 (如果提供了)
-        # 假設 Orders 表中已添加 rejection_reason VARCHAR(255) NULLABLE 欄位
-        # 如果您還沒有此欄位，請先 ALTER TABLE Orders ADD COLUMN rejection_reason VARCHAR(255) NULL;
         new_status = '已拒絕'
         if rejection_reason:
             cursor.execute("UPDATE Orders SET order_status = %s, rejection_reason = %s WHERE order_id = %s", 
@@ -950,7 +1483,7 @@ def api_submit_chef_pricing(order_id):
         return jsonify({'error': '僅廚師可以執行此操作'}), 403
 
     chef_id = user_info.get('chef_id')
-    form_data = request.form # 價格數據從表單中獲取
+    form_data = request.form # This API uses form data for initial pricing
 
     conn = None
     cursor = None
@@ -971,21 +1504,18 @@ def api_submit_chef_pricing(order_id):
         total_estimated_price = 0.0
         updated_items_count = 0
 
-        # 2. 更新 OrderItems 中每項菜品的估價
-        #    並計算總價
-        #    表單欄位 name 格式應為 "price_{order_item_id}"
+        # 2. 更新 OrderItems 中每項菜品的估價並計算總價
         for key, value in form_data.items():
             if key.startswith('price_'):
                 try:
                     item_price = float(value)
                     order_item_id = key.split('price_')[1]
                     
-                    # 確保 order_item_id 確實屬於此 order_id (可選的額外安全檢查)
                     cursor.execute("SELECT order_id FROM OrderItems WHERE order_item_id = %s", (order_item_id,))
                     item_check = cursor.fetchone()
                     if not item_check or item_check['order_id'] != order_id:
                         print(f"警告：嘗試為不匹配的 order_item_id {order_item_id} (訂單 {order_id}) 提交價格。")
-                        continue # 跳過此項
+                        continue
 
                     cursor.execute("UPDATE OrderItems SET chef_estimated_price_per_dish = %s WHERE order_item_id = %s", 
                                    (item_price, order_item_id))
@@ -995,14 +1525,12 @@ def api_submit_chef_pricing(order_id):
                     return jsonify({'error': f'無效的價格格式提交給 {key}'}), 400
         
         if updated_items_count == 0 and total_estimated_price == 0.0:
-            # 檢查是否至少有一個菜品被估價，或是否有菜品存在
             cursor.execute("SELECT COUNT(*) as count FROM OrderItems WHERE order_id = %s", (order_id,))
             if cursor.fetchone()['count'] > 0:
                  return jsonify({'error': '沒有提交任何菜品的有效價格。'}), 400
-            # 如果訂單中本來就沒有菜品，允許總價為0 (例如只收服務費，但目前模型不含服務費)
 
         # 3. 更新 Orders 表中的 initial_price_chef 和 order_status
-        new_order_status = '議價中-廚師估價' # 根據您的流程定義
+        new_order_status = '議價中-廚師估價'
         cursor.execute("UPDATE Orders SET initial_price_chef = %s, order_status = %s WHERE order_id = %s",
                        (total_estimated_price, new_order_status, order_id))
         
@@ -1012,7 +1540,7 @@ def api_submit_chef_pricing(order_id):
             'order_id': order_id,
             'total_price': total_estimated_price,
             'new_status': new_order_status,
-            'redirect_url': url_for('route_chef_main') # 或其他廚師查看訂單的頁面
+            'redirect_url': url_for('route_chef_main')
         }), 200
 
     except Exception as e:
@@ -1025,6 +1553,431 @@ def api_submit_chef_pricing(order_id):
             cursor.close()
         if conn:
             conn.close()
+
+# API：廚師提交最終定價
+@app.route('/api/order/<order_id>/chef_final_pricing', methods=['POST'])
+@login_required
+def api_chef_final_pricing(order_id):
+    user_info = get_user_info()
+    if user_info.get('user_type') != 'chef':
+        return jsonify({'error': '僅廚師可以執行此操作'}), 403
+
+    chef_id = user_info.get('chef_id')
+    
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': '請求資料為空或格式不正確 (應為JSON)'}), 400
+
+    items_final_pricing = data.get('items_final_pricing') # 新的 payload 結構
+    # reason = data.get('chef_final_price_reason') # 如果之後要加回來說明欄位
+    reason = None # 目前前端沒有發送 reason
+
+    if not isinstance(items_final_pricing, list):
+        return jsonify({'error': '菜品最終定價資料格式不正確 (應為列表)'}), 400
+
+    conn = None
+    cursor = None
+    calculated_final_total_price = 0.0
+    updated_item_ids = []
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 1. 驗證訂單是否存在、屬於該廚師，並且狀態是否為 '議價中-顧客回價'
+        cursor.execute("SELECT order_status FROM Orders WHERE order_id = %s AND chef_id = %s", (order_id, chef_id))
+        order_db_check = cursor.fetchone()
+
+        if not order_db_check:
+            return jsonify({'error': '找不到訂單或訂單不屬於您'}), 404
+        
+        if order_db_check['order_status'] != '議價中-顧客回價': 
+            return jsonify({'error': f'訂單狀態為 {order_db_check["order_status"]}，無法提交最終定價'}), 400
+
+        # 2. 遍歷提交的菜品最終價格，更新 OrderItems
+        if not items_final_pricing: # 如果列表為空 (例如所有菜品價格都無效或未輸入，但用戶確認提交0元總價)
+            # 查詢訂單中實際有多少菜品
+            cursor.execute("SELECT order_item_id FROM OrderItems WHERE order_id = %s", (order_id,))
+            all_order_items = cursor.fetchall()
+            if not all_order_items: # 訂單本身就沒有菜品
+                pass # 允許總價為0且沒有菜品的情況
+            else: # 訂單有菜品，但前端傳來空的 items_final_pricing，表示所有菜品價格為0
+                for item_in_db in all_order_items:
+                    cursor.execute("UPDATE OrderItems SET chef_final_price_per_dish = %s WHERE order_item_id = %s AND order_id = %s",
+                                   (0, item_in_db['order_item_id'], order_id))
+                    updated_item_ids.append(item_in_db['order_item_id'])
+            calculated_final_total_price = 0.0
+        else:
+            for item_price_data in items_final_pricing:
+                order_item_id = item_price_data.get('order_item_id')
+                final_price_per_dish_str = item_price_data.get('final_price_per_dish')
+
+                if order_item_id is None or final_price_per_dish_str is None:
+                    conn.rollback()
+                    return jsonify({'error': f'菜品資料不完整: {item_price_data}'}), 400
+                
+                try:
+                    final_price_per_dish = float(final_price_per_dish_str)
+                    if final_price_per_dish < 0:
+                        conn.rollback()
+                        return jsonify({'error': f'菜品 {order_item_id} 的最終價格不能為負數'}), 400
+                except ValueError:
+                    conn.rollback()
+                    return jsonify({'error': f'菜品 {order_item_id} 的最終價格格式無效'}), 400
+
+                # 更新 OrderItems 表中的 chef_final_price_per_dish
+                # 同時驗證 order_item_id 確實屬於該 order_id
+                update_item_sql = """
+                    UPDATE OrderItems 
+                    SET chef_final_price_per_dish = %s 
+                    WHERE order_item_id = %s AND order_id = %s
+                """
+                cursor.execute(update_item_sql, (final_price_per_dish, order_item_id, order_id))
+                if cursor.rowcount == 0:
+                    # 如果沒有任何行被更新，表示 order_item_id 不存在或不屬於此訂單
+                    conn.rollback()
+                    return jsonify({'error': f'無效的菜品項目 ID: {order_item_id} 或其不屬於訂單 {order_id}'}), 400
+                
+                calculated_final_total_price += final_price_per_dish
+                updated_item_ids.append(order_item_id)
+
+        # 3. 更新 Orders 表中的 final_price_chef (使用後端計算的總價) 和 order_status
+        new_order_status = '議價中-廚師定價' 
+        update_order_sql = """
+            UPDATE Orders 
+            SET final_price_chef = %s, chef_final_price_reason = %s, order_status = %s
+            WHERE order_id = %s AND chef_id = %s
+        """
+        # 注意：chef_final_price_reason 目前是 None
+        cursor.execute(update_order_sql, (calculated_final_total_price, reason, new_order_status, order_id, chef_id))
+        
+        conn.commit()
+
+        return jsonify({
+            'message': '最終定價已成功提交！請等待顧客確認。',
+            'order_id': order_id,
+            'new_status': new_order_status,
+            'calculated_total': calculated_final_total_price,
+            'redirect_url': url_for('route_chef_main') 
+        }), 200
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Error submitting chef final pricing for order {order_id}: {str(e)}")
+        return jsonify({'error': f'處理最終定價提交時發生錯誤: {str(e)}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# API：顧客提交議價
+@app.route('/api/order/<order_id>/customer_negotiate', methods=['POST'])
+@login_required
+def api_customer_negotiate(order_id):
+    user_info = get_user_info()
+    if user_info.get('user_type') != 'customer':
+        return jsonify({'error': '僅顧客可以執行此操作'}), 403
+
+    customer_id = user_info.get('customer_id')
+    
+    data = request.get_json() 
+    if not data:
+        return jsonify({'error': '請求資料為空或格式不正確 (應為JSON)'}), 400
+
+    counter_price_str = data.get('customer_counter_price')
+    reason = data.get('customer_reason')
+
+    if counter_price_str is None or str(counter_price_str).strip() == "":
+        return jsonify({'error': '議價金額為必填項'}), 400
+    
+    try:
+        customer_counter_price = float(counter_price_str) 
+        if customer_counter_price <= 0:
+            return jsonify({'error': '議價金額必須大於0'}), 400
+    except (ValueError, TypeError): 
+        return jsonify({'error': '無效的議價金額格式'}), 400
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT order_status FROM Orders WHERE order_id = %s AND customer_id = %s", (order_id, customer_id))
+        order = cursor.fetchone()
+
+        if not order:
+            return jsonify({'error': '找不到訂單或訂單不屬於您'}), 404
+        
+        if order['order_status'] != '議價中-廚師估價':
+            return jsonify({'error': f'訂單狀態為 {order["order_status"]}，無法提交議價'}), 400
+
+        new_order_status = '議價中-顧客回價'
+        sql = """
+            UPDATE Orders 
+            SET customer_counter_price = %s, customer_reason = %s, order_status = %s
+            WHERE order_id = %s
+        """
+        cursor.execute(sql, (customer_counter_price, reason, new_order_status, order_id))
+        conn.commit()
+
+        return jsonify({
+            'message': '議價已成功提交！請等待廚師回應。',
+            'order_id': order_id,
+            'new_status': new_order_status,
+            'redirect_url': url_for('route_order_detail', order_id=order_id)
+        }), 200
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Error submitting customer negotiation for order {order_id}: {str(e)}")
+        return jsonify({'error': f'處理議價提交時發生錯誤: {str(e)}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# API：顧客接受廚師的首次報價
+@app.route('/api/order/<order_id>/accept_initial_offer', methods=['POST'])
+@login_required
+def api_customer_accept_initial_offer(order_id):
+    user_info = get_user_info()
+    if user_info.get('user_type') != 'customer':
+        return jsonify({'error': '僅顧客可以執行此操作'}), 403
+
+    customer_id = user_info.get('customer_id')
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT order_status, initial_price_chef FROM Orders WHERE order_id = %s AND customer_id = %s", (order_id, customer_id))
+        order = cursor.fetchone()
+
+        if not order:
+            return jsonify({'error': '找不到訂單或訂單不屬於您'}), 404
+        
+        if order['order_status'] != '議價中-廚師估價':
+            return jsonify({'error': f'訂單狀態為 {order["order_status"]}，無法執行此操作'}), 400
+        
+        initial_price = order['initial_price_chef']
+        if initial_price is None:
+            return jsonify({'error': '廚師尚未提供初步報價，無法接受'}), 400
+
+        new_order_status = '廚師已確認，備餐中' 
+        sql = """
+            UPDATE Orders 
+            SET final_price_chef = %s, order_status = %s
+            WHERE order_id = %s
+        """
+        cursor.execute(sql, (initial_price, new_order_status, order_id))
+        conn.commit()
+
+        return jsonify({
+            'message': '您已成功接受廚師的報價！訂單已確認。',
+            'order_id': order_id,
+            'new_status': new_order_status,
+            'final_price': initial_price,
+            'redirect_url': url_for('route_order_detail', order_id=order_id)
+        }), 200
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Error accepting initial offer for order {order_id}: {str(e)}")
+        return jsonify({'error': f'接受報價時發生錯誤: {str(e)}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# API：顧客對廚師最終報價做出決定 (接受或拒絕)
+@app.route('/api/order/<order_id>/customer_decision_on_final_price', methods=['POST'])
+@login_required
+def api_customer_decision_on_final_price(order_id):
+    user_info = get_user_info()
+    if user_info.get('user_type') != 'customer':
+        return jsonify({'error': '僅顧客可以執行此操作'}), 403
+
+    customer_id = user_info.get('customer_id')
+    if not customer_id:
+        return jsonify({'error': '無法獲取顧客資訊'}), 401
+
+    data = request.get_json()
+    if not data or 'decision' not in data:
+        return jsonify({'error': '請求資料不完整或格式不正確 (需要 decision)'}), 400
+
+    decision = data.get('decision') # 'accept' 或 'reject'
+
+    if decision not in ['accept', 'reject']:
+        return jsonify({'error': '無效的決定參數'}), 400
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 1. 驗證訂單是否存在、屬於該顧客，並且狀態是否為 '議價中-廚師定價'
+        query_order = "SELECT order_status, final_price_chef FROM Orders WHERE order_id = %s AND customer_id = %s"
+        cursor.execute(query_order, (order_id, customer_id))
+        order = cursor.fetchone()
+
+        if not order:
+            return jsonify({'error': '找不到訂單或訂單不屬於您'}), 404
+        
+        if order['order_status'] != '議價中-廚師定價':
+            return jsonify({'error': f'訂單狀態為 {order["order_status"]}，無法執行此操作'}), 400
+
+        new_order_status = ''
+        success_message = ''
+
+        if decision == 'accept':
+            # 顧客接受廚師的最終報價
+            new_order_status = '廚師已確認，備餐中' # <--- 修改狀態名稱
+            success_message = '您已接受廚師的最終報價，訂單已確認，廚師將開始備餐！' # <--- 可選：微調成功訊息
+            update_sql = "UPDATE Orders SET order_status = %s WHERE order_id = %s"
+            cursor.execute(update_sql, (new_order_status, order_id))
+
+        elif decision == 'reject':
+            # 顧客拒絕廚師的最終報價，訂單取消
+            new_order_status = '訂單已取消 (顧客最終拒絕)'
+            success_message = '您已拒絕廚師的最終報價，訂單已取消。'
+            # 可選：記錄顧客拒絕的原因，如果需要，需在 Orders 表加欄位並從前端獲取
+            update_sql = "UPDATE Orders SET order_status = %s WHERE order_id = %s"
+            cursor.execute(update_sql, (new_order_status, order_id))
+        
+        conn.commit()
+
+        return jsonify({
+            'message': success_message,
+            'order_id': order_id,
+            'new_status': new_order_status,
+            'redirect_url': url_for('route_my_order') # 操作後跳轉回我的訂單列表
+        }), 200
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Error in customer_decision_on_final_price for order {order_id}: {str(e)}")
+        return jsonify({'error': f'處理您的決定時發生錯誤: {str(e)}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# API: 顧客確認收到餐點並完成訂單
+@app.route('/api/order/<order_id>/customer_confirm_completion', methods=['POST'])
+@login_required
+def api_customer_confirm_completion(order_id):
+    user_info = get_user_info()
+    if user_info.get('user_type') != 'customer':
+        return jsonify({'error': '僅顧客可以執行此操作', 'success': False}), 403
+
+    customer_id = user_info.get('customer_id')
+    if not customer_id:
+        return jsonify({'error': '無法獲取顧客資訊', 'success': False}), 401
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 1. 驗證訂單是否存在、屬於該顧客，並且狀態是否為 '餐點製作完成'
+        query_order = "SELECT order_status FROM Orders WHERE order_id = %s AND customer_id = %s"
+        cursor.execute(query_order, (order_id, customer_id))
+        order = cursor.fetchone()
+
+        if not order:
+            return jsonify({'error': '找不到訂單或訂單不屬於您', 'success': False}), 404
+        
+        if order['order_status'] != '餐點製作完成':
+            return jsonify({'error': f'訂單狀態為 "{order["order_status"]}"，無法確認完成', 'success': False}), 400
+
+        # 2. 更新訂單狀態為 '訂單已完成'
+        new_order_status = '訂單已完成'
+        update_sql = "UPDATE Orders SET order_status = %s WHERE order_id = %s"
+        cursor.execute(update_sql, (new_order_status, order_id))
+        conn.commit()
+
+        return jsonify({
+            'message': '訂單已成功確認完成！感謝您的使用。',
+            'order_id': order_id,
+            'new_status': new_order_status,
+            'success': True
+        }), 200
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Error in api_customer_confirm_completion for order {order_id}: {str(e)}")
+        return jsonify({'error': f'確認訂單完成時發生錯誤: {str(e)}', 'success': False}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# ----------------------------------------------
+# API 端點 (處理數據)
+# ----------------------------------------------
+
+# ... (其他 API 端點) ...
+
+@app.route('/api/chef/order/<order_id>/mark_completed', methods=['POST'])
+@login_required
+def api_chef_mark_order_completed(order_id):
+    user_info = get_user_info()
+    chef_id = user_info.get('chef_id')
+
+    if user_info.get('user_type') != 'chef' or not chef_id:
+        return jsonify({'error': '僅廚師可執行此操作', 'success': False}), 403
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 檢查訂單是否屬於此廚師且狀態是否為 '廚師已確認，備餐中'
+        cursor.execute("SELECT chef_id, order_status FROM Orders WHERE order_id = %s", (order_id,))
+        order = cursor.fetchone()
+
+        if not order:
+            return jsonify({'error': '訂單不存在', 'success': False}), 404
+        
+        if order['chef_id'] != chef_id:
+            return jsonify({'error': '您沒有權限修改此訂單', 'success': False}), 403
+
+        if order['order_status'] != '廚師已確認，備餐中':
+            return jsonify({'error': f'訂單狀態為 \'{order["order_status"]}\'，無法標記為製作完成', 'success': False}), 400
+
+        # 更新訂單狀態
+        cursor.execute("UPDATE Orders SET order_status = '餐點製作完成' WHERE order_id = %s", (order_id,))
+        conn.commit()
+
+        return jsonify({'message': '訂單已成功標記為「餐點製作完成」', 'success': True, 'new_status': '餐點製作完成'}), 200
+
+    except Exception as e:
+        print(f"Error in api_chef_mark_order_completed for order {order_id}: {str(e)}")
+        if conn:
+            conn.rollback() # 發生錯誤時回滾
+        return jsonify({'error': '更新訂單狀態時發生內部錯誤', 'success': False}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# ... (其他 API 端點) ...
 
 # ----------------------------------------------
 # 主程式入口

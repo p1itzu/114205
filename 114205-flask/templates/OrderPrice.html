@@ -402,9 +402,9 @@
                     <div class="price-info">
                         <div class="price-info-row">
                             <button type="button" class="rules-button">價格計算規則</button>
-                        <div>系統估價為：2000</div>
+                        <!-- <div>系統估價為：2000</div> -->
                         </div>
-                        <div>最高上限價格：3000</div>
+                        <!-- <div>最高上限價格：3000</div> -->
                         <div class="price-section-bottom">
                             <div class="total-price-display">總金額：0 元</div>
                             <button type="submit" class="confirm-button">確認送出</button>
@@ -496,6 +496,28 @@
             // --- 表單提交邏輯 ---
             const pricingForm = document.querySelector('form[action*="/api/chef/order/"]'); // 選取估價表單
             // const currentPricingOrderId = "{{ order_id }}"; // order_id 已包含在表單的 action URL 中
+
+            // --- OrderPrice.html 頁面本身的關閉按鈕 ---
+            const pageCloseButton = document.querySelector('.modal-header .close-button');
+            if (pageCloseButton) {
+                pageCloseButton.addEventListener('click', function() {
+                    // 詢問使用者是否確定要離開，因為未儲存的估價會遺失
+                    Swal.fire({
+                        title: '確定要離開嗎？',
+                        text: "尚未提交的估價將不會儲存。",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: '是的，離開',
+                        cancelButtonText: '取消'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{{ url_for('route_chef_main') }}";
+                        }
+                    });
+                });
+            }
 
             if (pricingForm) {
                 pricingForm.addEventListener('submit', function(event) {

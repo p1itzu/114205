@@ -218,7 +218,7 @@ div.footer {
     font-size: 12px;
     font-weight: bold;
     color: #ffffff;
-    background-color: #56783e;
+    background-color: #FF6B6B;
 }
 
 .status-tag-negotiating {
@@ -243,6 +243,30 @@ div.footer {
     font-weight: bold;
     color: #ffffff;
     background-color: #B3811C;
+}
+
+.status-tag-completed {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #56783e;
+}
+
+.status-tag-cancelled {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: red;
 }
 
 .order-detail {

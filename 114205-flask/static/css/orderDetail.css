@@ -473,6 +473,13 @@ input[type="text"]:not(.price-input) {
     width: 300px;  /* 設定固定寬度 */
     flex-shrink: 0;  /* 避免被縮小 */
 }
+.right {
+    border-radius: 10px;
+    padding: 20px;
+    height: auto;
+    width: 300px;  /* 設定固定寬度 */
+    flex-shrink: 0;  /* 避免被縮小 */
+}
 
 
 .price-negotiation h4 {
@@ -501,6 +508,12 @@ input[type="text"]:not(.price-input) {
     min-width: 70px !important;
     margin: 0 !important;
     width: auto !important;
+}
+
+.btn-confirm-completion {
+    background-color: #F9C765 !important;
+    color: white !important;
+    width: 100%;
 }
 
 .btn-agree {
@@ -647,11 +660,4 @@ input[type="text"]:not(.text-input) {
 
 .price-negotiation {
     margin-left: 0; /* 保證內部區域的內容不受影響 */
-}
-
-.price-input,
-.text-input,
-.submit-btn,
-.note {
-    display: none;
 }
