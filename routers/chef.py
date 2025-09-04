@@ -13,6 +13,9 @@ from models.order import Order, OrderStatus, OrderStatusHistory, Negotiation, Or
 from models.user import User
 from models.chef import ChefProfile, ChefSpecialty, ChefSignatureDish
 from models.message import Message
+from models.review import Review
+from typing import Optional
+from fastapi.responses import JSONResponse
 from utils.dependencies import require_chef, common_template_params
 
 router = APIRouter(dependencies=[Depends(require_chef)])
@@ -43,15 +46,100 @@ def chef_dashboard(
         Order.chef_id == current_user.id
     ).order_by(Order.created_at.desc()).limit(10).all()
     
+    # 獲取廚師的評價（最新5則）
+    my_reviews = db.query(Review).filter(
+        Review.reviewee_id == current_user.id
+    ).order_by(Review.created_at.desc()).limit(5).all()
+    
+    # 獲取廚師資料（用於顯示平均評分）
+    chef_profile = db.query(ChefProfile).filter(
+        ChefProfile.user_id == current_user.id
+    ).first()
+    
     return templates.TemplateResponse(
         "chef_dashboard.html",
         {
             **commons,
             "current_user": current_user,
             "pending_orders": pending_orders,
-            "my_orders": my_orders
+            "my_orders": my_orders,
+            "my_reviews": my_reviews,
+            "chef_profile": chef_profile
         }
     )
+
+
+@router.get("/api/reviews")
+def get_chef_reviews_api(
+    page: int = 1,
+    per_page: int = 10,
+    rating: Optional[int] = None,
+    search: Optional[str] = None,
+    current_user: User = Depends(require_chef),
+    db: Session = Depends(get_db)
+):
+    """獲取廚師評價API（支援篩選和分頁）"""
+    
+    # 基本查詢
+    query = db.query(Review).filter(Review.reviewee_id == current_user.id)
+    
+    # 評分篩選
+    if rating is not None:
+        query = query.filter(Review.rating == rating)
+    
+    # 搜尋篩選
+    if search:
+        search_term = f"%{search}%"
+        query = query.filter(
+            (Review.content.ilike(search_term)) | 
+            (Review.title.ilike(search_term))
+        )
+    
+    # 總數統計
+    total_count = query.count()
+    
+    # 分頁
+    offset = (page - 1) * per_page
+    reviews = query.order_by(Review.created_at.desc()).offset(offset).limit(per_page).all()
+    
+    # 格式化回傳數據
+    reviews_data = []
+    for review in reviews:
+        reviewer = db.query(User).filter(User.id == review.reviewer_id).first()
+        order = db.query(Order).filter(Order.id == review.order_id).first()
+        
+        reviews_data.append({
+            "id": review.id,
+            "rating": review.rating,
+            "title": review.title,
+            "content": review.content,
+            "taste_rating": review.taste_rating,
+            "service_rating": review.service_rating,
+            "hygiene_rating": review.hygiene_rating,
+            "delivery_rating": review.delivery_rating,
+            "created_at": review.created_at.strftime("%Y-%m-%d %H:%M"),
+            "reviewer_name": reviewer.name if reviewer else "匿名用戶",
+            "order_number": f"#{order.id}" if order else "N/A",
+            "is_verified": review.is_verified
+        })
+    
+    # 計算分頁資訊
+    total_pages = (total_count + per_page - 1) // per_page
+    
+    return JSONResponse({
+        "success": True,
+        "data": {
+            "reviews": reviews_data,
+            "pagination": {
+                "current_page": page,
+                "per_page": per_page,
+                "total_count": total_count,
+                "total_pages": total_pages,
+                "has_next": page < total_pages,
+                "has_prev": page > 1
+            }
+        }
+    })
 
 @router.get("/pending-orders", name="chef_pending_orders")
 def chef_pending_orders(
