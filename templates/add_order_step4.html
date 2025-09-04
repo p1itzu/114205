@@ -67,7 +67,7 @@
             }
         }
         /* 現代化設定模態框樣式 */
-        #settingsModal.modal {
+        .modal {
             display: none;
             position: fixed;
             z-index: 10000;
@@ -79,7 +79,7 @@
             backdrop-filter: blur(5px);
         }
 
-        #settingsModal .modal-content {
+        .modal-content {
             position: relative;
             background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
             margin: 5% auto;
@@ -419,6 +419,18 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
         }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+            
+            #profileModal .modal-content {
+                width: 95%;
+                max-height: 85vh;
+            }
+        }
     </style>
 </head>
 
@@ -665,6 +677,21 @@
     <!-- 引入 SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // 頁面載入時確保所有模態窗口都是隱藏的
+        document.addEventListener('DOMContentLoaded', function() {
+            // 確保設定模態窗口初始為隱藏
+            const settingsModal = document.getElementById('settingsModal');
+            if (settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            
+            // 確保個人資料編輯模態窗口初始為隱藏
+            const profileModal = document.getElementById('profileModal');
+            if (profileModal) {
+                profileModal.style.display = 'none';
+            }
+        });
+        
         // 現代化設定模態窗口功能
         function toggleSettingsModal() {
             const modal = document.getElementById('settingsModal');
