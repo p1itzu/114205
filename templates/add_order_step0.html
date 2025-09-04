@@ -422,16 +422,8 @@
         </div>
     </div>
 
-    <!-- 通知中心視窗 -->
-    <div class="notification-center" id="notificationCenter">
-        <div class="notification-header">
-            <span>通知中心</span>
-            <button class="clear-all" onclick="clearAllNotifications()">清空通知</button>
-        </div>
-        <ul class="notification-list" id="notificationList">
-            <!-- 通知項目會動態添加在這裡 -->
-        </ul>
-    </div>
+    <!-- 通知中心 -->
+    {% include 'notification_component.html' %}
 
     <!-- 主要內容區塊 -->
     <div class="content-container">
@@ -869,6 +861,72 @@
             // 可以實現廚師詳細資料頁面
             alert('廚師詳細資料功能開發中...');
         }
+    </script>
+    <script>
+        // 通知中心功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationCenter = document.getElementById('notificationCenter');
+            
+            // 確保通知中心初始為隱藏狀態
+            if (notificationCenter) {
+                notificationCenter.style.display = 'none';
+            }
+            
+            // 創建 toggleNotification 函數
+            window.toggleNotification = function() {
+                if (notificationCenter) {
+                    if (notificationCenter.style.display === 'block') {
+                        notificationCenter.style.display = 'none';
+                    } else {
+                        notificationCenter.style.display = 'block';
+                        // 更新通知內容
+                        const notificationList = document.getElementById('notificationList');
+                        if (notificationList && notificationList.children.length === 0) {
+                            notificationList.innerHTML = `
+                                <li class="notification-item unread">
+                                    <div class="notification-type type-accept">✓</div>
+                                    <div class="notification-content">
+                                        XXX廚師接受您的訂單！
+                                        <div class="notification-time">5分鐘前</div>
+                                    </div>
+                                </li>
+                                <li class="notification-item unread">
+                                    <div class="notification-type type-reject">✕</div>
+                                    <div class="notification-content">
+                                        OOO廚師拒絕您的訂單！
+                                        <div class="notification-time">10分鐘前</div>
+                                    </div>
+                                </li>
+                                <li class="notification-item">
+                                    <div class="notification-type type-update">↻</div>
+                                    <div class="notification-content">
+                                        20250322訂單狀態更新：已完成
+                                        <div class="notification-time">30分鐘前</div>
+                                    </div>
+                                </li>
+                                <li class="notification-item">
+                                    <div class="notification-type type-create">+</div>
+                                    <div class="notification-content">
+                                        20250322訂單已成立
+                                        <div class="notification-time">1小時前</div>
+                                    </div>
+                                </li>
+                            `;
+                        }
+                    }
+                }
+            };
+            
+            // 點擊其他地方關閉通知中心
+            document.addEventListener('click', function(e) {
+                const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+                
+                if (notificationCenter && notificationLink && 
+                    !notificationCenter.contains(e.target) && !notificationLink.contains(e.target)) {
+                    notificationCenter.style.display = 'none';
+                }
+            });
+        });
     </script>
     <script src="/static/js/notification.js"></script>
 </body>

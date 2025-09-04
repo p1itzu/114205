@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
     <link href="/static/css/reserve2.css" rel="stylesheet" />
+    <link href="/static/css/notification.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Step2 - 菜單填寫</title>
     <!-- 現代化設定模態框樣式 -->
@@ -740,7 +741,6 @@
         function goToNextDish() { saveCurrentDishData(); if (currentDishIndex < dishCount) currentDishIndex++, renderDish(); else Swal.fire('已經是最後一道菜'); }
         function goToPreviousDish() { saveCurrentDishData(); if (currentDishIndex > 1) currentDishIndex--, renderDish(); else Swal.fire('已經是第一道菜'); }
         function deleteDish() { Swal.fire({ title:'確定刪除?', icon:'warning', showCancelButton:true }).then(res=>{ if(res.isConfirmed){ delete dishData[currentDishIndex]; const vals=Object.values(dishData); dishData={}; vals.filter(x=>x).forEach((x,i)=>dishData[i+1]=x); dishCount=Object.keys(dishData).length; if(currentDishIndex>dishCount) currentDishIndex=dishCount; renderDish(); localStorage.setItem('dishData',JSON.stringify(dishData)); }}); }
-        function toggleNotification(){const m=document.getElementById('notificationCenter'); m.style.display=m.style.display==='flex'?'none':'flex';}
         // 現代化設定模態窗口功能
         function toggleSettingsModal() {
             const modal = document.getElementById('settingsModal');
@@ -858,6 +858,87 @@
     <!-- 通知中心 -->
     {% include 'notification_component.html' %}
     
+    <script>
+    // 通知中心功能（內聯版本）
+    document.addEventListener('DOMContentLoaded', function() {
+        const notificationCenter = document.getElementById('notificationCenter');
+        
+        // 確保通知中心初始為隱藏狀態
+        if (notificationCenter) {
+            notificationCenter.style.display = 'none';
+        }
+        
+        // 創建 toggleNotification 函數
+        window.toggleNotification = function() {
+            if (notificationCenter) {
+                if (notificationCenter.style.display === 'block') {
+                    notificationCenter.style.display = 'none';
+                } else {
+                    notificationCenter.style.display = 'block';
+                    updateNotificationContent();
+                }
+            }
+        };
+        
+        // 更新通知內容
+        function updateNotificationContent() {
+            const notificationList = document.getElementById('notificationList');
+            if (notificationList && notificationList.children.length === 0) {
+                notificationList.innerHTML = `
+                    <li class="notification-item unread">
+                        <div class="notification-type type-accept">✓</div>
+                        <div class="notification-content">
+                            XXX廚師接受您的訂單！
+                            <div class="notification-time">5分鐘前</div>
+                        </div>
+                    </li>
+                    <li class="notification-item unread">
+                        <div class="notification-type type-reject">✕</div>
+                        <div class="notification-content">
+                            OOO廚師拒絕您的訂單！
+                            <div class="notification-time">10分鐘前</div>
+                        </div>
+                    </li>
+                    <li class="notification-item">
+                        <div class="notification-type type-update">↻</div>
+                        <div class="notification-content">
+                            20250322訂單狀態更新：已完成
+                            <div class="notification-time">30分鐘前</div>
+                        </div>
+                    </li>
+                    <li class="notification-item">
+                        <div class="notification-type type-create">+</div>
+                        <div class="notification-content">
+                            20250322訂單已成立
+                            <div class="notification-time">1小時前</div>
+                        </div>
+                    </li>
+                `;
+            }
+        }
+        
+        // 清空所有通知功能
+        window.clearAllNotifications = function() {
+            const notificationList = document.getElementById('notificationList');
+            if (notificationList) {
+                notificationList.innerHTML = '';
+            }
+            if (notificationCenter) {
+                notificationCenter.style.display = 'none';
+            }
+        };
+        
+        // 點擊其他地方關閉通知中心
+        document.addEventListener('click', function(e) {
+            const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+            
+            if (notificationCenter && notificationLink && 
+                !notificationCenter.contains(e.target) && !notificationLink.contains(e.target)) {
+                notificationCenter.style.display = 'none';
+            }
+        });
+    });
+    </script>
     <script src="/static/js/notification.js"></script>
 </body>
 
