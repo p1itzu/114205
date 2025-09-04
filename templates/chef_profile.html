@@ -1,118 +1,797 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh">
+
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的頁面 - 味你而煮</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/ChefUnOrder.css') }}">
+    <link href="/static/css/notification.css" rel="stylesheet" />
+    <title>廚師資料 - {{ chef.name }}</title>
+    
+    <style>
+        /* 基礎樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans HK', sans-serif;
+            background: #ffe7b7;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* 導航欄樣式 */
+        .navbar {
+            background: linear-gradient(135deg, #F9C765, #F7D28C);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .site-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #B3811C;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #B3811C;
+        }
+
+        .back-button {
+            background: #ffe7b7;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+        }
+
+        /* 主要內容區域 */
+        .chef-profile-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* 廚師基本資訊卡片 */
+        .profile-header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .chef-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #F9C765;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chef-basic-info {
+            flex: 1;
+        }
+
+        .chef-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #B3811C;
+            margin-bottom: 10px;
+        }
+
+        .chef-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .rating-stars {
+            font-size: 20px;
+            color: #e3ab3b;
+        }
+
+        .rating-text {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .chef-specialties {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .specialty-tag {
+            background: linear-gradient(135deg, #F9C765 0%, #e8b84f 100%);
+            color: #B3811C;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .chef-experience {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .select-chef-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .select-chef-btn:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ba085 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        /* 內容區塊 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #B3811C;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 服務資訊 */
+        .service-info-item {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .service-icon {
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .service-text {
+            flex: 1;
+        }
+
+        .service-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .service-value {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 招牌菜展示 - 直列式 */
+        .signature-dishes {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dish-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #F9C765;
+            transition: all 0.3s ease;
+        }
+
+        .dish-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .dish-rank {
+            font-size: 18px;
+            font-weight: bold;
+            color: #B3811C;
+            margin-right: 12px;
+            min-width: 30px;
+        }
+
+        .dish-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        /* 證照展示 - 橫列式 */
+        .certificates {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .certificate-item {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .certificate-item:hover {
+            border-color: #F9C765;
+            background: #fefefe;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .certificate-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .certificate-status {
+            font-size: 14px;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .status-verified {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* 評價區塊 */
+        .reviews-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .review-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .stats-numbers {
+            text-align: center;
+        }
+
+        .average-rating {
+            font-size: 36px;
+            font-weight: bold;
+            color: #B3811C;
+        }
+
+        .total-reviews {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .rating-distribution {
+            flex: 1;
+            margin-left: 30px;
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .rating-label {
+            width: 20px;
+            font-size: 14px;
+        }
+
+        .rating-progress {
+            flex: 1;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .rating-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #F9C765, #e8b84f);
+            transition: width 0.3s ease;
+        }
+
+        .rating-count {
+            width: 30px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+        }
+
+        /* 評價列表 */
+        .reviews-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .review-item {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 20px 0;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #F9C765;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .review-rating {
+            color: #e3ab3b;
+            font-size: 14px;
+        }
+
+        .review-date {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .review-content {
+            color: #666;
+            line-height: 1.6;
+            margin-left: 50px;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chef-specialties {
+                justify-content: center;
+            }
+
+            .review-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .rating-distribution {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        /* 空狀態樣式 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
 </head>
+
 <body>
+    <!-- 導航欄 -->
     <div class="navbar">
+        <div class="navbar-container">
         <div class="site-name">味你而煮</div>
         <div class="nav-links">
-            <a href="{{ url_for('chef_dashboard') }}">首頁</a>
-            <a href="{{ url_for('chef_profile') }}">我的頁面</a>
-            <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
+                <a href="javascript:history.back()" class="back-button">← 返回廚師列表</a>
+            </div>
+        </div>
+    </div>
 
-            <!-- 新增下拉選單 -->
-            <div class="dropdown">
-                <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
-                <div class="dropdown-content" id="orderDropdown">
-                    <a href="{{ url_for('chef_accepted_orders') }}">待完成訂單</a>
-                    <a href="{{ url_for('chef_completed_orders') }}">已完成訂單</a>
-                    <a href="{{ url_for('chef_negotiating_orders') }}">議價中訂單</a>
-                    <a href="{{ url_for('chef_cancelled_orders') }}">已取消訂單</a>
+    <!-- 通知中心 -->
+    {% include 'notification_component.html' %}
+
+    <!-- 主要內容 -->
+    <div class="chef-profile-container">
+        <!-- 廚師基本資訊卡片 -->
+        <div class="profile-header">
+            <img src="{{ chef.avatar_url or '/static/imgs/chef.png' }}" alt="廚師照片" class="chef-avatar">
+            <div class="chef-basic-info">
+                <h1 class="chef-name">{{ chef.name }}</h1>
+                <div class="chef-rating">
+                    <div class="rating-stars">
+                        {% if chef.chef_profile and chef.chef_profile.average_rating and chef.chef_profile.average_rating > 0 %}
+                            {% for i in range(5) %}
+                                {% if i < chef.chef_profile.average_rating %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                        {% else %}
+                            ☆☆☆☆☆
+                        {% endif %}
+                    </div>
+                    <span class="rating-text">
+                        {% if chef.chef_profile and chef.chef_profile.average_rating and chef.chef_profile.average_rating > 0 %}
+                            {{ "%.1f"|format(chef.chef_profile.average_rating) }} ({{ total_reviews }}則評價)
+                        {% else %}
+                            尚無評價
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="chef-specialties">
+                    {% if specialties %}
+                        {% for specialty in specialties %}
+                            <span class="specialty-tag">{{ specialty.specialty }}</span>
+                        {% endfor %}
+                    {% elif chef.chef_profile and chef.chef_profile.specialties_display %}
+                        {% for specialty in chef.chef_profile.specialties_display.split('、') %}
+                            <span class="specialty-tag">{{ specialty }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="specialty-tag">一般料理</span>
+                    {% endif %}
+                </div>
+                <div class="chef-experience">
+                    {% if chef.chef_profile and chef.chef_profile.experience_years %}
+                        🍳 料理經驗：{{ chef.chef_profile.experience_years }}年
+                    {% else %}
+                        🍳 料理經驗：未設定
+                    {% endif %}
+                </div>
+                <div class="action-buttons">
+                    <form method="post" action="{{ url_for('order_step0') }}" style="display: inline;">
+                        <input type="hidden" name="chef_id" value="{{ chef.id }}">
+                        <button type="submit" class="select-chef-btn">選擇此廚師</button>
+                    </form>
+                </div>
                 </div>
             </div>
 
-            <a href="#">客服聯絡</a>
+        <!-- 內容網格 -->
+        <div class="content-grid">
+            <!-- 左側：服務資訊 -->
+            <div class="content-card">
+                <h2 class="card-title">📍 服務資訊</h2>
+                <div class="service-info-item">
+                    <span class="service-icon">🏠</span>
+                    <div class="service-text">
+                        <div class="service-label">廚房地址</div>
+                        <div class="service-value">
+                            {% if chef.chef_profile and chef.chef_profile.kitchen_address %}
+                                {{ chef.chef_profile.kitchen_address }}
+                            {% else %}
+                                未設定
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="service-info-item">
+                    <span class="service-icon">📝</span>
+                    <div class="service-text">
+                        <div class="service-label">自我介紹</div>
+                        <div class="service-value">
+                            {% if chef.chef_profile and chef.chef_profile.description %}
+                                {{ chef.chef_profile.description }}
+                            {% else %}
+                                廚師尚未填寫自我介紹
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="service-info-item">
+                    <span class="service-icon">✅</span>
+                    <div class="service-text">
+                        <div class="service-label">已完成訂單</div>
+                        <div class="service-value">{{ completed_orders_count }}筆</div>
+                    </div>
         </div>
-        <div class="user-info">
-            {% if user %}
-            <img
-                src="{{ avatar_url }}"
-                alt="頭像"
-                class="avatar"
-            />
-            <div class="user-text">
-                <div class="name">{{ user.name }}</div>
-                <div class="email">{{ user.email }}</div>
             </div>
             
-            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            <!-- 右側：Top 3招牌菜 -->
+            <div class="content-card">
+                <h2 class="card-title">🍜 招牌菜色</h2>
+                {% if signature_dishes %}
+                    <div class="signature-dishes">
+                        {% for dish in signature_dishes[:3] %}
+                            <div class="dish-item">
+                                <div class="dish-rank">{{ loop.index }}</div>
+                                <div class="dish-name">{{ dish.dish_name }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
             {% else %}
-            <a href="{{ url_for('login') }}">登入/註冊</a>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🍽️</div>
+                        <p>廚師尚未設定招牌菜</p>
+                    </div>
             {% endif %}
         </div>
     </div>
 
-    <div style="padding: 40px 20px; background-color: #FFF5DA; min-height: calc(100vh - 80px);">
-        <div style="max-width: 800px; margin: 0 auto;">
-            <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                <h1 style="color: #B3811C; text-align: center; margin-bottom: 30px; font-size: 28px;">我的個人資料</h1>
-                
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <div style="width: 120px; height: 120px; border-radius: 50%; background: #f6c25f; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
-                        👨‍🍳
+        <!-- 證照展示 -->
+        <div class="content-card" style="margin-bottom: 30px;">
+            <h2 class="card-title">📜 專業證照</h2>
+            {% if chef.chef_profile and chef.chef_profile.certificate_name %}
+                <div class="certificates">
+                    <div class="certificate-item">
+                        <div class="certificate-name">{{ chef.chef_profile.certificate_name }}</div>
+                        {% if chef.chef_profile.certificate_verified %}
+                            <span class="certificate-status status-verified">✓ 已驗證</span>
+                        {% else %}
+                            <span class="certificate-status status-pending">⏳ 審核中</span>
+                        {% endif %}
                     </div>
-                    <h2 style="color: #5b4636; margin: 0;">{{ current_user.email }}</h2>
-                    <p style="color: #666; margin: 5px 0 0 0;">廚師</p>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <p>廚師尚未上傳專業證照</p>
+                    </div>
+            {% endif %}
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
-                    <div style="background: #fff3e0; padding: 20px; border-radius: 10px; border-left: 4px solid #f6c25f;">
-                        <h3 style="color: #B3811C; margin-bottom: 10px;">基本資訊</h3>
-                        <p style="margin: 5px 0; color: #666;"><strong>電子郵件：</strong>{{ current_user.email }}</p>
-                        <p style="margin: 5px 0; color: #666;"><strong>註冊日期：</strong>{{ current_user.created_at.strftime('%Y/%m/%d') if current_user.created_at else '未知' }}</p>
-                        <p style="margin: 5px 0; color: #666;"><strong>帳戶狀態：</strong>
-                            {% if current_user.is_verified %}
-                                <span style="color: #4CAF50;">✅ 已驗證</span>
+        <!-- 顧客評價區塊 -->
+        <div class="reviews-section">
+            <h2 class="card-title">💬 顧客評價</h2>
+            
+            {% if reviews %}
+                <!-- 評價統計 -->
+                <div class="review-stats">
+                    <div class="stats-numbers">
+                        <div class="average-rating">
+                            {% if chef.chef_profile and chef.chef_profile.average_rating %}
+                                {{ "%.1f"|format(chef.chef_profile.average_rating) }}
                             {% else %}
-                                <span style="color: #f44336;">❌ 未驗證</span>
+                                0.0
                             {% endif %}
-                        </p>
-                    </div>
-
-                    <div style="background: #fff3e0; padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50;">
-                        <h3 style="color: #B3811C; margin-bottom: 10px;">快速功能</h3>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="{{ url_for('chef_pending_orders') }}" style="background: #f6c25f; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; text-align: center;">查看待接訂單</a>
-                            <a href="{{ url_for('chef_accepted_orders') }}" style="background: #4CAF50; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; text-align: center;">我的訂單</a>
-                            <a href="#" style="background: #888; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; text-align: center;">編輯資料</a>
                         </div>
+                        <div class="total-reviews">{{ total_reviews }}則評價</div>
+                    </div>
+                    <div class="rating-distribution">
+                        {% for rating in range(5, 0, -1) %}
+                            <div class="rating-bar">
+                                <span class="rating-label">{{ rating }}★</span>
+                                <div class="rating-progress">
+                                    <div class="rating-progress-fill" data-width="{% if total_reviews > 0 %}{{ (review_stats[rating] / total_reviews * 100)|round }}{% else %}0{% endif %}"></div>
+                    </div>
+                                <span class="rating-count">{{ review_stats[rating] }}</span>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
 
-                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; text-align: center;">
-                    <h3 style="color: #B3811C; margin-bottom: 15px;">使用提示</h3>
-                    <p style="color: #666; line-height: 1.6; margin: 0;">
-                        在「待接單訂單」查看所有可接的新訂單<br>
-                        接單後可在「我的訂單」中管理進度<br>
-                        及時回應客戶需求，提升服務品質<br>
-                        如有問題請聯繫客服團隊
-                    </p>
+                <!-- 評價列表 -->
+                <div class="reviews-list">
+                    {% for review in reviews %}
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <img src="{{ review.reviewer.avatar_url or '/static/imgs/avatar.png' }}" alt="顧客頭像" class="reviewer-avatar">
+                                    <span class="reviewer-name">{{ review.reviewer.name }}</span>
+                                </div>
+                                <div>
+                                    <span class="review-rating">
+                                        {% for i in range(review.rating) %}★{% endfor %}
+                                        {% for i in range(5 - review.rating) %}☆{% endfor %}
+                                    </span>
+                                    <span class="review-date">{{ review.created_at.strftime('%Y/%m/%d') }}</span>
                 </div>
             </div>
+                            {% if review.content %}
+                                <div class="review-content">{{ review.content }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">💭</div>
+                    <p>此廚師尚無顧客評價</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 
+    <!-- 通知中心功能（內聯版本） -->
     <script>
-        function toggleDropdown() {
-            document.getElementById("orderDropdown").classList.toggle("show");
+    document.addEventListener('DOMContentLoaded', function() {
+        // 設定評價進度條寬度
+        document.querySelectorAll('.rating-progress-fill').forEach(function(fill) {
+            const width = fill.getAttribute('data-width');
+            fill.style.width = width + '%';
+        });
+        const notificationCenter = document.getElementById('notificationCenter');
+        
+        // 確保通知中心初始為隱藏狀態
+        if (notificationCenter) {
+            notificationCenter.style.display = 'none';
         }
-
-        // 點擊其他地方時關閉下拉選單
-        window.onclick = function (event) {
-            if (!event.target.matches('.dropdown-btn')) {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
+        
+        // 創建 toggleNotification 函數
+        window.toggleNotification = function() {
+            if (notificationCenter) {
+                if (notificationCenter.style.display === 'block') {
+                    notificationCenter.style.display = 'none';
+                } else {
+                    notificationCenter.style.display = 'block';
+                    updateNotificationContent();
                 }
             }
+        };
+        
+        // 更新通知內容
+        function updateNotificationContent() {
+            const notificationList = document.getElementById('notificationList');
+            if (notificationList && notificationList.children.length === 0) {
+                notificationList.innerHTML = `
+                    <li class="notification-item unread">
+                        <div class="notification-type type-accept">✓</div>
+                        <div class="notification-content">
+                            XXX廚師接受您的訂單！
+                            <div class="notification-time">5分鐘前</div>
+                        </div>
+                    </li>
+                    <li class="notification-item unread">
+                        <div class="notification-type type-reject">✕</div>
+                        <div class="notification-content">
+                            OOO廚師拒絕您的訂單！
+                            <div class="notification-time">10分鐘前</div>
+                        </div>
+                    </li>
+                    <li class="notification-item">
+                        <div class="notification-type type-update">↻</div>
+                        <div class="notification-content">
+                            20250322訂單狀態更新：已完成
+                            <div class="notification-time">30分鐘前</div>
+                        </div>
+                    </li>
+                    <li class="notification-item">
+                        <div class="notification-type type-create">+</div>
+                        <div class="notification-content">
+                            20250322訂單已成立
+                            <div class="notification-time">1小時前</div>
+                        </div>
+                    </li>
+                `;
+            }
         }
+        
+        // 清空所有通知功能
+        window.clearAllNotifications = function() {
+            const notificationList = document.getElementById('notificationList');
+            if (notificationList) {
+                notificationList.innerHTML = '';
+            }
+            if (notificationCenter) {
+                notificationCenter.style.display = 'none';
+            }
+        };
+        
+        // 點擊其他地方關閉通知中心
+        document.addEventListener('click', function(e) {
+            const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+            
+            if (notificationCenter && notificationLink && 
+                !notificationCenter.contains(e.target) && !notificationLink.contains(e.target)) {
+                notificationCenter.style.display = 'none';
+            }
+        });
+    });
     </script>
 </body>
+
 </html> 

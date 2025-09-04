@@ -12,6 +12,7 @@ from database import get_db
 from models.user import User
 from models.order import Order, OrderStatus, OrderDish, DeliveryMethod, SpiceLevel, SaltLevel, Negotiation, OrderStatusHistory
 from models.review import Review
+from models.chef import ChefProfile, ChefSignatureDish, ChefSpecialty
 from utils.dependencies import require_customer, common_template_params
 from utils.security import get_password_hash, verify_password
 from pydantic import BaseModel
@@ -41,6 +42,73 @@ class NegotiationResponse(BaseModel):
 class ReviewRequest(BaseModel):
     rating: int
     content: Optional[str] = None
+
+# 廚師詳細資料頁面
+@router.get("/chef/{chef_id}/profile")
+def chef_profile_page(
+    chef_id: int,
+    request: Request,
+    commons=Depends(common_template_params),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_customer)
+):
+    """廚師詳細資料頁面"""
+    # 查詢廚師基本資料
+    chef = db.query(User).filter(
+        User.id == chef_id,
+        User.role == "chef"
+    ).first()
+    
+    if not chef:
+        raise HTTPException(status_code=404, detail="廚師不存在")
+    
+    # 查詢廚師評價（最新10則）
+    reviews = db.query(Review).filter(
+        Review.reviewee_id == chef_id
+    ).order_by(Review.created_at.desc()).limit(10).all()
+    
+    # 查詢招牌菜（通過 chef_profile.id）
+    signature_dishes = []
+    if chef.chef_profile:
+        signature_dishes = db.query(ChefSignatureDish).filter(
+            ChefSignatureDish.chef_id == chef.chef_profile.id
+        ).all()
+    
+    # 查詢專長
+    specialties = []
+    if chef.chef_profile:
+        specialties = db.query(ChefSpecialty).filter(
+            ChefSpecialty.chef_id == chef.chef_profile.id
+        ).all()
+    
+    # 計算已完成訂單數
+    completed_orders_count = db.query(Order).filter(
+        Order.chef_id == chef_id,
+        Order.status == OrderStatus.COMPLETED
+    ).count()
+    
+    # 計算評價統計
+    review_stats = {}
+    if reviews:
+        total_reviews = len(reviews)
+        for i in range(1, 6):
+            count = len([r for r in reviews if r.rating == i])
+            review_stats[i] = count
+    else:
+        review_stats = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        total_reviews = 0
+    
+    return templates.TemplateResponse("chef_profile.html", {
+        **commons,
+        "request": request,
+        "chef": chef,
+        "reviews": reviews,
+        "signature_dishes": signature_dishes,
+        "specialties": specialties,
+        "completed_orders_count": completed_orders_count,
+        "review_stats": review_stats,
+        "total_reviews": total_reviews
+    })
 
 # 訂單列表
 @router.get("/orders/list", name="customer_order_list")
