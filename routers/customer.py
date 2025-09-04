@@ -1097,7 +1097,7 @@ async def submit_special_needs_verification(
             **commons,
             "request": request,
             "current_user": current_user,
-            "success": "申請已成功提交！我們將在 1-3 個工作天內完成審核，審核結果將透過電子郵件通知您。"
+            "success": "申請已成功提交！"
         })
         
     except Exception as e:

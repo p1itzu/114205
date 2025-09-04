@@ -12,6 +12,386 @@
     #address-field.hidden { display: none; }
     .button.active { background-color: #d19b2a; color: #fff; }
   </style>
+    <!-- 現代化設定模態框樣式 -->
+    <style>
+        /* 現代化設定模態框樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            margin: 5% auto;
+            padding: 0;
+            border: none;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            animation: modalSlideIn 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #F9C765 0%, #e8b84f 100%);
+            padding: 20px 25px;
+            color: #B3811C;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .close {
+            color: #B3811C;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close:hover {
+            background-color: rgba(179, 129, 28, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* 帳號區塊 */
+        .account-section {
+            margin-bottom: 15px;
+        }
+
+        .account-info-modern {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .account-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 3px solid #F9C765;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .account-details {
+            flex: 1;
+        }
+
+        .account-name {
+            font-weight: bold;
+            color: #B3811C;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .account-email {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        /* 設定項目 */
+        .setting-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            background: #fff;
+            border: 1px solid #e9ecef;
+        }
+
+        .setting-item:hover {
+            background: linear-gradient(135deg, #F9C765 0%, #f5c147 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(249, 199, 101, 0.3);
+            color: #B3811C;
+        }
+
+        .setting-icon {
+            font-size: 20px;
+            margin-right: 15px;
+            width: 25px;
+            text-align: center;
+        }
+
+        .setting-text {
+            flex: 1;
+        }
+
+        .setting-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 2px;
+        }
+
+        .setting-desc {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .setting-item:hover .setting-title,
+        .setting-item:hover .setting-desc {
+            color: #B3811C;
+        }
+
+        .setting-arrow {
+            font-size: 16px;
+            color: #adb5bd;
+            transition: all 0.3s ease;
+        }
+
+        .setting-item:hover .setting-arrow {
+            color: #B3811C;
+            transform: translateX(3px);
+        }
+
+        /* 分隔線 */
+        hr {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e9ecef, transparent);
+            margin: 20px 0;
+        }
+
+        /* 個人資料編輯器樣式 */
+        #profileModal .modal-content {
+            max-width: 600px;
+            max-height: 90vh;
+        }
+
+        #profileModal .modal-body {
+            max-height: 75vh;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* 自定義滾動條 */
+        #profileModal .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #profileModal .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        #profileModal .modal-body::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+
+        #profileModal .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        .avatar-edit-container {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .profile-edit-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid #F9C765;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: block;
+            margin: 0 auto 15px auto;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-upload-btn {
+            background: linear-gradient(135deg, #F9C765 0%, #e8b84f 100%);
+            color: #B3811C;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: 2px solid transparent;
+        }
+
+        .avatar-upload-btn:hover {
+            background: linear-gradient(135deg, #e8b84f 0%, #d4a745 100%);
+            border-color: #B3811C;
+            box-shadow: 0 4px 8px rgba(179, 129, 28, 0.2);
+        }
+
+        .form-group-modern {
+            margin-bottom: 20px;
+        }
+
+        .form-group-modern label {
+            display: block;
+            margin-bottom: 6px;
+            color: #495057;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group-modern input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        .form-group-modern input:focus {
+            outline: none;
+            border-color: #F9C765;
+            box-shadow: 0 0 0 3px rgba(249, 199, 101, 0.1);
+        }
+
+        .password-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .password-section h4 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .oauth-password-notice {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .oauth-notice-icon {
+            font-size: 20px;
+            margin-right: 10px;
+            margin-top: 2px;
+        }
+
+        .oauth-notice-text p {
+            margin: 5px 0;
+            color: #856404;
+        }
+
+        .disabled-label {
+            color: #6c757d !important;
+        }
+
+        .disabled-input {
+            background-color: #f8f9fa !important;
+            color: #6c757d !important;
+            cursor: not-allowed !important;
+            border-color: #dee2e6 !important;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn-save, .btn-cancel {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ba085 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+            
+            #profileModal .modal-content {
+                width: 95%;
+                max-height: 85vh;
+            }
+        }
+    </style>
 </head>
 <body>
    <div class="navbar">
@@ -100,13 +480,144 @@
     <div class="step">第4步</div>
   </div>
 
-  <!-- 設定小視窗 -->
-  <div class="settings-modal" id="settings-modal">
+  <!-- 現代化設定彈窗 -->
+  <div id="settingsModal" class="modal">
     <div class="modal-content">
-      <h2>設定</h2>
-      <p>帳號：{{ user.email if user else '' }}</p>
-      <p>其他</p>
-      <button class="close-btn" onclick="toggleSettingsModal()">儲存</button>
+      <div class="modal-header">
+        <h3>帳戶設定</h3>
+        <span class="close" onclick="closeSettingsModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <!-- 帳號資訊區塊 -->
+        <div class="account-section">
+          <div class="account-info-modern">
+            <img src="{{ avatar_url }}" alt="Avatar" class="account-avatar">
+            <div class="account-details">
+              <div class="account-name">{{ user.name }}</div>
+              <div class="account-email">{{ user.email }}</div>
+            </div>
+          </div>
+          <div class="setting-item" onclick="showProfileEditor()">
+            <div class="setting-icon">👤</div>
+            <div class="setting-text">
+              <div class="setting-title">編輯個人資料</div>
+              <div class="setting-desc">修改姓名、頭像或密碼</div>
+            </div>
+            <div class="setting-arrow">→</div>
+          </div>
+        </div>
+        
+        <hr>
+        
+        <div class="setting-item" onclick="window.location.href='/customer/special-needs-verification'">
+          <div class="setting-icon">🏥</div>
+          <div class="setting-text">
+            <div class="setting-title">身心障礙者/高齡者驗證</div>
+            <div class="setting-desc">申請特殊需求用戶驗證</div>
+          </div>
+          <div class="setting-arrow">→</div>
+        </div>
+        
+        <div class="setting-item" onclick="window.location.href='/customer/special-needs-status'">
+          <div class="setting-icon">📋</div>
+          <div class="setting-text">
+            <div class="setting-title">查看驗證狀態</div>
+            <div class="setting-desc">查看申請審核進度</div>
+          </div>
+          <div class="setting-arrow">→</div>
+        </div>
+        
+        <hr>
+        
+        <div class="setting-item" onclick="window.location.href='/auth/logout'">
+          <div class="setting-icon">🚪</div>
+          <div class="setting-text">
+            <div class="setting-title">登出</div>
+            <div class="setting-desc">登出目前帳戶</div>
+          </div>
+          <div class="setting-arrow">→</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 個人資料編輯器 -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>編輯個人資料</h3>
+        <span class="close" onclick="closeProfileModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="profile-form" enctype="multipart/form-data">
+          <!-- 頭像編輯區塊 -->
+          <div class="avatar-edit-container">
+            <img src="{{ avatar_url }}" alt="Profile Avatar" class="profile-edit-avatar" id="profileEditAvatar">
+            <label for="avatarInput" class="avatar-upload-btn">
+              📷 更換頭像
+              <input type="file" id="avatarInput" name="avatar" accept="image/*" style="display: none;">
+            </label>
+          </div>
+          
+          <!-- 基本資訊編輯 -->
+          <div class="form-group-modern">
+            <label for="name">姓名</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}" required>
+          </div>
+          
+          <div class="form-group-modern">
+            <label for="email">電子郵件</label>
+            <input type="email" id="email" value="{{ user.email }}" readonly style="background: #f8f9fa; cursor: not-allowed;">
+          </div>
+          
+          <div class="form-group-modern">
+            <label for="phone">電話號碼</label>
+            <input type="tel" id="phone" name="phone" value="{{ user.phone or '' }}" placeholder="請輸入電話號碼">
+          </div>
+          
+          <!-- 密碼修改區塊 -->
+          <div class="password-section">
+            <h4>密碼設定</h4>
+            {% if user.oauth_provider %}
+            <!-- OAuth2 用戶無法修改密碼 -->
+            <div class="oauth-password-notice">
+              <div class="oauth-notice-icon">🔒</div>
+              <div class="oauth-notice-text">
+                <p><strong>Google 帳戶登入</strong></p>
+                <p>您使用的是 Google OAuth2 登入，密碼由 Google 管理，無法在此修改。</p>
+                <p>如需修改密碼，請前往您的 Google 帳戶設定。</p>
+              </div>
+            </div>
+            <div class="form-group-modern">
+              <label for="current_password" class="disabled-label">目前密碼</label>
+              <input type="password" id="current_password" name="current_password" placeholder="OAuth2 登入用戶無法修改密碼" disabled class="disabled-input">
+            </div>
+            
+            <div class="form-group-modern">
+              <label for="new_password" class="disabled-label">新密碼</label>
+              <input type="password" id="new_password" name="new_password" placeholder="OAuth2 登入用戶無法修改密碼" disabled class="disabled-input">
+            </div>
+            {% else %}
+            <!-- 一般用戶可以修改密碼 -->
+            <div class="form-group-modern">
+              <label for="current_password">目前密碼</label>
+              <input type="password" id="current_password" name="current_password" placeholder="修改密碼時請輸入目前密碼">
+            </div>
+            
+            <div class="form-group-modern">
+              <label for="new_password">新密碼</label>
+              <input type="password" id="new_password" name="new_password" placeholder="請輸入新密碼（不修改請留空）">
+            </div>
+            {% endif %}
+          </div>
+          
+          <!-- 操作按鈕 -->
+          <div class="profile-actions">
+            <button type="submit" class="btn-save">儲存變更</button>
+            <button type="button" class="btn-cancel" onclick="closeProfileModal()">取消</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -129,9 +640,136 @@
     }
 
     function toggleSettingsModal() {
-      const modal = document.getElementById('settings-modal');
-      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+      const modal = document.getElementById('settingsModal');
+      modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
     }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').style.display = 'none';
+    }
+
+    function showProfileEditor() {
+      closeSettingsModal();
+      document.getElementById('profileModal').style.display = 'block';
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').style.display = 'none';
+    }
+
+    // 點擊模態框外部關閉
+    window.onclick = function(event) {
+      const settingsModal = document.getElementById('settingsModal');
+      const profileModal = document.getElementById('profileModal');
+      
+      if (event.target === settingsModal) {
+        closeSettingsModal();
+      } else if (event.target === profileModal) {
+        closeProfileModal();
+      }
+    }
+
+    // 頭像預覽功能
+    document.addEventListener('DOMContentLoaded', function() {
+      const avatarInput = document.getElementById('avatarInput');
+      const profileEditAvatar = document.getElementById('profileEditAvatar');
+
+      if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+          if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              profileEditAvatar.src = e.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+          }
+        });
+      }
+
+      // 個人資料表單提交處理
+      const profileForm = document.getElementById('profile-form');
+      if (profileForm) {
+        profileForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const submitBtn = this.querySelector('.btn-save');
+          const originalText = submitBtn.textContent;
+          
+          try {
+            // 顯示提交中狀態
+            submitBtn.disabled = true;
+            submitBtn.textContent = '儲存中...';
+            
+            // 收集表單數據
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('phone', document.getElementById('phone').value || '');
+            
+            // 處理密碼（僅限非OAuth2用戶）
+            const currentPasswordInput = document.getElementById('current_password');
+            const newPasswordInput = document.getElementById('new_password');
+            
+            if (!currentPasswordInput.disabled && !newPasswordInput.disabled) {
+              const currentPassword = currentPasswordInput.value;
+              const newPassword = newPasswordInput.value;
+              
+              if (newPassword) {
+                if (!currentPassword) {
+                  throw new Error('請輸入目前密碼');
+                }
+                formData.append('current_password', currentPassword);
+                formData.append('new_password', newPassword);
+              }
+            }
+            
+            // 處理頭像檔案
+            const avatarFile = document.getElementById('avatarInput').files[0];
+            if (avatarFile) {
+              formData.append('avatar', avatarFile);
+            }
+            
+            // 發送請求
+            const response = await fetch('/customer/profile/update', {
+              method: 'POST',
+              body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              alert('個人資料更新成功！');
+              closeProfileModal();
+              // 稍微延遲後重新載入頁面，確保數據庫更新完成
+              setTimeout(() => {
+                window.location.reload();
+              }, 500);
+            } else {
+              throw new Error(result.message || '更新失敗');
+            }
+            
+          } catch (error) {
+            alert('錯誤：' + error.message);
+          } finally {
+            // 恢復按鈕狀態
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+          }
+        });
+      }
+      
+      // 點擊模態窗口外部關閉
+      window.onclick = function(event) {
+        const settingsModal = document.getElementById('settingsModal');
+        const profileModal = document.getElementById('profileModal');
+        
+        if (event.target === settingsModal) {
+          settingsModal.style.display = 'none';
+        }
+        if (event.target === profileModal) {
+          profileModal.style.display = 'none';
+        }
+      }
+    });
 
     // 設置最小日期為今天
     function setMinDate() {
