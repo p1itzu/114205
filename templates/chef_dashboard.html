@@ -358,14 +358,26 @@
                             </div>
                         </div>
                         
-                        <div style="color: #555; line-height: 1.6; display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="flex: 1;">
-                                <span style="font-weight: 500; color: #333;">顧客評價：</span>${review.content || '無'}
+                        <div style="color: #555; line-height: 1.6;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                                <div style="flex: 1;">
+                                    <span style="font-weight: 500; color: #333;">顧客評價：</span>${review.content || '無'}
+                                </div>
+                                <div style="display: flex; gap: 8px; margin-left: 15px;">
+                                    ${review.reply_content ? 
+                                        `<button disabled style="padding: 6px 12px; background: #ccc; color: #666; border: none; border-radius: 5px; font-size: 14px; cursor: not-allowed; white-space: nowrap;">已回覆</button>` :
+                                        `<button onclick="showReplyModal(${review.id})" style="padding: 6px 12px; background: #B3811C; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer; white-space: nowrap;">回覆</button>`
+                                    }
+                                    <button onclick="helpWithReview(${review.id})" style="padding: 6px 12px; background: #6c757d; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer; white-space: nowrap;">幫助</button>
+                                </div>
                             </div>
-                            <div style="display: flex; gap: 8px; margin-left: 15px;">
-                                <button onclick="replyToReview(${review.id})" style="padding: 6px 12px; background: #B3811C; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer; white-space: nowrap;">回覆</button>
-                                <button onclick="helpWithReview(${review.id})" style="padding: 6px 12px; background: #6c757d; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer; white-space: nowrap;">幫助</button>
-                            </div>
+                            ${review.reply_content ? 
+                                `<div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border-left: 4px solid #B3811C; margin-top: 10px;">
+                                    <div style="font-weight: 500; color: #B3811C; margin-bottom: 5px;">回覆內容：</div>
+                                    <div style="color: #555;">${review.reply_content}</div>
+                                    <div style="color: #999; font-size: 12px; margin-top: 5px;">回覆時間：${review.reply_at ? review.reply_at.split(' ')[0] : ''}</div>
+                                </div>` : ''
+                            }
                         </div>
                     </div>
                 `;
@@ -448,10 +460,66 @@
             }
         });
 
-        // 回覆評價功能
-        function replyToReview(reviewId) {
-            // TODO: 實作回覆評價功能
-            alert(`回覆評價 ID: ${reviewId} 的功能開發中...`);
+        // 顯示回覆模態窗口
+        function showReplyModal(reviewId) {
+            document.getElementById('replyModal').style.display = 'block';
+            document.getElementById('replyReviewId').value = reviewId;
+            document.getElementById('replyContent').value = '';
+            // 重置字數統計
+            document.getElementById('replyCharCount').textContent = '0';
+            document.getElementById('replyContent').focus();
+        }
+
+        // 關閉回覆模態窗口
+        function closeReplyModal() {
+            document.getElementById('replyModal').style.display = 'none';
+        }
+
+        // 提交回覆
+        function submitReply() {
+            const reviewId = document.getElementById('replyReviewId').value;
+            const content = document.getElementById('replyContent').value.trim();
+
+            if (!content) {
+                alert('請輸入回覆內容');
+                return;
+            }
+
+            // 顯示載入狀態
+            const submitBtn = document.querySelector('#replyModal button[onclick="submitReply()"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '提交中...';
+            submitBtn.disabled = true;
+
+            // 發送回覆請求
+            fetch(`/chef/api/reviews/${reviewId}/reply`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    content: content
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('回覆成功！');
+                    closeReplyModal();
+                    // 重新載入評價列表
+                    loadReviews();
+                } else {
+                    alert(data.message || '回覆失敗，請稍後再試');
+                }
+            })
+            .catch(error => {
+                console.error('回覆錯誤:', error);
+                alert('回覆失敗，請稍後再試');
+            })
+            .finally(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
         }
 
         // 幫助功能
@@ -508,5 +576,56 @@
             </div>
         </div>
     </div>
+
+    <!-- 回覆模態窗口 -->
+    <div id="replyModal" class="modal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div class="modal-content" style="background-color: #fefefe; margin: 10% auto; padding: 0; border: none; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="color: #B3811C; margin: 0;">💬 回覆評價</h3>
+                <span class="close" onclick="closeReplyModal()" style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1;">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px 30px;">
+                <input type="hidden" id="replyReviewId" value="">
+                <div style="margin-bottom: 15px;">
+                    <label for="replyContent" style="display: block; font-weight: 500; color: #333; margin-bottom: 8px;">回覆內容：</label>
+                    <textarea 
+                        id="replyContent" 
+                        placeholder="請輸入您的回覆內容..." 
+                        style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical; font-family: inherit;"
+                        maxlength="500"
+                    ></textarea>
+                    <div style="text-align: right; color: #999; font-size: 12px; margin-top: 5px;">
+                        <span id="replyCharCount">0</span>/500 字
+                    </div>
+                </div>
+                <div style="text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button onclick="closeReplyModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">取消</button>
+                    <button onclick="submitReply()" style="padding: 10px 20px; background: #B3811C; color: white; border: none; border-radius: 6px; cursor: pointer;">提交回覆</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 回覆內容字數統計
+        document.addEventListener('DOMContentLoaded', function() {
+            const replyContent = document.getElementById('replyContent');
+            const charCount = document.getElementById('replyCharCount');
+            
+            if (replyContent && charCount) {
+                replyContent.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+
+            // 點擊回覆模態窗口外部關閉
+            window.addEventListener('click', function(event) {
+                const replyModal = document.getElementById('replyModal');
+                if (event.target === replyModal) {
+                    closeReplyModal();
+                }
+            });
+        });
+    </script>
 </body>
 </html> 

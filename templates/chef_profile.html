@@ -451,6 +451,40 @@
             margin-left: 50px;
         }
 
+        /* 廚師回覆樣式 */
+        .chef-reply {
+            background: #f8f9fa;
+            border-left: 4px solid #B3811C;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            margin-left: 50px;
+        }
+
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .reply-label {
+            font-weight: 600;
+            color: #B3811C;
+            font-size: 14px;
+        }
+
+        .reply-date {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .reply-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
         /* 響應式設計 */
         @media (max-width: 768px) {
             .profile-header {
@@ -693,6 +727,17 @@
             </div>
                             {% if review.content %}
                                 <div class="review-content">{{ review.content }}</div>
+                            {% endif %}
+                            
+                            <!-- 廚師回覆 -->
+                            {% if review.reply_content %}
+                                <div class="chef-reply">
+                                    <div class="reply-header">
+                                        <span class="reply-label">廚師回覆：</span>
+                                        <span class="reply-date">{{ review.reply_at.strftime('%Y/%m/%d') if review.reply_at else '' }}</span>
+                                    </div>
+                                    <div class="reply-content">{{ review.reply_content }}</div>
+                                </div>
                             {% endif %}
                         </div>
                     {% endfor %}

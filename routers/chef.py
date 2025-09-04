@@ -16,7 +16,12 @@ from models.message import Message
 from models.review import Review
 from typing import Optional
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from datetime import datetime
 from utils.dependencies import require_chef, common_template_params
+
+class ReplyRequest(BaseModel):
+    content: str
 
 router = APIRouter(dependencies=[Depends(require_chef)])
 templates = Jinja2Templates(directory="templates")
@@ -117,10 +122,12 @@ def get_chef_reviews_api(
             "service_rating": review.service_rating,
             "hygiene_rating": review.hygiene_rating,
             "delivery_rating": review.delivery_rating,
-            "created_at": review.created_at.strftime("%Y-%m-%d %H:%M"),
+            "created_at": review.created_at.strftime("%Y-%m-%d"),
             "reviewer_name": reviewer.name if reviewer else "匿名用戶",
             "order_number": f"#{order.id}" if order else "N/A",
-            "is_verified": review.is_verified
+            "is_verified": review.is_verified,
+            "reply_content": review.reply_content,
+            "reply_at": review.reply_at.strftime("%Y-%m-%d") if review.reply_at else None
         })
     
     # 計算分頁資訊
@@ -140,6 +147,56 @@ def get_chef_reviews_api(
             }
         }
     })
+
+
+@router.post("/api/reviews/{review_id}/reply")
+def reply_to_review(
+    review_id: int,
+    reply_request: ReplyRequest,
+    current_user: User = Depends(require_chef),
+    db: Session = Depends(get_db)
+):
+    """廚師回覆評價"""
+    
+    # 查找評價
+    review = db.query(Review).filter(
+        Review.id == review_id,
+        Review.reviewee_id == current_user.id  # 確保只能回覆自己收到的評價
+    ).first()
+    
+    if not review:
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "message": "評價不存在或無權限"}
+        )
+    
+    # 檢查是否已經回覆過
+    if review.reply_content:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "該評價已經回覆過了"}
+        )
+    
+    # 更新回覆內容
+    review.reply_content = reply_request.content
+    review.reply_at = datetime.utcnow()
+    
+    try:
+        db.commit()
+        return JSONResponse({
+            "success": True,
+            "message": "回覆成功",
+            "data": {
+                "reply_content": review.reply_content,
+                "reply_at": review.reply_at.strftime("%Y-%m-%d")
+            }
+        })
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "回覆失敗，請稍後再試"}
+        )
 
 @router.get("/pending-orders", name="chef_pending_orders")
 def chef_pending_orders(
