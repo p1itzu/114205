@@ -1166,8 +1166,9 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('已拒絕最終定價，訂單已取消。');
-                        location.reload();
+                        alert('已拒絕最終定價，您可以重新選擇廚師。');
+                        // 跳轉到重新選擇廚師頁面
+                        window.location.href = `/customer/order/${orderId}/reselect_chef`;
                     } else {
                         alert('操作失敗：' + data.message);
                     }

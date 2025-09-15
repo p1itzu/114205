@@ -155,14 +155,15 @@ def order_detail(
     # 檢查是否有待顧客回應的最終定價
     chef_final_pricing_pending = False
     chef_final_pricing = None
-    for nego in order.negotiations:
-        if nego.proposed_by == "chef" and nego.is_accepted is None:
-            # 檢查這是否是最終定價（在顧客議價之後的廚師議價）
-            customer_negotiations = [n for n in order.negotiations if n.proposed_by == "customer"]
-            if customer_negotiations:  # 如果有顧客議價，則這是最終定價
-                chef_final_pricing_pending = True
-                chef_final_pricing = nego
-                break
+    
+    # 獲取所有未回應的廚師議價，按時間排序（最新的在前）
+    chef_negotiations = [n for n in order.negotiations if n.proposed_by == "chef" and n.is_accepted is None]
+    chef_negotiations.sort(key=lambda x: x.created_at, reverse=True)
+    
+    if chef_negotiations:
+        # 取最新的廚師議價作為最終定價
+        chef_final_pricing = chef_negotiations[0]
+        chef_final_pricing_pending = True
     
     return templates.TemplateResponse("order_detail.html", {
         **commons, 
@@ -963,6 +964,8 @@ def respond_final_pricing(
             
         else:
             # 顧客拒絕最終定價 → 重新選擇廚師
+            # 先保存廚師ID，用於創建通知
+            chef_id_for_notification = order.chef_id
             order.status = OrderStatus.RESELECTING_CHEF
             order.chef_id = None  # 清除廚師分配，讓顧客重新選擇
             
@@ -989,7 +992,7 @@ def respond_final_pricing(
         else:
             create_notification(
                 db=db,
-                user_id=order.chef_id,
+                user_id=chef_id_for_notification,
                 notification_type=NotificationType.NEGOTIATION_RESPONSE,
                 title="顧客拒絕了最終定價",
                 content=f"顧客 {current_user.name} 拒絕了您的最終定價，訂單已取消。",
