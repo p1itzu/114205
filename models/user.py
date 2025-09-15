@@ -50,3 +50,4 @@ class User(Base):
     received_messages = relationship("Message", back_populates="receiver", foreign_keys="Message.receiver_id")
     reviews_given = relationship("Review", back_populates="reviewer", foreign_keys="Review.reviewer_id")
     reviews_received = relationship("Review", back_populates="reviewee", foreign_keys="Review.reviewee_id")
+    notifications = relationship("Notification", back_populates="user")

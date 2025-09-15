@@ -13,6 +13,8 @@ from models.user import User
 from models.order import Order, OrderStatus, OrderDish, DeliveryMethod, SpiceLevel, SaltLevel, Negotiation, OrderStatusHistory
 from models.review import Review
 from models.chef import ChefProfile, ChefSignatureDish, ChefSpecialty
+from models.notification import Notification, NotificationType
+from routers.notification import create_notification
 from utils.dependencies import require_customer, common_template_params
 from utils.security import get_password_hash, verify_password
 from pydantic import BaseModel
@@ -1010,6 +1012,17 @@ def submit_review(
                 order.chef.chef_profile.average_rating = round(avg_rating, 1)
                 order.chef.chef_profile.total_reviews = total_reviews
         
+        # 創建通知給廚師：收到新評價
+        create_notification(
+            db=db,
+            user_id=order.chef_id,
+            notification_type=NotificationType.NEW_REVIEW,
+            title="收到新評價",
+            content=f"顧客對訂單#{order.id} 給了 {review_data.rating} 星評價！",
+            order_id=order.id,
+            review_id=review.id
+        )
+        
         db.commit()
         
         return JSONResponse(
@@ -1062,6 +1075,16 @@ def confirm_received(
             notes="顧客確認收貨，訂單完成"
         )
         db.add(status_history)
+        
+        # 創建通知給廚師：顧客確認收貨
+        create_notification(
+            db=db,
+            user_id=order.chef_id,
+            notification_type=NotificationType.ORDER_COMPLETED,
+            title="訂單已完成",
+            content=f"顧客已確認收貨，訂單#{order.id} 完成！",
+            order_id=order.id
+        )
         
         db.commit()
         

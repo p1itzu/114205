@@ -14,6 +14,8 @@ from models.user import User
 from models.chef import ChefProfile, ChefSpecialty, ChefSignatureDish
 from models.message import Message
 from models.review import Review
+from models.notification import Notification, NotificationType
+from routers.notification import create_notification
 from typing import Optional
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -182,6 +184,17 @@ def reply_to_review(
     review.reply_at = datetime.utcnow()
     
     try:
+        # 創建通知給顧客：廚師回覆評價
+        create_notification(
+            db=db,
+            user_id=review.reviewer_id,
+            notification_type=NotificationType.REVIEW_REPLY,
+            title="廚師回覆了您的評價",
+            content=f"廚師回覆了您對訂單#{review.order_id} 的評價！",
+            order_id=review.order_id,
+            review_id=review.id
+        )
+        
         db.commit()
         return JSONResponse({
             "success": True,
@@ -319,6 +332,16 @@ def accept_order(
         )
         db.add(status_history)
         
+        # 創建通知給顧客：廚師接受訂單
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_ACCEPTED,
+            title="訂單已被接受",
+            content=f"{current_user.name}廚師接受了您的訂單！正在進行議價中...",
+            order_id=order.id
+        )
+        
         db.commit()
         
         return JSONResponse(
@@ -379,6 +402,16 @@ def reject_order(
             notes=f"廚師 {current_user.email} 拒絕接單，原因：{reject_data.reason}。顧客可重新選擇廚師"
         )
         db.add(status_history)
+        
+        # 創建通知給顧客：廚師拒絕訂單
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_REJECTED,
+            title="訂單被拒絕",
+            content=f"{current_user.name}廚師拒絕了您的訂單，原因：{reject_data.reason}。您可以重新選擇廚師。",
+            order_id=order.id
+        )
         
         db.commit()
         
@@ -815,6 +848,16 @@ def mark_order_ready(
             notes=f"廚師標記餐點製作完成"
         )
         db.add(status_history)
+        
+        # 創建通知給顧客：餐點製作完成
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_READY,
+            title="餐點製作完成",
+            content=f"訂單#{order.id} 餐點製作完成，請準備取餐！",
+            order_id=order.id
+        )
         
         db.commit()
         
