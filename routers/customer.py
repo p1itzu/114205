@@ -156,21 +156,14 @@ def order_detail(
     chef_final_pricing_pending = False
     chef_final_pricing = None
     
-    # 檢查議價流程：只有在顧客已經議價過之後的廚師議價才是最終定價
-    customer_negotiations = [n for n in order.negotiations if n.proposed_by == "customer"]
+    # 獲取所有未回應的廚師議價，按時間排序（最新的在前）
     chef_negotiations = [n for n in order.negotiations if n.proposed_by == "chef" and n.is_accepted is None]
+    chef_negotiations.sort(key=lambda x: x.created_at, reverse=True)
     
-    if customer_negotiations and chef_negotiations:
-        # 如果有顧客議價記錄，且有未回應的廚師議價，則最新的廚師議價是最終定價
-        chef_negotiations.sort(key=lambda x: x.created_at, reverse=True)
-        
-        # 確保這個廚師議價是在顾客議價之後
-        latest_customer_nego = max(customer_negotiations, key=lambda x: x.created_at)
-        latest_chef_nego = chef_negotiations[0]
-        
-        if latest_chef_nego.created_at > latest_customer_nego.created_at:
-            chef_final_pricing = latest_chef_nego
-            chef_final_pricing_pending = True
+    if chef_negotiations:
+        # 取最新的廚師議價作為最終定價
+        chef_final_pricing = chef_negotiations[0]
+        chef_final_pricing_pending = True
     
     return templates.TemplateResponse("order_detail.html", {
         **commons, 
@@ -305,10 +298,7 @@ def post_reselect_chef(
     db: Session = Depends(get_db)
 ):
     # 獲取訂單
-    from sqlalchemy.orm import joinedload
-    order = db.query(Order).options(
-        joinedload(Order.dishes)
-    ).filter(
+    order = db.query(Order).filter(
         Order.id == order_id,
         Order.customer_id == current_user.id
     ).first()
@@ -344,11 +334,6 @@ def post_reselect_chef(
         order.chef_id = chef_id
         order.status = OrderStatus.PENDING
         order.negotiation_count = 0  # 重置議價次數
-        order.total_amount = 0  # 重置訂單總金額，由新廚師重新定價
-        
-        # 重置所有菜品價格，由新廚師重新定價
-        for dish in order.dishes:
-            dish.unit_price = 0
         
         # 記錄狀態歷史
         status_history = OrderStatusHistory(
