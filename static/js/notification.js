@@ -176,9 +176,9 @@ function updateNotifications() {
         
         // 根據通知類型設置圖標
         const typeIcon = {
-            'order_accepted': '✓',
-            'order_rejected': '✕',
-            'order_status_update': '↻',
+            'order_accepted': '✅',
+            'order_rejected': '❌',
+            'order_status_update': '🔄',
             'order_ready': '🍽️',
             'order_completed': '✅',
             'new_order': '📋',

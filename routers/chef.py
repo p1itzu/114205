@@ -733,6 +733,16 @@ def chef_negotiate(
         )
         db.add(status_history)
         
+        # 創建通知給顧客：廚師提出議價
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_NEGOTIATION,
+            title="廚師提出議價",
+            content=f"{current_user.name}廚師提出議價 NT${negotiation_data.proposed_amount}，請查看詳情！",
+            order_id=order.id
+        )
+        
         db.commit()
         
         return JSONResponse(
@@ -982,6 +992,16 @@ def submit_pricing(
         )
         db.add(status_history)
         
+        # 創建通知給顧客：廚師提交估價
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_NEGOTIATION,
+            title="廚師提交了估價",
+            content=f"{current_user.name}廚師提交了估價 NT${pricing_data.total_amount}，請查看並回應！",
+            order_id=order.id
+        )
+        
         db.commit()
         
         return JSONResponse(
@@ -1073,6 +1093,27 @@ def respond_counter_offer(
             message = "已拒絕顧客議價，顧客可重新選擇廚師"
         
         db.add(status_history)
+        
+        # 創建通知給顧客：廚師回應再議價
+        if is_accepted:
+            create_notification(
+                db=db,
+                user_id=order.customer_id,
+                notification_type=NotificationType.ORDER_ACCEPTED,
+                title="廚師接受了您的議價",
+                content=f"{current_user.name}廚師接受了您的議價 NT${negotiation.proposed_amount}，訂單確認成功！",
+                order_id=order.id
+            )
+        else:
+            create_notification(
+                db=db,
+                user_id=order.customer_id,
+                notification_type=NotificationType.ORDER_REJECTED,
+                title="廚師拒絕了您的議價",
+                content=f"{current_user.name}廚師拒絕了您的議價，您可以重新選擇廚師。",
+                order_id=order.id
+            )
+        
         db.commit()
         
         return JSONResponse(
@@ -1243,6 +1284,16 @@ def submit_final_pricing(
             notes=f"廚師提交最終定價：NT${total_amount}，等待顧客確認"
         )
         db.add(status_history)
+        
+        # 創建通知給顧客：廚師提交最終定價
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_NEGOTIATION,
+            title="廚師提交了最終定價",
+            content=f"{current_user.name}廚師提交了最終定價 NT${total_amount}，請查看並確認！",
+            order_id=order.id
+        )
         
         db.commit()
         
