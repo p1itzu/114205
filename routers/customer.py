@@ -592,6 +592,18 @@ def post_step4(
         
         db.commit()
 
+        # 創建通知給廚師：收到新訂單
+        create_notification(
+            db=db,
+            user_id=step0["chef_id"],
+            notification_type=NotificationType.NEW_ORDER,
+            title="收到新訂單",
+            content=f"顧客 {current_user.name} 向您下了新訂單！",
+            order_id=order.id
+        )
+        
+        db.commit()
+
         # 清除 session 數據
         request.session.pop("step0", None)
         request.session.pop("step1", None)
@@ -801,6 +813,37 @@ def respond_negotiation(
             
             db.add(status_history)
         
+        # 創建通知給廚師：顧客回應議價
+        if response_data.is_accepted:
+            create_notification(
+                db=db,
+                user_id=order.chef_id,
+                notification_type=NotificationType.NEGOTIATION_RESPONSE,
+                title="顧客接受了您的議價",
+                content=f"顧客 {current_user.name} 接受了您的議價 NT${negotiation.proposed_amount}！",
+                order_id=order.id
+            )
+        else:
+            # 如果有再議價
+            if response_data.counter_amount and response_data.counter_amount > 0:
+                create_notification(
+                    db=db,
+                    user_id=order.chef_id,
+                    notification_type=NotificationType.NEGOTIATION_RESPONSE,
+                    title="顧客提出再議價",
+                    content=f"顧客 {current_user.name} 提出再議價 NT${response_data.counter_amount}！",
+                    order_id=order.id
+                )
+            else:
+                create_notification(
+                    db=db,
+                    user_id=order.chef_id,
+                    notification_type=NotificationType.NEGOTIATION_RESPONSE,
+                    title="顧客拒絕了您的議價",
+                    content=f"顧客 {current_user.name} 拒絕了您的議價。",
+                    order_id=order.id
+                )
+        
         db.commit()
         
         return JSONResponse(
@@ -932,6 +975,27 @@ def respond_final_pricing(
             message = "已拒絕最終定價，您可以重新選擇廚師"
         
         db.add(status_history)
+        
+        # 創建通知給廚師：顧客回應議價
+        if is_accepted:
+            create_notification(
+                db=db,
+                user_id=order.chef_id,
+                notification_type=NotificationType.NEGOTIATION_RESPONSE,
+                title="顧客接受了最終定價",
+                content=f"顧客 {current_user.name} 接受了您的最終定價 NT${negotiation.proposed_amount}！",
+                order_id=order.id
+            )
+        else:
+            create_notification(
+                db=db,
+                user_id=order.chef_id,
+                notification_type=NotificationType.NEGOTIATION_RESPONSE,
+                title="顧客拒絕了最終定價",
+                content=f"顧客 {current_user.name} 拒絕了您的最終定價，訂單已取消。",
+                order_id=order.id
+            )
+        
         db.commit()
         
         return JSONResponse(
@@ -1017,7 +1081,7 @@ def submit_review(
             db=db,
             user_id=order.chef_id,
             notification_type=NotificationType.NEW_REVIEW,
-            title="收到新評價",
+            title=f"#{order.id} 收到了評價",
             content=f"顧客對訂單#{order.id} 給了 {review_data.rating} 星評價！",
             order_id=order.id,
             review_id=review.id
