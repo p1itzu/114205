@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
     <link href="/static/css/reserve2.css" rel="stylesheet" />
+    <link href="/static/css/notification.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Step2 - 菜單填寫</title>
     <!-- 現代化設定模態框樣式 -->
@@ -740,7 +741,6 @@
         function goToNextDish() { saveCurrentDishData(); if (currentDishIndex < dishCount) currentDishIndex++, renderDish(); else Swal.fire('已經是最後一道菜'); }
         function goToPreviousDish() { saveCurrentDishData(); if (currentDishIndex > 1) currentDishIndex--, renderDish(); else Swal.fire('已經是第一道菜'); }
         function deleteDish() { Swal.fire({ title:'確定刪除?', icon:'warning', showCancelButton:true }).then(res=>{ if(res.isConfirmed){ delete dishData[currentDishIndex]; const vals=Object.values(dishData); dishData={}; vals.filter(x=>x).forEach((x,i)=>dishData[i+1]=x); dishCount=Object.keys(dishData).length; if(currentDishIndex>dishCount) currentDishIndex=dishCount; renderDish(); localStorage.setItem('dishData',JSON.stringify(dishData)); }}); }
-        function toggleNotification(){const m=document.getElementById('notificationCenter'); m.style.display=m.style.display==='flex'?'none':'flex';}
         // 現代化設定模態窗口功能
         function toggleSettingsModal() {
             const modal = document.getElementById('settingsModal');
@@ -858,6 +858,179 @@
     <!-- 通知中心 -->
     {% include 'notification_component.html' %}
     
+    <script>
+    // 通知中心功能（真實API版本）
+    let notifications = [];
+    let unreadCount = 0;
+
+    async function loadNotifications() {
+        try {
+            const response = await fetch('/api/notifications');
+            const result = await response.json();
+            
+            if (result.success) {
+                notifications = result.data.notifications;
+                unreadCount = result.data.unread_count;
+            } else {
+                notifications = [];
+                unreadCount = 0;
+            }
+        } catch (error) {
+            console.error('載入通知時發生錯誤:', error);
+            notifications = [];
+            unreadCount = 0;
+        }
+    }
+
+    async function markNotificationAsRead(notificationId) {
+        try {
+            const response = await fetch(`/api/notifications/${notificationId}/mark_read`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                const notification = notifications.find(n => n.id === notificationId);
+                if (notification && !notification.is_read) {
+                    notification.is_read = true;
+                    unreadCount = Math.max(0, unreadCount - 1);
+                    updateNotificationStatus();
+                }
+            }
+        } catch (error) {
+            console.error('標記已讀失敗:', error);
+        }
+    }
+
+    async function clearAllNotifications() {
+        try {
+            const response = await fetch('/api/notifications/clear', { method: 'DELETE' });
+            const result = await response.json();
+            if (result.success) {
+                notifications = [];
+                unreadCount = 0;
+                updateNotifications();
+                updateNotificationStatus();
+                const notificationCenter = document.getElementById('notificationCenter');
+                if (notificationCenter) notificationCenter.style.display = 'none';
+            } else {
+                alert('清空通知失敗：' + result.message);
+            }
+        } catch (error) {
+            console.error('清空通知失敗:', error);
+            alert('清空通知失敗，請稍後再試');
+        }
+    }
+
+    async function toggleNotification() {
+        const notificationCenter = document.getElementById('notificationCenter');
+        if (!notificationCenter) return;
+        
+        if (notificationCenter.style.display === 'block') {
+            notificationCenter.style.display = 'none';
+        } else {
+            notificationCenter.style.display = 'block';
+            await loadNotifications();
+            updateNotifications();
+        }
+    }
+
+    function updateNotificationStatus() {
+        const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+        if (!notificationLink) return;
+        
+        if (unreadCount > 0) {
+            notificationLink.classList.add('has-unread');
+        } else {
+            notificationLink.classList.remove('has-unread');
+        }
+    }
+
+    function updateNotifications() {
+        const notificationList = document.getElementById('notificationList');
+        if (!notificationList) return;
+        
+        updateNotificationStatus();
+        notificationList.innerHTML = '';
+        
+        if (notifications.length === 0) {
+            notificationList.innerHTML = '<li class="notification-item" style="text-align: center; color: #999;"><div class="notification-content">暫無通知</div></li>';
+            return;
+        }
+        
+        notifications.forEach((notification) => {
+            const li = document.createElement('li');
+            li.className = `notification-item ${!notification.is_read ? 'unread' : ''}`;
+            
+            const typeIcon = {
+                'order_accepted': '✅', 'order_rejected': '❌', 'order_status_update': '🔄',
+                'order_ready': '🍽️', 'order_completed': '✅', 'new_order': '📋',
+                'new_review': '⭐', 'review_reply': '💬', 'order_negotiation': '💰',
+                'negotiation_response': '💬'
+            };
+            
+            const icon = typeIcon[notification.type] || '📢';
+            
+            // 判斷是否為訂單類通知，如果是則顯示訂單編號
+            const orderTypes = ['order_accepted', 'order_rejected', 'order_status_update', 'order_ready', 'order_completed', 'new_order', 'order_negotiation', 'negotiation_response'];
+            const isOrderNotification = orderTypes.includes(notification.type);
+            const orderInfo = isOrderNotification && notification.order_id ? `<span style="color: #007bff; font-size: 12px;">#${notification.order_id}</span> ` : '';
+            
+            li.innerHTML = `
+                <div class="notification-type type-${notification.type.replace('_', '-')}">${icon}</div>
+                <div class="notification-content">
+                    <div style="font-weight: ${!notification.is_read ? 'bold' : 'normal'};">${orderInfo}${notification.title}</div>
+                    <div style="margin-top: 4px; font-size: 14px; color: #666;">${notification.content}</div>
+                    <div class="notification-time">${notification.time_ago}</div>
+                </div>
+            `;
+            
+            li.addEventListener('click', async () => {
+                if (!notification.is_read) {
+                    await markNotificationAsRead(notification.id);
+                }
+                if (notification.order_id) {
+                    window.location.href = `/customer/order/${notification.order_id}`;
+                }
+            });
+            
+            notificationList.appendChild(li);
+        });
+    }
+
+    async function getUnreadCount() {
+        try {
+            const response = await fetch('/api/notifications/unread_count');
+            const result = await response.json();
+            if (result.success) {
+                unreadCount = result.unread_count;
+                updateNotificationStatus();
+            }
+        } catch (error) {
+            console.error('獲取未讀數量失敗:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        const notificationCenter = document.getElementById('notificationCenter');
+        if (notificationCenter) {
+            notificationCenter.style.display = 'none';
+        }
+        
+        await getUnreadCount();
+        
+        document.addEventListener('click', function(e) {
+            const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+            if (notificationCenter && notificationLink && 
+                !notificationCenter.contains(e.target) && !notificationLink.contains(e.target)) {
+                notificationCenter.style.display = 'none';
+            }
+        });
+        
+        setInterval(async () => { await getUnreadCount(); }, 30000);
+    });
+    </script>
     <script src="/static/js/notification.js"></script>
 </body>
 

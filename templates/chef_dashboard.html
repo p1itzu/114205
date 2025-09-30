@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>廚師儀表板 - 味你而煮</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/ChefUnOrder.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/notification.css') }}">
 </head>
 <body>
     <div class="navbar">
@@ -26,6 +27,7 @@
             </div>
 
             <a href="#">客服聯絡</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
         </div>
         <div class="user-info">
             {% if user %}
@@ -63,6 +65,25 @@
                 <div style="font-size: 36px; color: #4CAF50; margin-bottom: 10px;">✅</div>
                 <h3 style="color: #B3811C; margin-bottom: 5px;">我的訂單</h3>
                 <p style="font-size: 24px; font-weight: bold; color: #333;">{{ my_orders|length }}</p>
+            </div>
+            
+            <div class="stat-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center;">
+                <div style="font-size: 36px; color: #e3ab3b; margin-bottom: 10px;">⭐</div>
+                <h3 style="color: #B3811C; margin-bottom: 5px;">我的評價</h3>
+                <p style="font-size: 24px; font-weight: bold; color: #333;">
+                    {% if chef_profile and chef_profile.average_rating %}
+                        {{ "%.1f"|format(chef_profile.average_rating) }}
+                    {% else %}
+                        0.0
+                    {% endif %}
+                </p>
+                <p style="color: #666; font-size: 14px;">
+                    {% if chef_profile and chef_profile.total_reviews %}
+                        {{ chef_profile.total_reviews }}則評價
+                    {% else %}
+                        尚無評價
+                    {% endif %}
+                </p>
             </div>
         </div>
 
@@ -125,6 +146,51 @@
                     <p style="color: #666; text-align: center; padding: 20px;">目前沒有進行中的訂單</p>
                 {% endif %}
             </div>
+
+            <div class="action-section" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="color: #B3811C; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    ⭐ 我的評價
+                </h3>
+                {% if my_reviews %}
+                    {% for review in my_reviews[:3] %}
+                    <div style="border-bottom: 1px solid #eee; padding: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                            <div>
+                                <p style="font-weight: bold; color: #333; margin-bottom: 3px;">{{ review.reviewer.name }}</p>
+                                <p style="color: #666; font-size: 14px;">訂單 #{{ review.order.order_number if review.order else 'N/A' }}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="color: #e3ab3b; font-size: 14px; margin-bottom: 2px;">
+                                    {% for i in range(review.rating) %}★{% endfor %}
+                                    {% for i in range(5 - review.rating) %}☆{% endfor %}
+                                </div>
+                                <div style="color: #999; font-size: 14px;">{{ review.created_at.strftime('%m/%d') }}</div>
+                            </div>
+                        </div>
+                        {% if review.content %}
+                            <p style="color: #666; font-size: 14px; line-height: 1.4; margin-bottom: 8px;">
+                                {% if review.content|length > 50 %}
+                                    顧客評價：{{ review.content[:50] }}...
+                                {% else %}
+                                    顧客評價：{{ review.content }}
+                                {% endif %}
+                        {% else %}
+                            <p style="color: #666; font-size: 14px; line-height: 1.4; margin-bottom: 8px;">
+                            顧客評價：無
+                            </p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <div style="text-align: center; margin-top: 20px;">
+                        <a href="#" onclick="showAllReviews()" 
+                           style="color: #B3811C; text-decoration: none; font-weight: bold;">
+                            查看全部評價 →
+                        </a>
+                    </div>
+                {% else %}
+                    <p style="color: #666; text-align: center; padding: 20px;">目前還沒有收到評價</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 
@@ -159,6 +225,7 @@
                 grid-template-columns: 1fr !important;
             }
         }
+
     </style>
 
     <script>
@@ -182,6 +249,622 @@
         function goToPendingOrders() {
             window.location.href = "{{ url_for('chef_pending_orders') }}";
         }
+
+        function showAllReviews() {
+            document.getElementById('reviewsModal').style.display = 'block';
+            currentPage = 1;
+            currentRating = '';
+            currentSearch = '';
+            document.getElementById('ratingFilter').value = '';
+            document.getElementById('searchInput').value = '';
+            loadReviews();
+        }
+
+        // 全域變數
+        let currentPage = 1;
+        let currentRating = '';
+        let currentSearch = '';
+
+        function closeReviewsModal() {
+            document.getElementById('reviewsModal').style.display = 'none';
+        }
+
+        function handleSearchKeyup(event) {
+            if (event.key === 'Enter') {
+                filterReviews();
+            }
+        }
+
+        function filterReviews() {
+            currentPage = 1;
+            currentRating = document.getElementById('ratingFilter').value;
+            currentSearch = document.getElementById('searchInput').value;
+            loadReviews();
+        }
+
+        function loadReviews(page = currentPage) {
+            currentPage = page;
+            
+            // 顯示載入狀態
+            document.getElementById('reviewsLoading').style.display = 'block';
+            document.getElementById('reviewsList').style.display = 'none';
+            document.getElementById('reviewsPagination').style.display = 'none';
+
+            // 建構API URL
+            const params = new URLSearchParams({
+                page: currentPage,
+                per_page: 10
+            });
+
+            if (currentRating) {
+                params.append('rating', currentRating);
+            }
+
+            if (currentSearch) {
+                params.append('search', currentSearch);
+            }
+
+            // AJAX 請求
+            fetch(`/chef/api/reviews?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayReviews(data.data.reviews);
+                        displayPagination(data.data.pagination);
+                    } else {
+                        document.getElementById('reviewsList').innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">載入評價失敗</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('載入評價錯誤:', error);
+                    document.getElementById('reviewsList').innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">載入評價失敗</div>';
+                })
+                .finally(() => {
+                    document.getElementById('reviewsLoading').style.display = 'none';
+                    document.getElementById('reviewsList').style.display = 'block';
+                    document.getElementById('reviewsPagination').style.display = 'flex';
+                });
+        }
+
+        function displayReviews(reviews) {
+            const reviewsList = document.getElementById('reviewsList');
+            
+            if (reviews.length === 0) {
+                reviewsList.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">沒有找到符合條件的評價</div>';
+                return;
+            }
+
+            let html = '';
+            reviews.forEach(review => {
+                // 生成星星顯示（統一使用★和☆）
+                const filledStars = '★'.repeat(review.rating);
+                const emptyStars = '☆'.repeat(5 - review.rating);
+                const stars = filledStars + emptyStars;
+                const verifiedBadge = review.is_verified ? '<span style="background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 12px; font-size: 14px; margin-left: 8px;">✓ 已驗證</span>' : '';
+                
+                html += `
+                    <div style="border: 1px solid #e9ecef; border-radius: 10px; padding: 20px; margin-bottom: 15px; background: #fff;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                    <span style="font-size: 20px; color: #F9C765;">${stars}</span>
+                                    <span style="font-weight: bold; margin-left: 10px; color: #333;">${review.rating}/5</span>
+                                    ${verifiedBadge}
+                                </div>
+                                ${review.title ? `<h4 style="margin: 0 0 8px 0; color: #B3811C;">${review.title}</h4>` : ''}
+                            </div>
+                            <div style="text-align: right; color: #666; font-size: 14px;">
+                                <div>顧客：${review.reviewer_name}</div>
+                                <div>訂單：${review.order_number}</div>
+                                <div>${review.created_at}</div>
+                            </div>
+                        </div>
+                        
+                        <div style="color: #555; line-height: 1.6;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                                <div style="flex: 1;">
+                                    <span style="font-weight: 500; color: #333;">顧客評價：</span>${review.content || '無'}
+                                </div>
+                                <div style="display: flex; gap: 8px; margin-left: 15px;">
+                                    ${review.reply_content ? 
+                                        `<button disabled style="padding: 6px 12px; background: #ccc; color: #666; border: none; border-radius: 5px; font-size: 14px; cursor: not-allowed; white-space: nowrap;">已回覆</button>` :
+                                        `<button onclick="showReplyModal(${review.id})" style="padding: 6px 12px; background: #B3811C; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer; white-space: nowrap;">回覆</button>`
+                                    }
+                                    <button onclick="helpWithReview(${review.id})" style="padding: 6px 12px; background: #6c757d; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer; white-space: nowrap;">幫助</button>
+                                </div>
+                            </div>
+                            ${review.reply_content ? 
+                                `<div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border-left: 4px solid #B3811C; margin-top: 10px;">
+                                    <div style="font-weight: 500; color: #B3811C; margin-bottom: 5px;">回覆內容：</div>
+                                    <div style="color: #555;">${review.reply_content}</div>
+                                    <div style="color: #999; font-size: 12px; margin-top: 5px;">回覆時間：${review.reply_at ? review.reply_at.split(' ')[0] : ''}</div>
+                                </div>` : ''
+                            }
+                        </div>
+                    </div>
+                `;
+            });
+
+            reviewsList.innerHTML = html;
+        }
+
+        function displayPagination(pagination) {
+            const paginationDiv = document.getElementById('reviewsPagination');
+            
+            if (pagination.total_pages <= 1) {
+                paginationDiv.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+
+            // 上一頁按鈕
+            if (pagination.has_prev) {
+                html += `<button onclick="loadReviews(${pagination.current_page - 1})" style="padding: 8px 12px; background: #B3811C; color: white; border: none; border-radius: 6px; cursor: pointer;">上一頁</button>`;
+            }
+
+            // 頁碼按鈕
+            const startPage = Math.max(1, pagination.current_page - 2);
+            const endPage = Math.min(pagination.total_pages, pagination.current_page + 2);
+
+            if (startPage > 1) {
+                html += `<button onclick="loadReviews(1)" style="padding: 8px 12px; background: #f8f9fa; color: #333; border: 1px solid #ddd; border-radius: 6px; cursor: pointer;">1</button>`;
+                if (startPage > 2) {
+                    html += `<span style="padding: 8px 4px; color: #666;">...</span>`;
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const isActive = i === pagination.current_page;
+                const bgColor = isActive ? '#B3811C' : '#f8f9fa';
+                const textColor = isActive ? 'white' : '#333';
+                const border = isActive ? 'none' : '1px solid #ddd';
+                
+                html += `<button onclick="loadReviews(${i})" style="padding: 8px 12px; background: ${bgColor}; color: ${textColor}; border: ${border}; border-radius: 6px; cursor: pointer;">${i}</button>`;
+            }
+
+            if (endPage < pagination.total_pages) {
+                if (endPage < pagination.total_pages - 1) {
+                    html += `<span style="padding: 8px 4px; color: #666;">...</span>`;
+                }
+                html += `<button onclick="loadReviews(${pagination.total_pages})" style="padding: 8px 12px; background: #f8f9fa; color: #333; border: 1px solid #ddd; border-radius: 6px; cursor: pointer;">${pagination.total_pages}</button>`;
+            }
+
+            // 下一頁按鈕
+            if (pagination.has_next) {
+                html += `<button onclick="loadReviews(${pagination.current_page + 1})" style="padding: 8px 12px; background: #B3811C; color: white; border: none; border-radius: 6px; cursor: pointer;">下一頁</button>`;
+            }
+
+            // 顯示總頁數資訊
+            html += `<span style="margin-left: 15px; color: #666; font-size: 14px;">第 ${pagination.current_page} 頁，共 ${pagination.total_pages} 頁 (${pagination.total_count} 則評價)</span>`;
+
+            paginationDiv.innerHTML = html;
+        }
+
+        // 點擊模態窗口外部關閉
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('reviewsModal');
+            if (event.target === modal) {
+                closeReviewsModal();
+            }
+        });
+
+        // 關閉按鈕懸停效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeBtn = document.querySelector('#reviewsModal .close');
+            if (closeBtn) {
+                closeBtn.addEventListener('mouseenter', function() {
+                    this.style.color = '#000';
+                });
+                closeBtn.addEventListener('mouseleave', function() {
+                    this.style.color = '#aaa';
+                });
+            }
+        });
+
+        // 顯示回覆模態窗口
+        function showReplyModal(reviewId) {
+            document.getElementById('replyModal').style.display = 'block';
+            document.getElementById('replyReviewId').value = reviewId;
+            document.getElementById('replyContent').value = '';
+            // 重置字數統計
+            document.getElementById('replyCharCount').textContent = '0';
+            document.getElementById('replyContent').focus();
+        }
+
+        // 關閉回覆模態窗口
+        function closeReplyModal() {
+            document.getElementById('replyModal').style.display = 'none';
+        }
+
+        // 提交回覆
+        function submitReply() {
+            const reviewId = document.getElementById('replyReviewId').value;
+            const content = document.getElementById('replyContent').value.trim();
+
+            if (!content) {
+                alert('請輸入回覆內容');
+                return;
+            }
+
+            // 顯示載入狀態
+            const submitBtn = document.querySelector('#replyModal button[onclick="submitReply()"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '提交中...';
+            submitBtn.disabled = true;
+
+            // 發送回覆請求
+            fetch(`/chef/api/reviews/${reviewId}/reply`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    content: content
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('回覆成功！');
+                    closeReplyModal();
+                    // 重新載入評價列表
+                    loadReviews();
+                } else {
+                    alert(data.message || '回覆失敗，請稍後再試');
+                }
+            })
+            .catch(error => {
+                console.error('回覆錯誤:', error);
+                alert('回覆失敗，請稍後再試');
+            })
+            .finally(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+        }
+
+        // 幫助功能
+        function helpWithReview(reviewId) {
+            // TODO: 實作幫助功能
+            alert(`評價 ID: ${reviewId} 的幫助功能開發中...`);
+        }
+    </script>
+
+    <!-- 評價模態窗口 -->
+    <div id="reviewsModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div class="modal-content reviews-modal-content" style="background-color: #fefefe; margin: 2% auto; padding: 0; border: none; border-radius: 10px; width: 90%; max-width: 1000px; max-height: 90vh; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="color: #B3811C; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    ⭐ 我的評價
+                </h3>
+                <span class="close" onclick="closeReviewsModal()" style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1;">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px 30px; max-height: 70vh; overflow-y: auto;">
+                <!-- 篩選和搜尋區域 -->
+                <div class="reviews-filter" style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <label for="ratingFilter" style="font-weight: 500; color: #333;">評分篩選：</label>
+                        <select id="ratingFilter" onchange="filterReviews()" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                            <option value="">全部評分</option>
+                            <option value="5">★★★★★ (5星)</option>
+                            <option value="4">★★★★☆ (4星)</option>
+                            <option value="3">★★★☆☆ (3星)</option>
+                            <option value="2">★★☆☆☆ (2星)</option>
+                            <option value="1">★☆☆☆☆ (1星)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 250px;">
+                        <label for="searchInput" style="font-weight: 500; color: #333;">搜尋：</label>
+                        <input type="text" id="searchInput" placeholder="搜尋評價內容..." onkeyup="handleSearchKeyup(event)" style="flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                        <button onclick="filterReviews()" style="padding: 8px 16px; background: #B3811C; color: white; border: none; border-radius: 6px; cursor: pointer;">搜尋</button>
+                    </div>
+                </div>
+
+                <!-- 載入狀態 -->
+                <div id="reviewsLoading" style="text-align: center; padding: 40px; display: none;">
+                    <div style="color: #666;">載入中...</div>
+                </div>
+
+                <!-- 評價列表 -->
+                <div id="reviewsList">
+                    <!-- 動態載入評價內容 -->
+                </div>
+
+                <!-- 分頁控制 -->
+                <div id="reviewsPagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px;">
+                    <!-- 動態載入分頁按鈕 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 回覆模態窗口 -->
+    <div id="replyModal" class="modal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div class="modal-content" style="background-color: #fefefe; margin: 10% auto; padding: 0; border: none; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="color: #B3811C; margin: 0;">💬 回覆評價</h3>
+                <span class="close" onclick="closeReplyModal()" style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1;">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px 30px;">
+                <input type="hidden" id="replyReviewId" value="">
+                <div style="margin-bottom: 15px;">
+                    <label for="replyContent" style="display: block; font-weight: 500; color: #333; margin-bottom: 8px;">回覆內容：</label>
+                    <textarea 
+                        id="replyContent" 
+                        placeholder="請輸入您的回覆內容..." 
+                        style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical; font-family: inherit;"
+                        maxlength="500"
+                    ></textarea>
+                    <div style="text-align: right; color: #999; font-size: 12px; margin-top: 5px;">
+                        <span id="replyCharCount">0</span>/500 字
+                    </div>
+                </div>
+                <div style="text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button onclick="closeReplyModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">取消</button>
+                    <button onclick="submitReply()" style="padding: 10px 20px; background: #B3811C; color: white; border: none; border-radius: 6px; cursor: pointer;">提交回覆</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 回覆內容字數統計
+        document.addEventListener('DOMContentLoaded', function() {
+            const replyContent = document.getElementById('replyContent');
+            const charCount = document.getElementById('replyCharCount');
+            
+            if (replyContent && charCount) {
+                replyContent.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+
+            // 點擊回覆模態窗口外部關閉
+            window.addEventListener('click', function(event) {
+                const replyModal = document.getElementById('replyModal');
+                if (event.target === replyModal) {
+                    closeReplyModal();
+                }
+            });
+        });
+    </script>
+
+    <!-- 通知中心組件 -->
+    {% include 'notification_component.html' %}
+
+    <!-- 通知中心 JavaScript -->
+    <script>
+        // 通知系統變數
+        let notifications = [];
+        let unreadCount = 0;
+
+        // 載入通知資料
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/api/notifications');
+                const result = await response.json();
+                if (result.success) {
+                    notifications = result.data.notifications;
+                    unreadCount = result.data.unread_count;
+                } else {
+                    console.error('載入通知失敗:', result.message);
+                }
+            } catch (error) {
+                console.error('載入通知錯誤:', error);
+            }
+        }
+
+        // 標記通知為已讀
+        async function markNotificationAsRead(notificationId) {
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}/mark_read`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                if (!result.success) {
+                    console.error('標記已讀失敗:', result.message);
+                }
+            } catch (error) {
+                console.error('標記已讀錯誤:', error);
+            }
+        }
+
+        // 清空所有通知
+        async function clearAllNotifications() {
+            try {
+                const response = await fetch('/api/notifications/clear', {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    notifications = [];
+                    unreadCount = 0;
+                    updateNotifications();
+                    updateNotificationStatus();
+                } else {
+                    console.error('清空通知失敗:', result.message);
+                }
+            } catch (error) {
+                console.error('清空通知錯誤:', error);
+            }
+        }
+
+        // 取得未讀通知數量
+        async function getUnreadCount() {
+            try {
+                const response = await fetch('/api/notifications/unread_count');
+                const result = await response.json();
+                if (result.success) {
+                    unreadCount = result.unread_count;
+                    updateNotificationStatus();
+                } else {
+                    console.error('取得未讀數量失敗:', result.message);
+                }
+            } catch (error) {
+                console.error('取得未讀數量錯誤:', error);
+            }
+        }
+
+        // 切換通知中心顯示狀態
+        async function toggleNotification() {
+            const notificationCenter = document.getElementById('notificationCenter');
+            if (!notificationCenter) {
+                console.error('通知中心元素未找到');
+                return;
+            }
+            
+            if (notificationCenter.style.display === 'none' || !notificationCenter.style.display) {
+                await loadNotifications();
+                updateNotifications();
+                notificationCenter.style.display = 'block';
+            } else {
+                notificationCenter.style.display = 'none';
+            }
+        }
+
+        // 更新通知連結的狀態（未讀提示）
+        function updateNotificationStatus() {
+            const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+            if (!notificationLink) return;
+            
+            if (unreadCount > 0) {
+                notificationLink.style.position = 'relative';
+                notificationLink.innerHTML = `通知中心 <span style="position: absolute; top: -8px; right: -8px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center;">${unreadCount}</span>`;
+            } else {
+                notificationLink.innerHTML = '通知中心';
+            }
+        }
+
+        // 處理通知點擊跳轉
+        function handleNotificationClick(notification) {
+            let targetUrl = '';
+            
+            switch(notification.type) {
+                case 'new_order':
+                    // 新訂單 -> 待接單頁面
+                    targetUrl = '/chef/pending-orders';
+                    break;
+                case 'order_completed':
+                    // 訂單完成 -> 已完成訂單頁面
+                    targetUrl = '/chef/completed-orders';
+                    break;
+                case 'new_review':
+                    // 新評價 -> 廚師儀表板（查看評價）
+                    targetUrl = '/chef/';
+                    break;
+                case 'negotiation_response':
+                    // 議價回應 -> 議價中訂單頁面
+                    targetUrl = '/chef/negotiating-orders';
+                    break;
+                case 'order_accepted':
+                case 'order_rejected':
+                case 'order_ready':
+                    // 訂單狀態更新 -> 對應的訂單詳情
+                    if (notification.order_id) {
+                        targetUrl = `/chef/order/${notification.order_id}`;
+                    }
+                    break;
+                default:
+                    // 預設跳轉到儀表板
+                    targetUrl = '/chef/';
+                    break;
+            }
+            
+            if (targetUrl) {
+                // 關閉通知中心
+                const notificationCenter = document.getElementById('notificationCenter');
+                if (notificationCenter) {
+                    notificationCenter.style.display = 'none';
+                }
+                // 跳轉頁面
+                window.location.href = targetUrl;
+            }
+        }
+
+        // 更新通知列表顯示
+        function updateNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            if (!notificationList) return;
+
+            notificationList.innerHTML = '';
+
+            if (notifications.length === 0) {
+                const li = document.createElement('li');
+                li.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">暫無通知</div>';
+                notificationList.appendChild(li);
+                return;
+            }
+
+            notifications.forEach((notification) => {
+                const li = document.createElement('li');
+                li.className = 'notification-item';
+                if (!notification.is_read) {
+                    li.classList.add('unread');
+                }
+
+                // 通知類型圖標
+                const typeIcon = {
+                    'new_order': '📋',
+                    'order_completed': '✅',
+                    'new_review': '⭐',
+                    'negotiation_response': '💬',
+                    'order_accepted': '✅',
+                    'order_rejected': '❌',
+                    'order_ready': '🍽️',
+                    'review_reply': '💬'
+                };
+                const icon = typeIcon[notification.type] || '📢';
+
+                // 判斷是否為訂單類通知，如果是則顯示訂單編號
+                const orderTypes = ['order_accepted', 'order_rejected', 'order_status_update', 'order_ready', 'order_completed', 'new_order', 'order_negotiation', 'negotiation_response'];
+                const isOrderNotification = orderTypes.includes(notification.type);
+                const orderInfo = isOrderNotification && notification.order_id ? `<span style="color: #007bff; font-size: 12px;">#${notification.order_id}</span> ` : '';
+                
+                li.innerHTML = `
+                    <div class="notification-type type-${notification.type.replace('_', '-')}">${icon}</div>
+                    <div class="notification-content">
+                        <div style="font-weight: ${!notification.is_read ? 'bold' : 'normal'};">${orderInfo}${notification.title}</div>
+                        <div style="margin-top: 4px; font-size: 14px; color: #666;">${notification.content}</div>
+                        <div class="notification-time">${notification.time_ago}</div>
+                    </div>
+                `;
+                
+                li.addEventListener('click', async () => {
+                    if (!notification.is_read) {
+                        await markNotificationAsRead(notification.id);
+                        notification.is_read = true;
+                        unreadCount = Math.max(0, unreadCount - 1);
+                        li.classList.remove('unread');
+                        li.querySelector('.notification-content > div').style.fontWeight = 'normal';
+                        updateNotificationStatus();
+                    }
+                    
+                    // 根據通知類型跳轉到對應頁面
+                    handleNotificationClick(notification);
+                });
+
+                notificationList.appendChild(li);
+            });
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            await getUnreadCount();
+            
+            document.addEventListener('click', function(e) {
+                const notificationCenter = document.getElementById('notificationCenter');
+                const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+                
+                if (notificationCenter && notificationLink && 
+                    !notificationCenter.contains(e.target) && !notificationLink.contains(e.target)) {
+                    notificationCenter.style.display = 'none';
+                }
+            });
+        });
+
+        // 定期更新未讀通知數量
+        setInterval(getUnreadCount, 30000); // 每30秒更新一次
     </script>
 </body>
 </html> 

@@ -17,6 +17,7 @@ from routers.auth import router as auth_router
 from routers.customer import router as customer_router
 from routers.chef import router as chef_router
 from routers.voice import router as voice_router
+from routers.notification import router as notification_router
 
 from config import settings
 
@@ -46,6 +47,7 @@ app.include_router(auth_router, prefix="/auth")
 app.include_router(customer_router, prefix="/customer")
 app.include_router(chef_router, prefix="/chef")
 app.include_router(voice_router)
+app.include_router(notification_router)
 
 # @app.get("/")
 # def index(request: Request, db=Depends(get_db)):

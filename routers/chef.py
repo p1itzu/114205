@@ -13,7 +13,17 @@ from models.order import Order, OrderStatus, OrderStatusHistory, Negotiation, Or
 from models.user import User
 from models.chef import ChefProfile, ChefSpecialty, ChefSignatureDish
 from models.message import Message
+from models.review import Review
+from models.notification import Notification, NotificationType
+from routers.notification import create_notification
+from typing import Optional
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from datetime import datetime
 from utils.dependencies import require_chef, common_template_params
+
+class ReplyRequest(BaseModel):
+    content: str
 
 router = APIRouter(dependencies=[Depends(require_chef)])
 templates = Jinja2Templates(directory="templates")
@@ -43,15 +53,163 @@ def chef_dashboard(
         Order.chef_id == current_user.id
     ).order_by(Order.created_at.desc()).limit(10).all()
     
+    # 獲取廚師的評價（最新5則）
+    my_reviews = db.query(Review).filter(
+        Review.reviewee_id == current_user.id
+    ).order_by(Review.created_at.desc()).limit(5).all()
+    
+    # 獲取廚師資料（用於顯示平均評分）
+    chef_profile = db.query(ChefProfile).filter(
+        ChefProfile.user_id == current_user.id
+    ).first()
+    
     return templates.TemplateResponse(
         "chef_dashboard.html",
         {
             **commons,
             "current_user": current_user,
             "pending_orders": pending_orders,
-            "my_orders": my_orders
+            "my_orders": my_orders,
+            "my_reviews": my_reviews,
+            "chef_profile": chef_profile
         }
     )
+
+
+@router.get("/api/reviews")
+def get_chef_reviews_api(
+    page: int = 1,
+    per_page: int = 10,
+    rating: Optional[int] = None,
+    search: Optional[str] = None,
+    current_user: User = Depends(require_chef),
+    db: Session = Depends(get_db)
+):
+    """獲取廚師評價API（支援篩選和分頁）"""
+    
+    # 基本查詢
+    query = db.query(Review).filter(Review.reviewee_id == current_user.id)
+    
+    # 評分篩選
+    if rating is not None:
+        query = query.filter(Review.rating == rating)
+    
+    # 搜尋篩選
+    if search:
+        search_term = f"%{search}%"
+        query = query.filter(
+            (Review.content.ilike(search_term)) | 
+            (Review.title.ilike(search_term))
+        )
+    
+    # 總數統計
+    total_count = query.count()
+    
+    # 分頁
+    offset = (page - 1) * per_page
+    reviews = query.order_by(Review.created_at.desc()).offset(offset).limit(per_page).all()
+    
+    # 格式化回傳數據
+    reviews_data = []
+    for review in reviews:
+        reviewer = db.query(User).filter(User.id == review.reviewer_id).first()
+        order = db.query(Order).filter(Order.id == review.order_id).first()
+        
+        reviews_data.append({
+            "id": review.id,
+            "rating": review.rating,
+            "title": review.title,
+            "content": review.content,
+            "taste_rating": review.taste_rating,
+            "service_rating": review.service_rating,
+            "hygiene_rating": review.hygiene_rating,
+            "delivery_rating": review.delivery_rating,
+            "created_at": review.created_at.strftime("%Y-%m-%d"),
+            "reviewer_name": reviewer.name if reviewer else "匿名用戶",
+            "order_number": f"#{order.id}" if order else "N/A",
+            "is_verified": review.is_verified,
+            "reply_content": review.reply_content,
+            "reply_at": review.reply_at.strftime("%Y-%m-%d") if review.reply_at else None
+        })
+    
+    # 計算分頁資訊
+    total_pages = (total_count + per_page - 1) // per_page
+    
+    return JSONResponse({
+        "success": True,
+        "data": {
+            "reviews": reviews_data,
+            "pagination": {
+                "current_page": page,
+                "per_page": per_page,
+                "total_count": total_count,
+                "total_pages": total_pages,
+                "has_next": page < total_pages,
+                "has_prev": page > 1
+            }
+        }
+    })
+
+
+@router.post("/api/reviews/{review_id}/reply")
+def reply_to_review(
+    review_id: int,
+    reply_request: ReplyRequest,
+    current_user: User = Depends(require_chef),
+    db: Session = Depends(get_db)
+):
+    """廚師回覆評價"""
+    
+    # 查找評價
+    review = db.query(Review).filter(
+        Review.id == review_id,
+        Review.reviewee_id == current_user.id  # 確保只能回覆自己收到的評價
+    ).first()
+    
+    if not review:
+        return JSONResponse(
+            status_code=404,
+            content={"success": False, "message": "評價不存在或無權限"}
+        )
+    
+    # 檢查是否已經回覆過
+    if review.reply_content:
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "message": "該評價已經回覆過了"}
+        )
+    
+    # 更新回覆內容
+    review.reply_content = reply_request.content
+    review.reply_at = datetime.utcnow()
+    
+    try:
+        # 創建通知給顧客：廚師回覆評價
+        create_notification(
+            db=db,
+            user_id=review.reviewer_id,
+            notification_type=NotificationType.REVIEW_REPLY,
+            title="廚師回覆了您的評價",
+            content=f"廚師回覆了您對訂單#{review.order_id} 的評價！",
+            order_id=review.order_id,
+            review_id=review.id
+        )
+        
+        db.commit()
+        return JSONResponse({
+            "success": True,
+            "message": "回覆成功",
+            "data": {
+                "reply_content": review.reply_content,
+                "reply_at": review.reply_at.strftime("%Y-%m-%d")
+            }
+        })
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "回覆失敗，請稍後再試"}
+        )
 
 @router.get("/pending-orders", name="chef_pending_orders")
 def chef_pending_orders(
@@ -174,6 +332,16 @@ def accept_order(
         )
         db.add(status_history)
         
+        # 創建通知給顧客：廚師接受訂單
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_ACCEPTED,
+            title="訂單已被接受",
+            content=f"{current_user.name}廚師接受了您的訂單！正在進行議價中...",
+            order_id=order.id
+        )
+        
         db.commit()
         
         return JSONResponse(
@@ -234,6 +402,16 @@ def reject_order(
             notes=f"廚師 {current_user.email} 拒絕接單，原因：{reject_data.reason}。顧客可重新選擇廚師"
         )
         db.add(status_history)
+        
+        # 創建通知給顧客：廚師拒絕訂單
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_REJECTED,
+            title="訂單被拒絕",
+            content=f"{current_user.name}廚師拒絕了您的訂單，原因：{reject_data.reason}。您可以重新選擇廚師。",
+            order_id=order.id
+        )
         
         db.commit()
         
@@ -555,6 +733,16 @@ def chef_negotiate(
         )
         db.add(status_history)
         
+        # 創建通知給顧客：廚師提出議價
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_NEGOTIATION,
+            title="廚師提出議價",
+            content=f"{current_user.name}廚師提出議價 NT${negotiation_data.proposed_amount}，請查看詳情！",
+            order_id=order.id
+        )
+        
         db.commit()
         
         return JSONResponse(
@@ -670,6 +858,16 @@ def mark_order_ready(
             notes=f"廚師標記餐點製作完成"
         )
         db.add(status_history)
+        
+        # 創建通知給顧客：餐點製作完成
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_READY,
+            title="餐點製作完成",
+            content=f"訂單#{order.id} 餐點製作完成，請準備取餐！",
+            order_id=order.id
+        )
         
         db.commit()
         
@@ -794,6 +992,16 @@ def submit_pricing(
         )
         db.add(status_history)
         
+        # 創建通知給顧客：廚師提交估價
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_NEGOTIATION,
+            title="廚師提交了估價",
+            content=f"{current_user.name}廚師提交了估價 NT${pricing_data.total_amount}，請查看並回應！",
+            order_id=order.id
+        )
+        
         db.commit()
         
         return JSONResponse(
@@ -885,6 +1093,27 @@ def respond_counter_offer(
             message = "已拒絕顧客議價，顧客可重新選擇廚師"
         
         db.add(status_history)
+        
+        # 創建通知給顧客：廚師回應再議價
+        if is_accepted:
+            create_notification(
+                db=db,
+                user_id=order.customer_id,
+                notification_type=NotificationType.ORDER_ACCEPTED,
+                title="廚師接受了您的議價",
+                content=f"{current_user.name}廚師接受了您的議價 NT${negotiation.proposed_amount}，訂單確認成功！",
+                order_id=order.id
+            )
+        else:
+            create_notification(
+                db=db,
+                user_id=order.customer_id,
+                notification_type=NotificationType.ORDER_REJECTED,
+                title="廚師拒絕了您的議價",
+                content=f"{current_user.name}廚師拒絕了您的議價，您可以重新選擇廚師。",
+                order_id=order.id
+            )
+        
         db.commit()
         
         return JSONResponse(
@@ -1055,6 +1284,16 @@ def submit_final_pricing(
             notes=f"廚師提交最終定價：NT${total_amount}，等待顧客確認"
         )
         db.add(status_history)
+        
+        # 創建通知給顧客：廚師提交最終定價
+        create_notification(
+            db=db,
+            user_id=order.customer_id,
+            notification_type=NotificationType.ORDER_NEGOTIATION,
+            title="廚師提交了最終定價",
+            content=f"{current_user.name}廚師提交了最終定價 NT${total_amount}，請查看並確認！",
+            order_id=order.id
+        )
         
         db.commit()
         

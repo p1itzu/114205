@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>廚師估價 - 訂單 #{{ order.order_number }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/notification.css') }}">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -346,6 +347,7 @@
             <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
             <a href="{{ url_for('chef_accepted_orders') }}">我的訂單</a>
             <a href="#">客服聯絡</a>
+            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
         </div>
         <div class="user-info">
             <div class="username">{{ current_user.email }}</div>
@@ -549,6 +551,243 @@
                 });
             });
         }
+    </script>
+
+    <!-- 通知中心組件 -->
+    {% include 'notification_component.html' %}
+
+    <!-- 通知中心 JavaScript -->
+    <script>
+        // 通知系統變數
+        let notifications = [];
+        let unreadCount = 0;
+
+        // 載入通知資料
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/api/notifications');
+                const result = await response.json();
+                if (result.success) {
+                    notifications = result.data.notifications;
+                    unreadCount = result.data.unread_count;
+                } else {
+                    console.error('載入通知失敗:', result.message);
+                }
+            } catch (error) {
+                console.error('載入通知錯誤:', error);
+            }
+        }
+
+        // 標記通知為已讀
+        async function markNotificationAsRead(notificationId) {
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}/mark_read`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                if (!result.success) {
+                    console.error('標記已讀失敗:', result.message);
+                }
+            } catch (error) {
+                console.error('標記已讀錯誤:', error);
+            }
+        }
+
+        // 清空所有通知
+        async function clearAllNotifications() {
+            try {
+                const response = await fetch('/api/notifications/clear', {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    notifications = [];
+                    unreadCount = 0;
+                    updateNotifications();
+                    updateNotificationStatus();
+                } else {
+                    console.error('清空通知失敗:', result.message);
+                }
+            } catch (error) {
+                console.error('清空通知錯誤:', error);
+            }
+        }
+
+        // 取得未讀通知數量
+        async function getUnreadCount() {
+            try {
+                const response = await fetch('/api/notifications/unread_count');
+                const result = await response.json();
+                if (result.success) {
+                    unreadCount = result.unread_count;
+                    updateNotificationStatus();
+                } else {
+                    console.error('取得未讀數量失敗:', result.message);
+                }
+            } catch (error) {
+                console.error('取得未讀數量錯誤:', error);
+            }
+        }
+
+        // 切換通知中心顯示狀態
+        async function toggleNotification() {
+            const notificationCenter = document.getElementById('notificationCenter');
+            if (!notificationCenter) {
+                console.error('通知中心元素未找到');
+                return;
+            }
+            
+            if (notificationCenter.style.display === 'none' || !notificationCenter.style.display) {
+                await loadNotifications();
+                updateNotifications();
+                notificationCenter.style.display = 'block';
+            } else {
+                notificationCenter.style.display = 'none';
+            }
+        }
+
+        // 更新通知連結的狀態（未讀提示）
+        function updateNotificationStatus() {
+            const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+            if (!notificationLink) return;
+            
+            if (unreadCount > 0) {
+                notificationLink.style.position = 'relative';
+                notificationLink.innerHTML = `通知中心 <span style="position: absolute; top: -8px; right: -8px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center;">${unreadCount}</span>`;
+            } else {
+                notificationLink.innerHTML = '通知中心';
+            }
+        }
+
+        // 處理通知點擊跳轉
+        function handleNotificationClick(notification) {
+            let targetUrl = '';
+            
+            switch(notification.type) {
+                case 'new_order':
+                    // 新訂單 -> 待接單頁面
+                    targetUrl = '/chef/pending-orders';
+                    break;
+                case 'order_completed':
+                    // 訂單完成 -> 已完成訂單頁面
+                    targetUrl = '/chef/completed-orders';
+                    break;
+                case 'new_review':
+                    // 新評價 -> 廚師儀表板（查看評價）
+                    targetUrl = '/chef/';
+                    break;
+                case 'negotiation_response':
+                    // 議價回應 -> 議價中訂單頁面
+                    targetUrl = '/chef/negotiating-orders';
+                    break;
+                case 'order_accepted':
+                case 'order_rejected':
+                case 'order_ready':
+                    // 訂單狀態更新 -> 對應的訂單詳情
+                    if (notification.order_id) {
+                        targetUrl = `/chef/order/${notification.order_id}`;
+                    }
+                    break;
+                default:
+                    // 預設跳轉到儀表板
+                    targetUrl = '/chef/';
+                    break;
+            }
+            
+            if (targetUrl) {
+                // 關閉通知中心
+                const notificationCenter = document.getElementById('notificationCenter');
+                if (notificationCenter) {
+                    notificationCenter.style.display = 'none';
+                }
+                // 跳轉頁面
+                window.location.href = targetUrl;
+            }
+        }
+
+        // 更新通知列表顯示
+        function updateNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            if (!notificationList) return;
+
+            notificationList.innerHTML = '';
+
+            if (notifications.length === 0) {
+                const li = document.createElement('li');
+                li.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">暫無通知</div>';
+                notificationList.appendChild(li);
+                return;
+            }
+
+            notifications.forEach((notification) => {
+                const li = document.createElement('li');
+                li.className = 'notification-item';
+                if (!notification.is_read) {
+                    li.classList.add('unread');
+                }
+
+                // 通知類型圖標
+                const typeIcon = {
+                    'new_order': '📋',
+                    'order_completed': '✅',
+                    'new_review': '⭐',
+                    'negotiation_response': '💬',
+                    'order_accepted': '✅',
+                    'order_rejected': '❌',
+                    'order_ready': '🍽️',
+                    'review_reply': '💬'
+                };
+                const icon = typeIcon[notification.type] || '📢';
+
+                // 判斷是否為訂單類通知，如果是則顯示訂單編號
+                const orderTypes = ['order_accepted', 'order_rejected', 'order_status_update', 'order_ready', 'order_completed', 'new_order', 'order_negotiation', 'negotiation_response'];
+                const isOrderNotification = orderTypes.includes(notification.type);
+                const orderInfo = isOrderNotification && notification.order_id ? `<span style="color: #007bff; font-size: 12px;">#${notification.order_id}</span> ` : '';
+                
+                li.innerHTML = `
+                    <div class="notification-type type-${notification.type.replace('_', '-')}">${icon}</div>
+                    <div class="notification-content">
+                        <div style="font-weight: ${!notification.is_read ? 'bold' : 'normal'};">${orderInfo}${notification.title}</div>
+                        <div style="margin-top: 4px; font-size: 14px; color: #666;">${notification.content}</div>
+                        <div class="notification-time">${notification.time_ago}</div>
+                    </div>
+                `;
+                
+                li.addEventListener('click', async () => {
+                    if (!notification.is_read) {
+                        await markNotificationAsRead(notification.id);
+                        notification.is_read = true;
+                        unreadCount = Math.max(0, unreadCount - 1);
+                        li.classList.remove('unread');
+                        li.querySelector('.notification-content > div').style.fontWeight = 'normal';
+                        updateNotificationStatus();
+                    }
+                    
+                    // 根據通知類型跳轉到對應頁面
+                    handleNotificationClick(notification);
+                });
+
+                notificationList.appendChild(li);
+            });
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            await getUnreadCount();
+            
+            document.addEventListener('click', function(e) {
+                const notificationCenter = document.getElementById('notificationCenter');
+                const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+                
+                if (notificationCenter && notificationLink && 
+                    !notificationCenter.contains(e.target) && !notificationLink.contains(e.target)) {
+                    notificationCenter.style.display = 'none';
+                }
+            });
+        });
+
+        // 定期更新未讀通知數量
+        setInterval(getUnreadCount, 30000); // 每30秒更新一次
     </script>
 </body>
 

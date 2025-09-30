@@ -28,6 +28,10 @@ class Review(Base):
     is_public = Column(Boolean, default=True)  # 是否公開顯示
     is_verified = Column(Boolean, default=False)  # 是否已驗證
     
+    # 廚師回覆
+    reply_content = Column(Text, nullable=True)  # 廚師回覆內容
+    reply_at = Column(DateTime, nullable=True)   # 回覆時間
+    
     # 時間戳記
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

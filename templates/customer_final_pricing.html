@@ -164,7 +164,13 @@
                             icon: "success",
                             confirmButtonText: "確認"
                         }).then(() => {
-                            window.location.href = "{{ url_for('customer_order_list') }}";
+                            // 根據操作結果決定跳轉頁面
+                            if (isAccepted) {
+                                window.location.href = "{{ url_for('customer_order_list') }}";
+                            } else {
+                                // 拒絕最終定價，跳轉到重新選擇廚師頁面
+                                window.location.href = `/customer/order/{{ order.id }}/reselect_chef`;
+                            }
                         });
                     } else {
                         Swal.fire({
