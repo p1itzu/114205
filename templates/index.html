@@ -534,8 +534,8 @@
                         <div class="setting-desc">查看申請審核進度</div>
                     </div>
                     <div class="setting-arrow">→</div>
-                </div>
-                
+            </div>
+
                 <hr>
                 
                 <div class="setting-item" onclick="window.location.href='/auth/logout'">
@@ -557,17 +557,17 @@
                 <span class="close" onclick="closeProfileModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="profile-form" enctype="multipart/form-data">
+            <form id="profile-form" enctype="multipart/form-data">
                     <div class="profile-edit-section">
                         <!-- 頭像編輯 -->
                         <div class="avatar-edit-container">
                             <img id="profile-avatar" src="{{ avatar_url }}" alt="個人頭像" class="profile-edit-avatar">
-                            <input type="file" id="avatar-input" name="avatar" accept="image/*" style="display: none;">
+                        <input type="file" id="avatar-input" name="avatar" accept="image/*" style="display: none;">
                             <button type="button" class="avatar-edit-btn" onclick="document.getElementById('avatar-input').click()">
                                 📷 更換頭像
                             </button>
-                        </div>
-                        
+                    </div>
+
                         <!-- 基本資料 -->
                         <div class="form-group-modern">
                             <label for="name">姓名</label>
@@ -627,7 +627,7 @@
                         </div>
                     </div>
                 </form>
-            </div>
+                </div>
         </div>
     </div>
 
@@ -727,10 +727,10 @@
                     alert('個人資料更新成功！');
                     closeProfileModal();
                     // 稍微延遲後重新載入頁面，確保數據庫更新完成
-                    setTimeout(() => {
+                setTimeout(() => {
                         window.location.reload();
                     }, 500);
-                } else {
+            } else {
                     throw new Error(result.message || '更新失敗');
                 }
                 
@@ -754,7 +754,7 @@
             if (event.target === profileModal) {
                 profileModal.style.display = 'none';
             }
-            
+
             // 關閉廚師下拉選單（如果點擊的不是下拉按鈕）
             if (!event.target.matches('.dropdown-btn')) {
                 var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -766,7 +766,7 @@
                 }
             }
         }
-        
+
         // 廚師下拉選單切換函數
         function toggleDropdown() {
             const dropdown = document.getElementById("orderDropdown");

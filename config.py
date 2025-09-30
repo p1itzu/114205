@@ -10,5 +10,9 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
     BASE_URL: str = "http://localhost:8000"
+    OPENAI_API_KEY: str
 
 settings = Settings()
+
+def get_settings():
+    return settings

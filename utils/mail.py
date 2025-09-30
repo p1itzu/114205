@@ -40,7 +40,7 @@ def sendmail(email, verification_url):
         smtp = SMTP('smtp.gmail.com', 587)
         smtp.ehlo()
         smtp.starttls()
-        smtp.login('11336017@ntub.edu.tw', 'vhvx osui fasc maks')
+        smtp.login('11336017@ntub.edu.tw', 'pzap ncvo mkfz xkaj')
 
         smtp.sendmail(from_addr, to_addr, msg.as_string())
         smtp.quit()

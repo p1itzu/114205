@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增訂單</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+
+        .chat-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .info-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-header {
+            background: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: #6c757d;
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: white;
+            color: #333;
+            align-self: flex-start;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            border-color: #6c757d;
+            box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.1);
+        }
+
+        .send-btn, .reset-btn {
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .send-btn {
+            background: #333;
+            color: white;
+        }
+
+        .send-btn:hover {
+            background: #555;
+        }
+
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+
+        .section {
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #6c757d;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .section-content {
+            background: #f8f9fa;
+            padding: 15px;
+            min-height: 150px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .status-complete {
+            background: #28a745;
+        }
+
+        .status-incomplete {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .data-item {
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #6c757d;
+        }
+
+        .data-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .data-value {
+            color: #666;
+        }
+
+        .dish-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .dish-name {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .dish-details {
+            display: grid;
+            gap: 4px;
+            font-size: 14px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .detail-label {
+            color: #6c757d;
+        }
+
+        .detail-value {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .loading {
+            opacity: 0.7;
+        }
+
+        .loading .send-btn {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .welcome-message {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .welcome-message h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .welcome-message p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .example-inputs {
+            margin-top: 15px;
+        }
+
+        .example-tag {
+            display: inline-block;
+            background: #e9ecef;
+            color: #333;
+            padding: 6px 12px;
+            margin: 4px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #ddd;
+        }
+
+        .example-tag:hover {
+            background: #dee2e6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .info-panel {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+        }
+
+        /* 自定義滾動條 */
+        .chat-messages::-webkit-scrollbar,
+        .section-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track,
+        .section-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb,
+        .section-content::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover,
+        .section-content::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 聊天面板 -->
+        <div class="chat-panel">
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <h3>訂單</h3>
+                    <p>我是您的專屬訂餐助手，請告訴我您想要吃的菜，我會幫您整理完整的訂單。</p>
+                    <p>您可以隨意輸入，比如：</p>
+                    <div class="example-inputs">
+                        <span class="example-tag" onclick="insertExample('明天中午12點我要外送一份宮保雞丁')">明天中午12點我要外送一份宮保雞丁</span>
+                        <span class="example-tag" onclick="insertExample('我要自取，點兩份蛋炒飯，不要太辣')">我要自取，點兩份蛋炒飯，不要太辣</span>
+                        <span class="example-tag" onclick="insertExample('地址是台北市信義區信義路五段7號')">地址是台北市信義區信義路五段7號</span>
+                        <span class="example-tag" onclick="insertExample('後天晚上6點用餐')">後天晚上6點用餐</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <div class="input-group">
+                    <input type="text" 
+                           class="message-input" 
+                           id="messageInput" 
+                           placeholder="輸入您的訂餐需求..." 
+                           onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendMessage()">
+                        發送
+                    </button>
+                    <button class="reset-btn" onclick="resetConversation()">
+                        重置
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 資訊面板 -->
+        <div class="info-panel">
+            <!-- 訂單狀態 -->
+            <div class="section">
+                <div class="section-header status-incomplete" id="statusHeader">
+                    訂單資訊收集中
+                </div>
+                <div class="section-content" id="statusContent">
+                    <div class="empty-state">
+                        開始對話來收集訂單資訊...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 已收集的資料 -->
+            <div class="section">
+                <div class="section-header">
+                    已收集資料
+                </div>
+                <div class="section-content" id="collectedData">
+                    <div class="empty-state">
+                        尚未收集到任何資料
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isLoading = false;
+
+        function insertExample(text) {
+            document.getElementById('messageInput').value = text;
+            document.getElementById('messageInput').focus();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message || isLoading) return;
+
+            // 顯示使用者訊息
+            addMessage(message, 'user');
+            input.value = '';
+            setLoading(true);
+
+            try {
+                const formData = new FormData();
+                formData.append('user_message', message);
+
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // 顯示機器人回應
+                    addMessage(result.response, 'bot');
+                    
+                    // 更新收集的資料
+                    updateCollectedData(result.collected_data);
+                    
+                    // 更新狀態
+                    updateOrderStatus(result.validation);
+                } else {
+                    addMessage(`錯誤：${result.error}`, 'bot');
+                }
+            } catch (error) {
+                addMessage(`系統錯誤：${error.message}`, 'bot');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function addMessage(content, type) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            messageDiv.innerHTML = content.replace(/\n/g, '<br>');
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function updateCollectedData(data) {
+            const container = document.getElementById('collectedData');
+            
+            if (!data || (Object.keys(data.預訂資訊).length === 0 && data.菜品資訊.length === 0)) {
+                container.innerHTML = '<div class="empty-state">尚未收集到任何資料</div>';
+                return;
+            }
+
+            let html = '';
+            
+            // 預訂資訊
+            if (Object.keys(data.預訂資訊).length > 0) {
+                html += '<div style="font-weight: bold; color: #495057; margin-bottom: 10px;">預訂資訊</div>';
+                for (const [key, value] of Object.entries(data.預訂資訊)) {
+                    html += `<div class="data-item">
+                        <div class="data-label">${key}</div>
+                        <div class="data-value">${value}</div>
+                    </div>`;
+                }
+            }
+            
+            // 菜品資訊
+            if (data.菜品資訊.length > 0) {
+                html += '<div style="font-weight: bold; color: #495057; margin: 15px 0 10px 0;">菜品資訊</div>';
+                data.菜品資訊.forEach((dish, index) => {
+                    html += `<div class="dish-item">
+                        <div class="dish-name">第 ${index + 1} 道：${dish.菜品名稱}</div>
+                        <div class="dish-details">`;
+                    
+                    for (const [key, value] of Object.entries(dish)) {
+                        if (key !== '菜品名稱') {
+                            html += `<div class="detail-row">
+                                <span class="detail-label">${key}:</span>
+                                <span class="detail-value">${value}</span>
+                            </div>`;
+                        }
+                    }
+                    
+                    html += '</div></div>';
+                });
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function updateOrderStatus(validation) {
+            const statusHeader = document.getElementById('statusHeader');
+            const statusContent = document.getElementById('statusContent');
+            
+            if (validation.ready_for_db) {
+                statusHeader.className = 'section-header status-complete';
+                statusHeader.innerHTML = '訂單資訊完整';
+                statusContent.innerHTML = `
+                    <div class="data-item" style="border-left-color: #28a745;">
+                        <div class="data-label">狀態</div>
+                        <div class="data-value">可以存入資料庫並送給廚師</div>
+                    </div>
+                    <div class="data-item" style="border-left-color: #28a745;">
+                        <div class="data-label">完整性</div>
+                        <div class="data-value">所有必要資訊已齊全</div>
+                    </div>
+                `;
+            } else {
+                statusHeader.className = 'section-header status-incomplete';
+                statusHeader.innerHTML = '訂單資訊收集中';
+                
+                let html = '';
+                if (validation.critical_issues && validation.critical_issues.length > 0) {
+                    html += `<div class="data-item" style="border-left-color: #ffc107;">
+                        <div class="data-label">主要問題</div>
+                        <div class="data-value">${validation.critical_issues.join(' | ')}</div>
+                    </div>`;
+                }
+                
+                html += `<div class="data-item" style="border-left-color: #dc3545;">
+                    <div class="data-label">缺少欄位</div>
+                    <div class="data-value">${validation.missing_fields.length} 個</div>
+                </div>`;
+                
+                if (validation.oral_questions && validation.oral_questions.length > 0) {
+                    html += `<div class="data-item" style="border-left-color: #17a2b8;">
+                        <div class="data-label">待確認</div>
+                        <div class="data-value">${validation.oral_questions.length} 個問題待回答</div>
+                    </div>`;
+                }
+                
+                statusContent.innerHTML = html;
+            }
+        }
+
+        async function resetConversation() {
+            if (!confirm('確定要重置對話嗎？這將清除所有收集的資料。')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/reset', {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    // 清除聊天記錄
+                    document.getElementById('chatMessages').innerHTML = `
+                        <div class="welcome-message">
+                            <h3>歡迎使用訂單收集測試系統</h3>
+                            <p>我是您的專屬訂餐助手，請告訴我您想要的餐點資訊，我會幫您整理完整的訂單。</p>
+                            <p>您可以隨意輸入，比如：</p>
+                            <div class="example-inputs">
+                                <span class="example-tag" onclick="insertExample('明天中午12點我要外送一份宮保雞丁')">明天中午12點我要外送一份宮保雞丁</span>
+                                <span class="example-tag" onclick="insertExample('我要自取，點兩份蛋炒飯，不要太辣')">我要自取，點兩份蛋炒飯，不要太辣</span>
+                                <span class="example-tag" onclick="insertExample('地址是台北市信義區信義路五段7號')">地址是台北市信義區信義路五段7號</span>
+                                <span class="example-tag" onclick="insertExample('後天晚上6點用餐')">後天晚上6點用餐</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 重置資料顯示
+                    document.getElementById('collectedData').innerHTML = '<div class="empty-state">尚未收集到任何資料</div>';
+                    
+                    // 重置狀態
+                    const statusHeader = document.getElementById('statusHeader');
+                    const statusContent = document.getElementById('statusContent');
+                    statusHeader.className = 'section-header status-incomplete';
+                    statusHeader.innerHTML = '訂單資訊收集中';
+                    statusContent.innerHTML = '<div class="empty-state">開始對話來收集訂單資訊...</div>';
+                    
+                    // 清除輸入框
+                    document.getElementById('messageInput').value = '';
+                }
+            } catch (error) {
+                alert('重置失敗：' + error.message);
+            }
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            const container = document.querySelector('.chat-input');
+            if (loading) {
+                container.classList.add('loading');
+            } else {
+                container.classList.remove('loading');
+            }
+        }
+
+        // 頁面載入完成後聚焦輸入框
+        window.addEventListener('load', function() {
+            document.getElementById('messageInput').focus();
+        });
+    </script>
+</body>
+</html>
