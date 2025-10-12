@@ -55,6 +55,27 @@
     .success.fade-out {
       opacity: 0;
     }
+
+    /* Logo 樣式 */
+    .auth-logo {
+      width: 100px;
+      height: 100px;
+      display: block;
+      margin: 0 auto 20px;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
+      animation: fadeInDown 0.6s ease;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
@@ -64,6 +85,7 @@
       已經有帳號？<a href="{{ url_for('login') }}" class="login-button">登入</a>
     </div>
     <div class="form-container">
+      <img src="/static/imgs/logo.png" alt="味你而煮 Logo" class="auth-logo">
       <h2>Welcome to 味你而煮！</h2>
       <form action="{{ url_for('signup') }}" method="post" id="signup-form">
         <input type="text" name="name" placeholder="Name" required>

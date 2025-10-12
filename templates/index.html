@@ -9,7 +9,7 @@
     <link rel="icon" type="image/x-icon" href="/static/imgs/favicon.ico">
     <link href="static/css/index.css" rel="stylesheet" />
     <link href="static/css/notification.css" rel="stylesheet" />
-    <title>代做菜媒合平台</title>
+    <title>味你而煮 - 代做菜媒合平台</title>
     
     <style>
         /* 現代化設定模態窗口樣式 */
@@ -457,37 +457,468 @@
             {% endif %}
         </div>
     </div>
-    <div class="content">
-        <h1>歡迎來到我們的網站</h1>
-        <p>這是一個代做菜的媒合平台。</p>
-    </div>
-    <div class="content">
-        <div class="section">
-            <h3>平台簡介</h3>
-            <p>
-                平台旨在為忙碌的現代人提供便捷的餐食解決方案。無論是因工作繁忙、聚會需要，或是單純想享受家常美味卻無暇下廚，平台都能幫助用戶快速找到合適的代做菜服務。
-                <br><br>
-                使用者只需透過簡單的操作，即可瀏覽多樣菜單、預約代做菜服務，並選擇自取或外送。平台同時提供代做菜師傅資訊與評價，保障用戶的選擇品質與餐食安全。
-                <br><br>
-                我們致力於打造一個 <strong>方便、快速、安全</strong> 的用餐媒合體驗，讓每一位用戶都能輕鬆享受美味料理，減少生活煩惱。
-            </p>
-        </div>
-        <div class="section">
-            <h3>流程介紹</h3>
-            <p>1. 選擇角色（廚師 / 顧客）</p>
-            <p>2. 瀏覽或上架菜單</p>
-            <p>3. 下單或接單</p>
-            <p>4. 完成訂單並留下評價</p>
-        </div>
-        <div class="section">
-            <h3>最新公告</h3>
-            <p>春節期間訂單調整時間請提前查詢！</p>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <img src="/static/imgs/logo.png" alt="味你而煮 Logo" class="hero-logo">
+            <h1 class="hero-title">味你而煮</h1>
+            <p class="hero-subtitle">專業廚師為您服務，讓美味料理走進您的生活</p>
+            <p class="hero-description">無論是家庭聚餐、商務宴請，還是日常便餐，我們為您連結專業廚師，提供客製化的美食體驗</p>
+            <div class="hero-buttons">
+                {% if user %}
+                    {% if user.role and user.role.value == 'chef' %}
+                        <a href="{{ url_for('chef_pending_orders') }}" class="btn-primary">查看訂單</a>
+                        <a href="{{ url_for('chef_profile', chef_id=user.id) }}" class="btn-secondary">我的資料</a>
+                    {% else %}
+                        <a href="{{ url_for('order_step0') }}" class="btn-primary">立即預訂</a>
+                        <a href="/customer/cooking_method" class="btn-secondary">料理建議</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ url_for('signup') }}" class="btn-primary">立即註冊</a>
+                    <a href="{{ url_for('login') }}" class="btn-secondary">會員登入</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 
+    <!-- About Section -->
+    <div class="about-section">
+        <div class="about-container">
+            <h2 class="section-title">平台簡介</h2>
+            <div class="about-content">
+                <p class="about-paragraph">
+                    本平台旨在為忙碌的現代人提供便捷的餐食解決方案。無論是因工作繁忙、聚會需要，或是單純想享受家常美味卻無暇下廚，平台都能幫助用戶快速找到合適的代做菜服務。
+                </p>
+                <p class="about-paragraph">
+                    使用者只需透過簡單的操作，即可瀏覽多樣菜單、預約代做菜服務，並選擇自取或外送。平台同時提供代做菜師傅資訊與評價，保障用戶的選擇品質與餐食安全。
+                </p>
+                <p class="about-paragraph highlight">
+                    我們致力於打造一個 <strong>方便、快速、安全</strong> 的用餐媒合體驗，讓每一位用戶都能輕鬆享受美味料理，減少生活煩惱。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <!-- <div class="features-section">
+        <h2 class="section-title">為什麼選擇我們？</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-number">01</div>
+                <h3>快速配對</h3>
+                <p>智能媒合系統，5分鐘內為您找到最適合的專業廚師</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-number">02</div>
+                <h3>安全保障</h3>
+                <p>所有廚師經過嚴格認證，提供完整的食材溯源與衛生證明</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-number">03</div>
+                <h3>品質保證</h3>
+                <p>真實用戶評價系統，讓每一次用餐都是五星級體驗</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-number">04</div>
+                <h3>透明計價</h3>
+                <p>彈性議價機制，明確費用說明，讓您消費更安心</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-number">05</div>
+                <h3>客製服務</h3>
+                <p>從食材選擇到烹調方式，完全依照您的需求量身打造</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-number">06</div>
+                <h3>即時追蹤</h3>
+                <p>訂單狀態即時更新，讓您隨時掌握餐點準備進度</p>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Process Section -->
+    <div class="process-section">
+        <h2 class="section-title">使用流程</h2>
+        <div class="process-timeline">
+            <div class="process-step">
+                <div class="step-number">1</div>
+                <h3>選擇角色</h3>
+                <p>選擇註冊成為廚師或顧客</p>
+            </div>
+            <div class="process-arrow">→</div>
+            <div class="process-step">
+                <div class="step-number">2</div>
+                <h3>瀏覽或上架菜單</h3>
+                <p>顧客瀏覽菜單，廚師上架菜色</p>
+            </div>
+            <div class="process-arrow">→</div>
+            <div class="process-step">
+                <div class="step-number">3</div>
+                <h3>下單或接單</h3>
+                <p>顧客提出需求，廚師接受訂單</p>
+            </div>
+            <div class="process-arrow">→</div>
+            <div class="process-step">
+                <div class="step-number">4</div>
+                <h3>完成訂單並留下評價</h3>
+                <p>用餐後為彼此留下真實評價</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(180deg, #ffffff 0%, #fff9f0 100%);
+            padding: 60px 20px 80px;
+            text-align: center;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(246, 194, 95, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(224, 169, 61, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-logo {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 25px;
+            display: block;
+            animation: fadeInDown 0.8s ease;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+
+        .hero-title {
+            font-size: 56px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f6c25f, #e0a93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInDown 0.8s ease 0.2s both;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            color: #555;
+            margin-bottom: 15px;
+            font-weight: 500;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .hero-description {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.8s both;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f6c25f, #e0a93d);
+            color: white;
+            box-shadow: 0 4px 15px rgba(246, 194, 95, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(246, 194, 95, 0.6);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #e0a93d;
+            border: 2px solid #e0a93d;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #f6c25f, #e0a93d);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-3px);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .about-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .about-content {
+            margin-top: 40px;
+        }
+
+        .about-paragraph {
+            font-size: 17px;
+            line-height: 1.9;
+            color: #555;
+            margin-bottom: 25px;
+            text-align: justify;
+            text-justify: inter-ideograph;
+        }
+
+        .about-paragraph.highlight {
+            background: linear-gradient(135deg, #fff9e6 0%, #ffe8cc 100%);
+            padding: 25px 30px;
+            border-radius: 12px;
+            border-left: 4px solid #f6c25f;
+            margin-top: 30px;
+        }
+
+        .about-paragraph strong {
+            color: #e0a93d;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 80px 20px;
+            background: #f8f9fa;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 50px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #f6c25f, #e0a93d);
+            border-radius: 2px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 35px 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #f6c25f;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Process Section */
+        .process-section {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .process-timeline {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .process-step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .process-step:hover {
+            background: linear-gradient(135deg, #f6c25f, #e0a93d);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .process-step:hover h3,
+        .process-step:hover p {
+            color: white;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f6c25f, #e0a93d);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 10px rgba(246, 194, 95, 0.4);
+        }
+
+        .process-step h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .process-step p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .process-arrow {
+            font-size: 30px;
+            color: #e0a93d;
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 20px 60px;
+            }
+
+            .hero-logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .process-timeline {
+                flex-direction: column;
+            }
+
+            .process-arrow {
+                transform: rotate(90deg);
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
     <div class="footer">
-        © 2025 網站名稱. All rights reserved.<br>
-        聯絡我們：official@example.com | 電話：02-12345678900
+        © 2025 味你而煮. All rights reserved.<br>
+        聯絡我們：official@example.com | 電話：02-3322-2777
     </div>
 
     <!-- 現代化設定彈窗 -->
