@@ -18,6 +18,7 @@ from routers.customer import router as customer_router
 from routers.chef import router as chef_router
 from routers.voice import router as voice_router
 from routers.notification import router as notification_router
+from routers.dish_suggestions import router as dish_suggestions_router
 
 from config import settings
 
@@ -27,6 +28,8 @@ from models.user import User
 
 import models.user
 import models.order
+
+# 菜單建議API已移至專門的路由器
 
 app = FastAPI(title="NTUB Project 114205")
 
@@ -48,6 +51,9 @@ app.include_router(customer_router, prefix="/customer")
 app.include_router(chef_router, prefix="/chef")
 app.include_router(voice_router)
 app.include_router(notification_router)
+app.include_router(dish_suggestions_router)
+
+# API 路由已就緒
 
 # @app.get("/")
 # def index(request: Request, db=Depends(get_db)):
@@ -65,6 +71,8 @@ app.include_router(notification_router)
 @app.get("/", name="index")
 def index(ctx: dict = Depends(common_template_params)):
     return templates.TemplateResponse("index.html", ctx)
+
+# 菜單建議API已移至 routers/dish_suggestions.py
 
 # 通用個人資料更新API
 @app.post("/profile/update")

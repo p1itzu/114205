@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/static/imgs/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Sans+HK:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
@@ -367,6 +368,200 @@
             box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
         }
 
+        /* AI助手按鈕樣式 */
+        .chatbot-button {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+        }
+
+        .chatbot-button:hover {
+            background: linear-gradient(135deg, #F57C00 0%, #E65100 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+        }
+
+        /* AI助手容器樣式 */
+        .ai-assistant-container {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-top: 1px solid #e9ecef;
+            background: rgba(255, 152, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        .ai-assistant-container .chatbot-button {
+            margin: 0;
+            padding: 10px 20px;
+            font-size: 15px;
+        }
+
+        /* 聊天室模態窗口樣式 */
+        #dishChatbotModal .modal-content {
+            max-width: 900px;
+            height: 80vh;
+            margin: 5% auto;
+        }
+
+        .chatbot-container {
+            display: flex;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .chatbot-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .chat-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .chat-messages-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-field {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .chat-input-field:focus {
+            border-color: #FF9800;
+        }
+
+        .chat-send-btn {
+            background: #FF9800;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .chat-send-btn:hover {
+            background: #F57C00;
+        }
+
+        .preview-section {
+            flex: 1;
+            padding: 20px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-title {
+            font-weight: bold;
+            color: #FF9800;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .preview-content {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .apply-btn, .reset-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .apply-btn {
+            background: #FF9800;
+            color: white;
+        }
+
+        .apply-btn:hover {
+            background: #F57C00;
+        }
+
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .user-msg {
+            background: #FF9800;
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .bot-msg {
+            background: white;
+            color: #333;
+            border: 1px solid #e9ecef;
+            align-self: flex-start;
+        }
+
         @media (max-width: 768px) {
             .modal-content {
                 width: 95%;
@@ -376,6 +571,20 @@
             #profileModal .modal-content {
                 width: 95%;
                 max-height: 85vh;
+            }
+
+            #dishChatbotModal .modal-content {
+                width: 95%;
+                height: 85vh;
+            }
+
+            .chatbot-body {
+                flex-direction: column;
+            }
+
+            .chat-section {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
             }
         }
     </style>
@@ -484,6 +693,9 @@
                                 <button class="delete-button" type="button" onclick="deleteDish()">刪除</button>
                                 <button class="next-button" type="button" onclick="updateDish()">新增下一道</button>
                                 <button class="save-button" type="submit">菜單確認</button>
+                            </div>
+                            <div class="ai-assistant-container">
+                                <button class="chatbot-button" type="button" onclick="openDishChatbot()">AI助手</button>
                             </div>
                         </td>
                     </tr>
@@ -646,18 +858,128 @@
         </div>
     </div>
 
+    <!-- AI菜單助手聊天室 -->
+    <div id="dishChatbotModal" class="modal">
+        <div class="modal-content">
+            <div class="chatbot-container">
+                <div class="chatbot-header">
+                    <span>AI 菜單助手</span>
+                    <span class="close" onclick="closeDishChatbot()" style="float: right; cursor: pointer; font-size: 24px; margin-left: 20px;">&times;</span>
+                </div>
+                
+                <div class="chatbot-body">
+                    <!-- 聊天區域 -->
+                    <div class="chat-section">
+                        <div class="chat-messages-area" id="chatMessages">
+                            <div class="chat-message bot-msg">
+                                你好！我是你的 AI 菜單助手。請告訴我你想做什麼菜，我會給你食材和料理方式的建議！
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-area">
+                            <div class="chat-input-group">
+                                <input type="text" 
+                                       id="chatInput" 
+                                       class="chat-input-field" 
+                                       placeholder="例如：我想做宮保雞丁..."
+                                       onkeypress="handleChatKeyPress(event)">
+                                <button class="chat-send-btn" onclick="sendChatMessage()">發送</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 預覽區域 -->
+                    <div class="preview-section">
+                        <div class="preview-title">建議內容預覽</div>
+                        <div class="preview-content" id="previewContent">
+                            <div style="color: #999; text-align: center; padding: 40px 0;">
+                                與AI助手對話後，這裡會顯示建議的食材和料理方式
+                            </div>
+                        </div>
+                        <div class="preview-actions">
+                            <button class="reset-btn" onclick="resetChatPreview()">清空</button>
+                            <button class="apply-btn" onclick="applyChatSuggestions()">新增</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let dishCount = 1;
         let currentDishIndex = 1;
         let dishData = {};
 
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('=== 頁面加載完成，初始化菜品數據 ===');
+            
+            // 檢查並清除過期的菜品數據
             const saved = localStorage.getItem('dishData');
-            if (saved) {
+            const savedTimestamp = localStorage.getItem('dishDataTimestamp');
+            
+            let shouldClearData = false;
+            
+            // 檢查數據是否過期（超過2小時）
+            if (saved && savedTimestamp) {
+                const timestamp = parseInt(savedTimestamp);
+                const now = Date.now();
+                const twoHours = 2 * 60 * 60 * 1000; // 2小時的毫秒數
+                
+                if (now - timestamp > twoHours) {
+                    console.log('菜品數據已過期，清除舊數據');
+                    shouldClearData = true;
+                }
+            }
+            
+            // 檢查是否是新訂單（從step0或step1進入）
+            const urlParams = new URLSearchParams(window.location.search);
+            const isNewOrder = urlParams.get('new') === 'true' || document.referrer.includes('step0') || document.referrer.includes('step1');
+            
+            if (isNewOrder) {
+                console.log('檢測到新訂單，清除舊菜品數據');
+                shouldClearData = true;
+            }
+            
+            if (shouldClearData) {
+                localStorage.removeItem('dishData');
+                localStorage.removeItem('dishDataTimestamp');
+                dishData = {};
+                dishCount = 0;
+                currentDishIndex = 1;
+                console.log('已清除舊菜品數據，開始新訂單');
+            } else if (saved) {
+                try {
                 dishData = JSON.parse(saved);
                 dishCount = Object.keys(dishData).length;
+                    currentDishIndex = dishCount || 1;
+                    console.log('從localStorage恢復數據:', dishData);
+                    console.log('菜品數量:', dishCount, '當前索引:', currentDishIndex);
                 renderDish();
+                } catch (error) {
+                    console.error('解析localStorage數據失敗:', error);
+                    localStorage.removeItem('dishData');
+                    localStorage.removeItem('dishDataTimestamp');
+                    dishData = {};
+                    dishCount = 0;
+                    currentDishIndex = 1;
+                }
+            } else {
+                console.log('沒有儲存的菜品數據，使用預設值');
+                currentDishIndex = 1;
+                dishCount = 0;
+                
+                // 如果表單中有數據，保存為第一道菜
+                const initialDishName = document.getElementById('dish-name').value;
+                if (initialDishName && initialDishName.trim()) {
+                    console.log('發現表單中有初始數據，保存為第一道菜');
+                    saveCurrentDishData();
+                    dishCount = 1;
+                }
             }
+            
+            console.log('初始化完成 - dishData:', dishData);
+            console.log('dishCount:', dishCount, 'currentDishIndex:', currentDishIndex);
         });
 
         function saveCurrentDishData() {
@@ -671,54 +993,171 @@
             const oilLevel = parseInt(document.querySelector('.oillevel-button.active')?.dataset.value) || 0;
             const aroma = parseInt(document.querySelector('.aroma-button.active')?.dataset.value) || 0;
 
+            console.log(`保存菜品 ${currentDishIndex}:`, { name, portion, ingredients, special, customized, salinity, spiciness, oilLevel, aroma });
+            
             dishData[currentDishIndex] = { name, portion, ingredients, special, customized, salinity, spiciness, oilLevel, aroma };
             localStorage.setItem('dishData', JSON.stringify(dishData));
+            
+            // 保存時間戳
+            localStorage.setItem('dishDataTimestamp', Date.now().toString());
+            
+            console.log('更新後的dishData:', dishData);
         }
 
         function renderDish() {
+            console.log('=== renderDish 被調用 ===');
+            console.log('currentDishIndex:', currentDishIndex);
+            console.log('dishCount:', dishCount);
+            console.log('dishData:', dishData);
+            
+            // 確保索引至少為1
+            if (currentDishIndex < 1) {
+                currentDishIndex = 1;
+                console.log('修正currentDishIndex為1');
+            }
+            
+            // 更新顯示的菜品索引
             document.getElementById('dish-index').textContent = currentDishIndex;
+            
+            // 獲取當前菜品資料（如果不存在則為空物件）
             const d = dishData[currentDishIndex] || {};
+            console.log('渲染菜品:', d);
+            
+            // 填入表單
             document.getElementById('dish-name').value = d.name || '';
             document.getElementById('custom-number').value = d.portion || 1;
             document.getElementById('ingredients').value = d.ingredients || '';
             document.getElementById('special').value = d.special || '';
             document.getElementById('customized').value = d.customized || '';
+            
+            // 設置調味按鈕狀態
             ['salinity','spiciness','oilLevel','aroma'].forEach(type => {
                 document.querySelectorAll(`.${type}-button`).forEach(b => b.classList.remove('active'));
-                document.querySelector(`.${type}-button[data-value='${d[type]}']`)?.classList.add('active');
+                const value = d[type];
+                if (value) {
+                    const btn = document.querySelector(`.${type}-button[data-value='${value}']`);
+                    if (btn) btn.classList.add('active');
+                } else {
+                    // 設置默認值
+                    if (type === 'salinity') {
+                        const defaultBtn = document.querySelector('.salinity-button[data-value="normal"]');
+                        if (defaultBtn) defaultBtn.classList.add('active');
+                    } else if (type === 'spiciness') {
+                        const defaultBtn = document.querySelector('.spiciness-button[data-value="none"]');
+                        if (defaultBtn) defaultBtn.classList.add('active');
+                    } else if (type === 'oilLevel' || type === 'aroma') {
+                        const defaultBtn = document.querySelector(`.${type}-button[data-value="0"]`);
+                        if (defaultBtn) defaultBtn.classList.add('active');
+                    }
+                }
             });
+            
+            console.log('renderDish 完成');
         }
 
         function handleStep2Submit(e) {
+            try {
             e.preventDefault();
+                console.log('=== 開始提交Step2表單 ===');
+                
+                // 保存當前菜品數據
             saveCurrentDishData();
+                
+                // 驗證是否有菜品數據
+                const dishValues = Object.values(dishData);
+                console.log('所有菜品數據:', dishValues);
+                
+                // 如果沒有儲存的菜品數據，檢查當前表單是否有數據
+                if (dishValues.length === 0) {
+                    const currentDishName = document.getElementById('dish-name').value;
+                    if (currentDishName && currentDishName.trim()) {
+                        console.log('沒有儲存數據，但表單中有內容，先保存當前菜品');
+                        saveCurrentDishData();
+                        // 重新取得更新後的數據
+                        const updatedDishValues = Object.values(dishData);
+                        if (updatedDishValues.length === 0) {
+                            alert('保存菜品數據時發生錯誤，請重試！');
+                            return;
+                        }
+                    } else {
+                        alert('請至少新增一道菜品才能提交！');
+                        return;
+                    }
+                }
+                
+                // 重新取得最新的菜品數據（可能在上面的檢查中更新了）
+                const finalDishValues = Object.values(dishData);
+                console.log('最終菜品數據:', finalDishValues);
+                
+                // 驗證每道菜是否有必需的資訊
+                let hasValidDish = false;
+                for (let dish of finalDishValues) {
+                    if (dish && dish.name && dish.name.trim()) {
+                        hasValidDish = true;
+                        break;
+                    }
+                }
+                
+                if (!hasValidDish) {
+                    alert('請確保至少有一道菜品有名稱！');
+                    return;
+                }
+                
             const form = document.getElementById('step2-form');
+                
+                // 清除之前的動態輸入字段
             form.querySelectorAll('.dynamic-hidden').forEach(el => el.remove());
-            Object.values(dishData).forEach(d => {
+                
+                console.log('開始處理菜品數據...');
+                
+                // 為每道菜創建隱藏輸入字段
+                finalDishValues.forEach((d, index) => {
+                    if (!d || !d.name || !d.name.trim()) {
+                        console.log(`跳過菜品 ${index + 1}（沒有名稱）`);
+                        return;
+                    }
+                    
+                    console.log(`處理菜品 ${index + 1}:`, d);
+                    
                 const fields = {
-                    dish_names: d.name,
-                    quantities: d.portion,
+                        dish_names: d.name || '',
+                        quantities: d.portion || 1,
                     unit_prices: d.price || 0,
-                    salt_levels: d.salinity,
-                    spice_levels: d.spiciness,
+                        salt_levels: d.salinity || 'normal',
+                        spice_levels: d.spiciness || 'none',
                     include_onions: true,
                     include_gingers: true,
                     include_garlics: true,
                     include_cilantros: true,
-                    ingredients_list: d.ingredients,
-                    special_instructions_list: d.special,
-                    custom_notes_list: d.customized
-                };
-                Object.entries(fields).forEach(([key,val]) => {
+                        ingredients_list: d.ingredients || '',
+                        special_instructions_list: d.special || '',
+                        custom_notes_list: d.customized || ''
+                    };
+                    
+                    Object.entries(fields).forEach(([key, val]) => {
                     const input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = key;
                     input.value = String(val);
                     input.classList.add('dynamic-hidden');
                     form.appendChild(input);
+                        console.log(`添加字段: ${key} = ${val}`);
                 });
             });
+                
+                console.log('表單數據準備完成，開始提交...');
+                console.log('動態字段數量:', form.querySelectorAll('.dynamic-hidden').length);
+                
+                // 清除localStorage中的菜品數據（準備提交了）
+                console.log('清除localStorage中的菜品數據...');
+                localStorage.removeItem('dishData');
+                
             form.submit();
+                
+            } catch (error) {
+                console.error('表單提交錯誤:', error);
+                alert('提交表單時發生錯誤，請重試！');
+            }
         }
 
         ['salinity','spiciness','oillevel','aroma','cookingmethod'].forEach(type => {
@@ -732,15 +1171,102 @@
         });
         
         function updateDish() {
+            console.log('=== updateDish (新增下一道) 被調用 ===');
+            console.log('更新前dishData:', dishData);
+            console.log('更新前dishCount:', dishCount);
+            console.log('更新前currentDishIndex:', currentDishIndex);
+            
+            // 保存當前菜品資料
             saveCurrentDishData();
+            
+            // 確保全局dishCount與實際菜品數量同步
+            const actualDishCount = Object.keys(dishData).length;
+            if (actualDishCount > dishCount) {
+                dishCount = actualDishCount;
+                console.log('修正dishCount為:', dishCount);
+            }
+            
+            // 增加菜品數量和索引
             dishCount++;
             currentDishIndex = dishCount;
+            
+            console.log('更新後dishCount:', dishCount);
+            console.log('更新後currentDishIndex:', currentDishIndex);
+            console.log('更新後dishData:', dishData);
+            
+            // 渲染新的空白菜品表單
             renderDish();
         }
 
-        function goToNextDish() { saveCurrentDishData(); if (currentDishIndex < dishCount) currentDishIndex++, renderDish(); else Swal.fire('已經是最後一道菜'); }
-        function goToPreviousDish() { saveCurrentDishData(); if (currentDishIndex > 1) currentDishIndex--, renderDish(); else Swal.fire('已經是第一道菜'); }
-        function deleteDish() { Swal.fire({ title:'確定刪除?', icon:'warning', showCancelButton:true }).then(res=>{ if(res.isConfirmed){ delete dishData[currentDishIndex]; const vals=Object.values(dishData); dishData={}; vals.filter(x=>x).forEach((x,i)=>dishData[i+1]=x); dishCount=Object.keys(dishData).length; if(currentDishIndex>dishCount) currentDishIndex=dishCount; renderDish(); localStorage.setItem('dishData',JSON.stringify(dishData)); }}); }
+        function goToNextDish() { 
+            saveCurrentDishData(); 
+            if (currentDishIndex < dishCount) {
+                currentDishIndex++;
+                renderDish();
+            } else {
+                Swal.fire('已經是最後一道菜');
+            }
+        }
+        
+        function goToPreviousDish() { 
+            saveCurrentDishData(); 
+            if (currentDishIndex > 1) {
+                currentDishIndex--;
+                renderDish();
+            } else {
+                Swal.fire('已經是第一道菜');
+            }
+        }
+        
+        function deleteDish() { 
+            Swal.fire({ 
+                title:'確定刪除?', 
+                icon:'warning', 
+                showCancelButton:true,
+                confirmButtonText: '確定',
+                cancelButtonText: '取消'
+            }).then(res => { 
+                if(res.isConfirmed) { 
+                    console.log('=== 刪除菜品 ===');
+                    console.log('刪除前dishData:', dishData);
+                    console.log('刪除索引:', currentDishIndex);
+                    
+                    // 刪除當前菜品
+                    delete dishData[currentDishIndex]; 
+                    
+                    // 重新索引所有菜品（從1開始）
+                    const vals = Object.values(dishData); 
+                    dishData = {};
+                    vals.filter(x => x).forEach((x, i) => dishData[i + 1] = x); 
+                    
+                    // 更新菜品數量
+                    dishCount = Object.keys(dishData).length;
+                    console.log('刪除後菜品數量:', dishCount);
+                    
+                    // 調整當前索引
+                    if (dishCount === 0) {
+                        // 如果所有菜品都被刪除，重置為初始狀態
+                        currentDishIndex = 1;
+                        console.log('所有菜品已刪除，重置索引為1');
+                    } else if (currentDishIndex > dishCount) {
+                        // 如果當前索引超過菜品數量，移到最後一道菜
+                        currentDishIndex = dishCount;
+                        console.log('調整索引到最後一道菜:', currentDishIndex);
+                    }
+                    
+                    console.log('刪除後dishData:', dishData);
+                    console.log('最終currentDishIndex:', currentDishIndex);
+                    
+                    // 更新顯示
+                    renderDish(); 
+                    
+                    // 保存到localStorage
+                    localStorage.setItem('dishData', JSON.stringify(dishData));
+                    
+                    Swal.fire('已刪除', '菜品已成功刪除', 'success');
+                }
+            }); 
+        }
         // 現代化設定模態窗口功能
         function toggleSettingsModal() {
             const modal = document.getElementById('settingsModal');
@@ -841,16 +1367,652 @@
             }
         });
         
+        // AI菜單助手聊天室功能
+        let chatSuggestions = {
+            ingredients: '',
+            cooking_methods: '',
+            special_notes: ''
+        };
+
+        function openDishChatbot() {
+            document.getElementById('dishChatbotModal').style.display = 'block';
+            // 初始化聊天室時，顯示目前菜品名稱
+            const currentDishName = document.getElementById('dish-name').value;
+            if (currentDishName.trim()) {
+                const welcomeMsg = `我看到你想吃「${currentDishName}」，我可以給你食材和料理方式建議！有什麼需要協助的嗎？`;
+                addChatMessage(welcomeMsg, 'bot');
+            }
+        }
+
+        function closeDishChatbot() {
+            document.getElementById('dishChatbotModal').style.display = 'none';
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // 添加用戶訊息
+            addChatMessage(message, 'user');
+            input.value = '';
+            
+            // 添加載入中訊息
+            const loadingMsg = addChatMessage('思考中...', 'bot');
+            
+            try {
+                // 發送到後端 API
+                const response = await fetch('/api/dish-suggestions/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        current_dish: {
+                            name: document.getElementById('dish-name').value,
+                            ingredients: document.getElementById('ingredients').value,
+                            special: document.getElementById('special').value
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                // 移除載入中訊息
+                loadingMsg.remove();
+                
+                if (result.success) {
+                    // 添加AI回應
+                    addChatMessage(result.response, 'bot');
+                    
+                    // 更新建議預覽
+                    if (result.suggestions) {
+                        updateChatPreview(result.suggestions);
+                    }
+                } else {
+                    addChatMessage('抱歉，我現在無法處理你的請求，請稍後再試。', 'bot');
+                }
+                
+            } catch (error) {
+                console.error('Chat API Error:', error);
+                loadingMsg.remove();
+                addChatMessage('連線發生錯誤，請檢查網路後重試。', 'bot');
+            }
+        }
+
+        function addChatMessage(message, sender) {
+            const messagesArea = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender === 'user' ? 'user-msg' : 'bot-msg'}`;
+            
+            // 處理換行符並保持格式
+            if (sender === 'bot') {
+                // 將換行符轉換為HTML的<br>標籤，並保持其他格式
+                const formattedMessage = message
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // 處理粗體標記
+                messageDiv.innerHTML = formattedMessage;
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+            
+            return messageDiv;
+        }
+
+        function updateChatPreview(suggestions) {
+            chatSuggestions = suggestions;
+            const previewContent = document.getElementById('previewContent');
+            
+            let html = '';
+            
+            if (suggestions.dish_name) {
+                html += `<div><strong>菜品名稱：</strong>${suggestions.dish_name}</div><br>`;
+            }
+            
+            if (suggestions.ingredients) {
+                html += `<div><strong>建議食材：</strong></div>`;
+                html += `<div style="margin-left: 15px; margin-bottom: 15px;">${suggestions.ingredients}</div>`;
+            }
+            
+            if (suggestions.cooking_methods) {
+                html += `<div><strong>料理方式：</strong></div>`;
+                html += `<div style="margin-left: 15px; margin-bottom: 15px;">${suggestions.cooking_methods}</div>`;
+            }
+            
+            if (suggestions.seasoning) {
+                html += `<div><strong>調味建議：</strong></div>`;
+                html += `<div style="margin-left: 15px; margin-bottom: 15px;">`;
+                if (suggestions.seasoning.salt_level) {
+                    html += `鹹度：${suggestions.seasoning.salt_level} `;
+                }
+                if (suggestions.seasoning.spice_level) {
+                    html += `辣度：${suggestions.seasoning.spice_level}`;
+                }
+                html += `</div>`;
+            }
+            
+            if (suggestions.special_notes) {
+                html += `<div><strong>特別注意：</strong></div>`;
+                html += `<div style="margin-left: 15px; margin-bottom: 15px;">${suggestions.special_notes}</div>`;
+            }
+            
+            previewContent.innerHTML = html || '<div style="color: #999; text-align: center; padding: 40px 0;">暫無建議內容</div>';
+        }
+
+        function resetChatPreview() {
+            chatSuggestions = { ingredients: '', cooking_methods: '', special_notes: '' };
+            document.getElementById('previewContent').innerHTML = '<div style="color: #999; text-align: center; padding: 40px 0;">與AI助手對話後，這裡會顯示建議的食材和料理方式</div>';
+        }
+
+        function showSuccessMessageAndAskForMore() {
+            // 清空預覽區域並顯示繼續選項
+            const previewContent = document.getElementById('previewContent');
+            const currentDishName = document.getElementById('dish-name').value;
+            const dishCount = Object.keys(dishData).length;
+            
+            previewContent.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="color: #28a745; font-size: 18px; margin-bottom: 15px;">
+                        <strong>「${currentDishName}」<br>已成功新增到表單！</strong>
+                    </div>
+                    <div style="margin-bottom: 10px; color: #666;">
+                        目前已新增 ${dishCount} 道菜品
+                    </div>
+                    <div style="margin-bottom: 10px; font-size: 12px; color: #999;">
+                        ${Object.values(dishData).map(dish => `• ${dish.name || '未命名菜品'}`).join('<br>')}
+                    </div>
+                    <div style="margin-bottom: 20px; color: #666;">
+                        您可以繼續新增更多菜色
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button onclick="continueAddingDishes(); console.log('繼續新增菜色按鈕被點擊');" style="
+                            background: #FF9800; 
+                            color: white; 
+                            border: none; 
+                            padding: 10px 20px; 
+                            border-radius: 5px; 
+                            cursor: pointer;
+                            font-size: 14px;
+                        ">繼續新增菜色</button>
+                        <button onclick="finishDishPlanning(); console.log('完成規劃按鈕被點擊');" style="
+                            background: #6c757d; 
+                            color: white; 
+                            border: none; 
+                            padding: 10px 20px; 
+                            border-radius: 5px; 
+                            cursor: pointer;
+                            font-size: 14px;
+                        ">完成規劃</button>
+                    </div>
+                </div>
+            `;
+            
+            // 注意：不要清空建議數據，以防用戶想要在完成規劃時再次應用
+            // chatSuggestions = null;
+            
+            // 在聊天區域添加成功訊息
+            addChatMessage(`✅ 太棒了！「${currentDishName}」已經成功新增到您的菜單中。`, 'bot');
+            addChatMessage(`目前您已經規劃了 ${dishCount} 道菜品。還想要新增其他菜色嗎？`, 'bot');
+        }
+
+        function continueAddingDishes() {
+            try {
+                console.log('=== continueAddingDishes 被調用 ===');
+                console.log('當前dishData:', dishData);
+                console.log('當前dishCount:', dishCount);
+                console.log('當前currentDishIndex:', currentDishIndex);
+                
+                // 確保全局dishCount與實際菜品數量同步
+                const actualDishCount = Object.keys(dishData).length;
+                if (actualDishCount > dishCount) {
+                    dishCount = actualDishCount;
+                    console.log('修正dishCount為:', dishCount);
+                }
+                
+                // 創建新的菜品索引，避免覆蓋之前的菜品
+                dishCount++;
+                currentDishIndex = dishCount;
+                console.log('新菜品索引:', currentDishIndex, '菜品數量:', dishCount);
+                
+                // 清空表單以準備新菜品
+                document.getElementById('dish-name').value = '';
+                document.getElementById('ingredients').value = '';
+                document.getElementById('special').value = '';
+                document.getElementById('customized').value = '';
+                document.getElementById('custom-number').value = 1;
+                
+                // 重置調味按鈕狀態
+                document.querySelectorAll('.salinity-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.spiciness-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.oillevel-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.aroma-button').forEach(btn => btn.classList.remove('active'));
+                
+                // 設置默認狀態
+                const normalBtn = document.querySelector('.salinity-button[data-value="normal"]');
+                const noneBtn = document.querySelector('.spiciness-button[data-value="none"]');
+                const oil0Btn = document.querySelector('.oillevel-button[data-value="0"]');
+                const aroma0Btn = document.querySelector('.aroma-button[data-value="0"]');
+                
+                if (normalBtn) normalBtn.classList.add('active');
+                if (noneBtn) noneBtn.classList.add('active');
+                if (oil0Btn) oil0Btn.classList.add('active');
+                if (aroma0Btn) aroma0Btn.classList.add('active');
+                
+                // 更新菜品索引顯示和界面
+                if (typeof renderDish === 'function') {
+                    renderDish();
+                }
+                
+                // 重置聊天室狀態，開始新的對話
+                if (typeof resetChatPreview === 'function') {
+                    resetChatPreview();
+                }
+                
+                // 發送歡迎訊息開始新一輪對話
+                addChatMessage('好的！讓我們來規劃下一道菜吧！🍽️', 'bot');
+                addChatMessage('請告訴我您想要做什麼菜，或是有什麼特別的需求？', 'bot');
+                
+                // 聚焦到輸入框
+                const inputField = document.getElementById('chatInputField');
+                if (inputField) {
+                    inputField.focus();
+                }
+                
+                console.log('continueAddingDishes 執行完成');
+                console.log('最終dishCount:', dishCount, 'currentDishIndex:', currentDishIndex);
+            } catch (error) {
+                console.error('continueAddingDishes 錯誤:', error);
+                alert('新增菜色時發生錯誤，請重試');
+            }
+        }
+
+        function finishDishPlanning() {
+            try {
+                console.log('=== finishDishPlanning 被調用 ===');
+                console.log('當前chatSuggestions:', chatSuggestions);
+                console.log('當前dishData:', dishData);
+                console.log('當前dishCount:', dishCount);
+                console.log('當前currentDishIndex:', currentDishIndex);
+                
+                // 檢查當前表單是否有未保存的資料（菜名不為空）
+                const currentDishName = document.getElementById('dish-name').value;
+                const hasUnsavedData = currentDishName && currentDishName.trim();
+                
+                console.log('當前菜品名稱:', currentDishName);
+                console.log('是否有未保存資料:', hasUnsavedData);
+                
+                // 如果有未保存的資料，先保存
+                if (hasUnsavedData) {
+                    console.log('檢測到未保存的菜品資料，先保存...');
+                    
+                    // 如果有AI建議且表單還未填入，則應用建議
+                    if (chatSuggestions && Object.keys(chatSuggestions).length > 0) {
+                        console.log('應用AI建議到表單...');
+                        
+                        // 只在表單欄位為空時才填入AI建議
+                        if (chatSuggestions.ingredients && !document.getElementById('ingredients').value) {
+                            document.getElementById('ingredients').value = chatSuggestions.ingredients;
+                            console.log('設置食材:', chatSuggestions.ingredients);
+                        }
+                        
+                        if (chatSuggestions.cooking_methods && !document.getElementById('special').value) {
+                            document.getElementById('special').value = chatSuggestions.cooking_methods;
+                            console.log('設置料理方式:', chatSuggestions.cooking_methods);
+                        }
+                        
+                        if (chatSuggestions.special_notes && !document.getElementById('customized').value) {
+                            document.getElementById('customized').value = chatSuggestions.special_notes;
+                            console.log('設置特別備註:', chatSuggestions.special_notes);
+                        }
+                    }
+                    
+                    // 保存當前菜品資料
+                    saveCurrentDishData();
+                }
+                
+                // 關閉聊天室
+                if (typeof closeDishChatbot === 'function') {
+                    closeDishChatbot();
+                }
+                
+                // 顯示完成訊息
+                const finalDishCount = Object.keys(dishData).length;
+                console.log('最終菜品數量:', finalDishCount);
+                console.log('最終dishData:', dishData);
+                
+                if (finalDishCount > 0) {
+                    alert(`菜單規劃完成！您總共規劃了 ${finalDishCount} 道菜品。現在可以點擊「菜單確認」提交訂單。`);
+                } else {
+                    alert('您還沒有新增任何菜品喔！');
+                }
+                
+                console.log('finishDishPlanning 執行完成');
+            } catch (error) {
+                console.error('finishDishPlanning 錯誤:', error);
+                console.error('錯誤堆疊:', error.stack);
+                alert('完成規劃時發生錯誤：' + error.message);
+            }
+        }
+
+        // 確保函數在全域作用域中可用
+        window.continueAddingDishes = continueAddingDishes;
+        window.finishDishPlanning = finishDishPlanning;
+
+        // 調試函數
+        function debugChatState() {
+            console.log('=== 聊天狀態調試 ===');
+            console.log('chatSuggestions:', chatSuggestions);
+            console.log('dishData:', dishData);
+            console.log('currentDishIndex:', currentDishIndex);
+            console.log('dishCount:', dishCount);
+            console.log('=================');
+        }
+        
+        // 將調試函數也加到全域
+        window.debugChatState = debugChatState;
+        
+        // 在控制台添加幫助訊息
+        console.log('AI助手調試功能已啟用。在瀏覽器控制台輸入 debugChatState() 查看狀態。');
+        
+        // 測試函數是否可用
+        console.log('測試函數可用性:');
+        console.log('- continueAddingDishes:', typeof window.continueAddingDishes);
+        console.log('- finishDishPlanning:', typeof window.finishDishPlanning);
+
+        // 檢查內容是否為無意義或需要替換的內容
+        function isPlaceholderContent(text) {
+            if (!text || text.trim() === '') return false;
+            
+            const placeholderKeywords = [
+                '不知道', '不清楚', '不確定', '不了解', '不太清楚',
+                '?', '？', '待填', '待定', '未知', '無',
+                'todo', 'TODO', 'TBD', 'tbd'
+            ];
+            
+            const trimmed = text.trim().toLowerCase();
+            return placeholderKeywords.some(keyword => trimmed.includes(keyword.toLowerCase()));
+        }
+
+        // 用於存儲待處理的欄位選擇
+        let pendingFieldChoices = [];
+
+        // 在預覽區顯示欄位比較和選擇按鈕
+        function showFieldComparison(fieldName, currentValue, aiValue, fieldLabel) {
+            pendingFieldChoices.push({
+                fieldName,
+                currentValue,
+                aiValue,
+                fieldLabel,
+                choice: null  // 將由用戶選擇：'ai', 'keep', 'merge'
+            });
+        }
+
+        // 渲染所有待選擇的欄位
+        function renderFieldChoices() {
+            if (pendingFieldChoices.length === 0) return '';
+            
+            let html = '<div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border: 2px solid #ffc107;">';
+            html += '<h4 style="color: #856404; margin: 0 0 15px 0;">⚠️ 發現已填寫內容，請選擇如何處理</h4>';
+            
+            pendingFieldChoices.forEach((field, index) => {
+                const isPlaceholder = isPlaceholderContent(field.currentValue);
+                const currentBg = isPlaceholder ? '#f8d7da' : '#d4edda';
+                const currentColor = isPlaceholder ? '#721c24' : '#155724';
+                
+                html += `
+                    <div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 6px; border: 1px solid #dee2e6;">
+                        <h5 style="color: #495057; margin: 0 0 10px 0;">📝 ${field.fieldLabel}</h5>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">您目前的內容：</div>
+                            <div style="background: ${currentBg}; padding: 10px; border-radius: 5px; color: ${currentColor}; font-size: 14px;">
+                                ${field.currentValue}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">AI建議：</div>
+                            <div style="background: #d1ecf1; padding: 10px; border-radius: 5px; color: #0c5460; font-size: 14px;">
+                                ${field.aiValue}
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button onclick="selectFieldChoice(${index}, 'ai')" 
+                                    class="field-choice-btn choice-ai"
+                                    style="flex: 1; min-width: 100px; padding: 8px 12px; border: 2px solid #FF9800; background: white; color: #FF9800; border-radius: 5px; cursor: pointer; font-size: 13px; transition: all 0.3s;">
+                                使用AI建議
+                            </button>
+                            <button onclick="selectFieldChoice(${index}, 'keep')" 
+                                    class="field-choice-btn choice-keep"
+                                    style="flex: 1; min-width: 100px; padding: 8px 12px; border: 2px solid #6c757d; background: white; color: #6c757d; border-radius: 5px; cursor: pointer; font-size: 13px; transition: all 0.3s;">
+                                保留原內容
+                            </button>
+                            <button onclick="selectFieldChoice(${index}, 'merge')" 
+                                    class="field-choice-btn choice-merge"
+                                    style="flex: 1; min-width: 100px; padding: 8px 12px; border: 2px solid #17a2b8; background: white; color: #17a2b8; border-radius: 5px; cursor: pointer; font-size: 13px; transition: all 0.3s;">
+                                合併兩者
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        // 用戶選擇處理方式
+        window.selectFieldChoice = function(index, choice) {
+            pendingFieldChoices[index].choice = choice;
+            
+            // 更新按鈕樣式
+            const buttons = document.querySelectorAll(`.field-choice-btn`);
+            const startIdx = index * 3;
+            buttons.forEach((btn, i) => {
+                if (Math.floor((startIdx + i) / 3) === index) {
+                    btn.style.background = 'white';
+                    btn.style.fontWeight = 'normal';
+                }
+            });
+            
+            // 高亮選中的按鈕
+            const selectedBtn = buttons[startIdx + (choice === 'ai' ? 0 : choice === 'keep' ? 1 : 2)];
+            if (selectedBtn) {
+                const color = choice === 'ai' ? '#FF9800' : choice === 'keep' ? '#6c757d' : '#17a2b8';
+                selectedBtn.style.background = color;
+                selectedBtn.style.color = 'white';
+                selectedBtn.style.fontWeight = 'bold';
+            }
+            
+            // 檢查是否所有欄位都已選擇
+            const allSelected = pendingFieldChoices.every(f => f.choice !== null);
+            if (allSelected) {
+                // 顯示確認按鈕
+                showConfirmApplyButton();
+            }
+        };
+
+        // 顯示確認應用按鈕
+        function showConfirmApplyButton() {
+            const previewActions = document.querySelector('.preview-actions');
+            if (previewActions && !document.getElementById('confirmApplyBtn')) {
+                const confirmBtn = document.createElement('button');
+                confirmBtn.id = 'confirmApplyBtn';
+                confirmBtn.className = 'apply-btn';
+                confirmBtn.textContent = '✓ 確認套用所有選擇';
+                confirmBtn.style.background = '#28a745';
+                confirmBtn.style.width = '100%';
+                confirmBtn.style.padding = '12px';
+                confirmBtn.style.fontSize = '16px';
+                confirmBtn.style.fontWeight = 'bold';
+                confirmBtn.onclick = applyAllFieldChoices;
+                previewActions.insertBefore(confirmBtn, previewActions.firstChild);
+            }
+        }
+
+        // 應用所有選擇
+        function applyAllFieldChoices() {
+            pendingFieldChoices.forEach(field => {
+                let finalValue;
+                
+                if (field.choice === 'ai') {
+                    finalValue = field.aiValue;
+                } else if (field.choice === 'keep') {
+                    finalValue = field.currentValue;
+                } else if (field.choice === 'merge') {
+                    finalValue = `${field.currentValue}；${field.aiValue}`;
+                }
+                
+                // 應用到表單
+                document.getElementById(field.fieldName).value = finalValue;
+            });
+            
+            // 清除待選擇列表
+            pendingFieldChoices = [];
+            
+            // 移除確認按鈕
+            const confirmBtn = document.getElementById('confirmApplyBtn');
+            if (confirmBtn) confirmBtn.remove();
+            
+            // 繼續原來的新增流程
+            finalizeApplySuggestions();
+        }
+
+        // 完成建議應用
+        function finalizeApplySuggestions() {
+            // 套用調味建議
+            if (chatSuggestions.seasoning) {
+                if (chatSuggestions.seasoning.salt_level) {
+                    const saltButtons = document.querySelectorAll('.salinity-button');
+                    saltButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    const saltMap = {
+                        '清淡': 'light',
+                        '標準': 'normal', 
+                        '濃郁': 'heavy'
+                    };
+                    
+                    const saltValue = saltMap[chatSuggestions.seasoning.salt_level] || 'normal';
+                    const targetBtn = document.querySelector(`.salinity-button[data-value="${saltValue}"]`);
+                    if (targetBtn) targetBtn.classList.add('active');
+                }
+                
+                if (chatSuggestions.seasoning.spice_level) {
+                    const spiceButtons = document.querySelectorAll('.spiciness-button');
+                    spiceButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    const spiceMap = {
+                        '不辣': 'none',
+                        '微辣': 'mild',
+                        '中辣': 'medium', 
+                        '重辣': 'spicy'
+                    };
+                    
+                    const spiceValue = spiceMap[chatSuggestions.seasoning.spice_level] || 'none';
+                    const targetBtn = document.querySelector(`.spiciness-button[data-value="${spiceValue}"]`);
+                    if (targetBtn) targetBtn.classList.add('active');
+                }
+            }
+            
+            // 保存當前菜品資料到當前索引
+            console.log('保存菜品到索引:', currentDishIndex);
+            saveCurrentDishData();
+            
+            // 更新全局dishCount以反映實際菜品數量
+            dishCount = Object.keys(dishData).length;
+            console.log('更新後的菜品數量:', dishCount);
+            console.log('更新後的菜品資料:', dishData);
+            
+            // 顯示成功訊息並詢問是否繼續
+            showSuccessMessageAndAskForMore();
+        }
+
+        function applyChatSuggestions() {
+            if (!chatSuggestions || Object.keys(chatSuggestions).length === 0) {
+                alert('沒有建議內容可以套用');
+                return;
+            }
+            
+            console.log('=== 應用AI建議 ===');
+            console.log('當前索引:', currentDishIndex);
+            console.log('當前菜品數量:', dishCount);
+            console.log('AI建議:', chatSuggestions);
+            
+            // 重置待選擇列表
+            pendingFieldChoices = [];
+            
+            // 套用菜品名稱（直接使用）
+            if (chatSuggestions.dish_name) {
+                document.getElementById('dish-name').value = chatSuggestions.dish_name;
+            }
+            
+            // 檢查食材是否需要選擇
+            if (chatSuggestions.ingredients) {
+                const currentIngredients = document.getElementById('ingredients').value;
+                if (currentIngredients && currentIngredients.trim()) {
+                    showFieldComparison('ingredients', currentIngredients, chatSuggestions.ingredients, '食材清單');
+                } else {
+                    document.getElementById('ingredients').value = chatSuggestions.ingredients;
+                }
+            }
+            
+            // 檢查料理方式是否需要選擇
+            if (chatSuggestions.cooking_methods) {
+                const currentSpecial = document.getElementById('special').value;
+                if (currentSpecial && currentSpecial.trim()) {
+                    showFieldComparison('special', currentSpecial, chatSuggestions.cooking_methods, '特製作法');
+                } else {
+                    document.getElementById('special').value = chatSuggestions.cooking_methods;
+                }
+            }
+            
+            // 檢查備註是否需要選擇
+            if (chatSuggestions.special_notes) {
+                const currentCustomized = document.getElementById('customized').value;
+                if (currentCustomized && currentCustomized.trim()) {
+                    showFieldComparison('customized', currentCustomized, chatSuggestions.special_notes, '客製備註');
+                } else {
+                    document.getElementById('customized').value = chatSuggestions.special_notes;
+                }
+            }
+            
+            // 如果有需要選擇的欄位，顯示比較
+            if (pendingFieldChoices.length > 0) {
+                const comparisonHtml = renderFieldChoices();
+                const previewContent = document.getElementById('previewContent');
+                previewContent.innerHTML = comparisonHtml;
+            } else {
+                // 沒有需要選擇的欄位，直接完成
+                finalizeApplySuggestions();
+            }
+        }
+
         // 點擊模態窗口外部關閉
         window.onclick = function(event) {
             const settingsModal = document.getElementById('settingsModal');
             const profileModal = document.getElementById('profileModal');
+            const chatbotModal = document.getElementById('dishChatbotModal');
             
             if (event.target === settingsModal) {
                 settingsModal.style.display = 'none';
             }
             if (event.target === profileModal) {
                 profileModal.style.display = 'none';
+            }
+            if (event.target === chatbotModal) {
+                chatbotModal.style.display = 'none';
             }
         }
     </script>

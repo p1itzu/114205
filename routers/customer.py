@@ -430,7 +430,7 @@ def post_step1(
         "preferred_time": order_datetime.isoformat()
     }
     
-    return RedirectResponse(url="/customer/orders/new/step2", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/customer/orders/new/step2?new=true", status_code=status.HTTP_302_FOUND)
 
 # 新增訂單 - 第二步：菜品資訊
 @router.get("/orders/new/step2", name="order_step2")
