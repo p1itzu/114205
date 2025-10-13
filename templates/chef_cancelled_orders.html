@@ -10,25 +10,46 @@
 </head>
 <body>
     <div class="navbar">
-        <div class="site-name">味你而煮</div>
+        <div class="site-name">
+            <img src="/static/imgs/chef_logo.png" alt="Logo" class="site-logo">
+            <div class="site-text">
+                <div class="site-title">味你而煮</div>
+                <div class="site-subtitle">cook for you</div>
+            </div>
+        </div>
         <div class="nav-links">
             <a href="{{ url_for('index') }}">首頁</a>
-            <a href="{{ url_for('chef_dashboard') }}">總覽</a>
-            <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
-
-            <!-- 新增下拉選單 -->
-            <div class="dropdown">
-                <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
-                <div class="dropdown-content" id="orderDropdown">
-                    <a href="{{ url_for('chef_accepted_orders') }}">待完成訂單</a>
-                    <a href="{{ url_for('chef_completed_orders') }}">已完成訂單</a>
-                    <a href="{{ url_for('chef_negotiating_orders') }}">議價中訂單</a>
-                    <a href="{{ url_for('chef_cancelled_orders') }}">已取消訂單</a>
+            {% if user %}
+                {% if user.role and user.role.value == 'chef' %}
+                <!-- 廚師專用導航 -->
+                <a href="{{ url_for('chef_dashboard') }}">總覽</a>
+                <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
+                
+                <!-- 廚師的我的訂單下拉選單 -->
+                <div class="dropdown" style="position: relative; display: inline-block;">
+                    <button class="dropdown-btn" onclick="toggleDropdown()" style="background: none; border: none; color: #B3811C; font-size: 18px; font-weight: bold; cursor: pointer; padding: 10px 20px; font-family: Arial, sans-serif; border-radius: 5px;">我的訂單 ▾</button>
+                    <div class="dropdown-content" id="orderDropdown" style="display: none; position: absolute; background-color: white; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1000; border-radius: 5px; top: 100%;">
+                        <a href="{{ url_for('chef_accepted_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">待完成訂單</a>
+                        <a href="{{ url_for('chef_completed_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已完成訂單</a>
+                        <a href="{{ url_for('chef_negotiating_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">議價中訂單</a>
+                        <a href="{{ url_for('chef_cancelled_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已取消訂單</a>
+                    </div>
                 </div>
-            </div>
-
-            <a href="#">客服聯絡</a>
-            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                
+                <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                <a href="#">客服聯絡</a>
+                {% else %}
+                <!-- 顧客專用導航 -->
+                <a href="/customer/cooking_method">料理方式建議</a>
+                <a href="{{ url_for('order_step0') }}">新增訂單</a>
+                <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
+                <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                {% endif %}
+            {% else %}
+            <a href="{{ url_for('index') }}">關於我們</a>
+            <a href="{{ url_for('index') }}">料理方式建議</a>
+            <a href="{{ url_for('index') }}">常見問題</a>
+            {% endif %}
         </div>
         <div class="user-info">
             {% if user %}
@@ -84,22 +105,44 @@
     </div>
 
     <script>
+        // 切換設定視窗
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+        
         function toggleDropdown() {
-            document.getElementById("orderDropdown").classList.toggle("show");
+            var dropdown = document.getElementById("orderDropdown");
+            if (dropdown.style.display === "block") {
+                dropdown.style.display = "none";
+            } else {
+                dropdown.style.display = "block";
+            }
         }
 
-        // 點擊其他地方時關閉下拉選單
-        window.onclick = function (event) {
+        // 點擊其他地方時關閉下拉選單和設定視窗
+        window.addEventListener('click', function(event) {
+            // 關閉下拉選單
             if (!event.target.matches('.dropdown-btn')) {
                 var dropdowns = document.getElementsByClassName("dropdown-content");
                 for (var i = 0; i < dropdowns.length; i++) {
                     var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
+                    if (openDropdown.style.display === "block") {
+                        openDropdown.style.display = "none";
                     }
                 }
             }
-        }
+            
+            // 關閉設定視窗
+            const settingsModal = document.getElementById('settingsModal');
+            if (event.target === settingsModal) {
+                closeSettingsModal();
+            }
+        });
 
         function viewOrderDetail(orderId) {
             window.location.href = `/chef/order/${orderId}`;
@@ -170,6 +213,50 @@
 
     <!-- 通知中心組件 -->
     {% include 'notification_component.html' %}
+    
+    <!-- 設定模態框 -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>帳戶設定</h3>
+                <span class="close" onclick="closeSettingsModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- 帳號資訊區塊 -->
+                <div class="account-section">
+                    <div class="account-info-modern">
+                        <img src="{{ current_user.avatar_url or url_for('static', path='imgs/avatar.png') }}" alt="Avatar" class="account-avatar">
+                        <div class="account-details">
+                            <div class="account-name">{{ current_user.name }}</div>
+                            <div class="account-email">{{ current_user.email }}</div>
+                        </div>
+                    </div>
+                    <div class="setting-item" onclick="showProfileEditor()">
+                        <div class="setting-icon">👤</div>
+                        <div class="setting-text">
+                            <div class="setting-title">編輯個人資料</div>
+                            <div class="setting-desc">修改姓名、頭像或密碼</div>
+                        </div>
+                        <div class="setting-arrow">→</div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="setting-item" onclick="window.location.href='/auth/logout'">
+                    <div class="setting-icon">🚪</div>
+                    <div class="setting-text">
+                        <div class="setting-title">登出</div>
+                        <div class="setting-desc">登出目前帳戶</div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 個人資料編輯模態框 -->
+    {% include 'profile_editor_modal.html' %}
 
     <!-- 通知中心 JavaScript -->
     <script>

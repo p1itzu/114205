@@ -21,6 +21,37 @@ body {
     font-weight: bold;
     padding-left: 20px;
     color: #B3811C;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.navbar .site-logo {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+.navbar .site-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.navbar .site-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #B3811C;
+    line-height: 1.2;
+}
+
+.navbar .site-subtitle {
+    font-size: 12px;
+    font-weight: normal;
+    color: #B3811C;
+    opacity: 0.8;
+    line-height: 1;
+    text-align: center;
 }
 
 .navbar .nav-links {
@@ -67,8 +98,8 @@ body {
 }
 
 .user-info .avatar {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -85,7 +116,7 @@ body {
 }
 
 .user-info .user-text .email {
-    font-size: 12px;
+    font-size: 16px;
     color: #8B6014;
 }
 

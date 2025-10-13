@@ -47,25 +47,39 @@
     }
 
     .error-icon {
-      font-size: 120px;
-      margin-bottom: 20px;
-      animation: bounce 2s infinite;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 20px;
+      /* animation: bounce 2s infinite; */
       display: block;
+      object-fit: contain;
+    }
+
+    .error-code {
+      font-size: 72px;
+      font-weight: bold;
+      color: #B3811C;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
 
     .error-title {
-      font-size: 48px;
-      font-weight: 700;
-      color: #5b4636;
+      font-size: 72px;
+      font-weight: bold;
+      color: #B3811C;
       margin-bottom: 10px;
-      position: relative;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
 
     .error-subtitle {
-      font-size: 24px;
+      font-size: 28px;
+      color: #5b4636;
+      margin-bottom: 15px;
+      font-weight: bold;
+      /* font-size: 24px;
       font-weight: 500;
       color: #e0a93d;
-      margin-bottom: 20px;
+      margin-bottom: 20px; */
     }
 
     .error-message {
@@ -95,7 +109,7 @@
     }
 
     .back-home-btn::before {
-      content: '🏠';
+      /* content: '🏠'; */
       margin-right: 8px;
     }
 
@@ -179,7 +193,8 @@
       }
       
       .error-icon {
-        font-size: 80px;
+        width: 80px;
+        height: 80px;
       }
     }
   </style>
@@ -193,12 +208,12 @@
   </div>
 
   <div class="error-container">
-    <div class="error-icon">😅</div>
+    <img src="/static/imgs/logo.png" alt="味你而煮" class="error-icon">
     <h1 class="error-title">404</h1>
-    <h2 class="error-subtitle">頁面走失了</h2>
+    <h2 class="error-subtitle">Not Found</h2>
     <p class="error-message">
-      抱歉，您要找的頁面可能被我們的廚師不小心端走了！<br>
-      別擔心，讓我們帶您回到美味的起點。
+      您要找的頁面可能被廚師不小心端走了！<br>
+      不過別擔心，讓我們帶您回到美味的起點。
     </p>
     <a href="{{ url_for('index') }}" class="back-home-btn">返回首頁</a>
   </div>

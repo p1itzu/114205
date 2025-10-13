@@ -50,6 +50,15 @@
             font-size: 24px;
             font-weight: bold;
             color: #B3811C;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .site-logo {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
         }
 
         .nav-links {
@@ -532,7 +541,13 @@
     <!-- 導航欄 -->
     <div class="navbar">
         <div class="navbar-container">
-        <div class="site-name">味你而煮</div>
+        <div class="site-name">
+            <img src="/static/imgs/chef_logo.png" alt="Logo" class="site-logo">
+            <div class="site-text">
+                <div class="site-title">味你而煮</div>
+                <div class="site-subtitle">cook for you</div>
+            </div>
+        </div>
         <div class="nav-links">
                 <a href="javascript:history.back()" class="back-button">← 返回廚師列表</a>
             </div>

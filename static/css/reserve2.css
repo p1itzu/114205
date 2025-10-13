@@ -6,11 +6,30 @@ body {
     color: #B3811C;
 }
 
-.avatar {
+.user-info .avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;
     margin-right: 10px;
+}
+
+/* 用户信息文本 */
+.user-text {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 帳號名稱 */
+.name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #B3811C;
+}
+
+/* 邮箱 */
+.email {
+    font-size: 16px;
+    color: #8B6014;
 }
 
 .navbar {
@@ -26,6 +45,37 @@ body {
     font-weight: bold;
     padding-left: 20px;
     color: #B3811C;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.navbar .site-logo {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+.navbar .site-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.navbar .site-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #B3811C;
+    line-height: 1.2;
+}
+
+.navbar .site-subtitle {
+    font-size: 12px;
+    font-weight: normal;
+    color: #B3811C;
+    opacity: 0.8;
+    line-height: 1;
+    text-align: center;
 }
 
 .navbar .nav-links {

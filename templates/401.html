@@ -45,10 +45,12 @@
         }
 
         .error-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 20px;
             display: block;
-            animation: bounce 2s infinite;
+            /* animation: bounce 2s infinite; */
+            object-fit: contain;
         }
 
         @keyframes bounce {
@@ -199,6 +201,48 @@
             animation: float 3s ease-in-out infinite;
         }
 
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+            font-size: 30px;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+            font-size: 25px;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+            font-size: 35px;
+        }
+
+        .floating-element:nth-child(4) {
+            top: 30%;
+            right: 20%;
+            animation-delay: 1s;
+            font-size: 20px;
+        }
+        
         @keyframes float {
             0%, 100% {
                 transform: translateY(0px);
@@ -210,28 +254,33 @@
     </style>
 </head>
 <body>
+    <div class="floating-elements">
+        <div class="floating-element">🍳</div>
+        <div class="floating-element">🥘</div>
+        <div class="floating-element">🍽️</div>
+        <div class="floating-element">👨‍🍳</div>
+    </div>
+
     <div class="error-container">
-        <div class="error-icon">🔒</div>
+        <img src="/static/imgs/logo.png" alt="味你而煮" class="error-icon">
         <div class="error-code">401</div>
-        <h1 class="error-title">未授權訪問</h1>
+        <h1 class="error-title">Unauthorized</h1>
         <p class="error-message">抱歉，您沒有權限訪問此頁面。請重新登入。</p>
         
         <div class="error-details">
             <p><strong>可能的原因：</strong></p>
-            <p>• 您尚未登入系統</p>
+            <p>• 您尚未登入</p>
             <p>• 登入已過期，需要重新登入</p>
             <!-- <p>• 您的帳戶權限不足</p>
             <p>• 您嘗試訪問不屬於您角色的頁面</p> -->
         </div>
 
-        <div class="chef-illustration">👨‍🍳</div>
-
         <div class="actions">
             <a href="/auth/login" class="btn btn-primary">
-                🔑 重新登入
+                重新登入
             </a>
             <a href="/" class="btn btn-secondary">
-                🏠 回到首頁
+                回到首頁
             </a>
         </div>
 

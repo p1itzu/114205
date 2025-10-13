@@ -35,6 +35,38 @@ body {
     font-weight: 700;
     color: #B3811C;
     font-family: 'Noto Serif TC', serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.site-logo {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+.site-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.site-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #B3811C;
+    font-family: 'Noto Serif TC', serif;
+    line-height: 1.2;
+}
+
+.site-subtitle {
+    font-size: 13px;
+    font-weight: normal;
+    color: #B3811C;
+    opacity: 0.8;
+    line-height: 1;
+    text-align: center;
 }
 
 .nav-links {

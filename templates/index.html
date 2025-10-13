@@ -405,7 +405,13 @@
 </head>
 <body>
     <div class="navbar">
-        <div class="site-name">味你而煮</div>
+        <div class="site-name">
+            <img src="/static/imgs/chef_logo.png" alt="Logo" class="site-logo">
+            <div class="site-text">
+                <div class="site-title">味你而煮</div>
+                <div class="site-subtitle">cook for you</div>
+            </div>
+        </div>
         <div class="nav-links">
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
@@ -417,7 +423,7 @@
                 <!-- 廚師的我的訂單下拉選單 -->
                 <div class="dropdown" style="position: relative; display: inline-block;">
                     <button class="dropdown-btn" onclick="toggleDropdown()" style="background: none; border: none; color: #B3811C; font-size: 18px; font-weight: bold; cursor: pointer; padding: 10px 20px; font-family: Arial, sans-serif; border-radius: 5px;">我的訂單 ▾</button>
-                    <div class="dropdown-content" id="orderDropdown" style="display: none; position: absolute; background-color: white; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 5px; top: 100%;">
+                    <div class="dropdown-content" id="orderDropdown" style="display: none; position: absolute; background-color: white; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1000; border-radius: 5px; top: 100%;">
                         <a href="{{ url_for('chef_accepted_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">待完成訂單</a>
                         <a href="{{ url_for('chef_completed_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已完成訂單</a>
                         <a href="{{ url_for('chef_negotiating_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">議價中訂單</a>
@@ -425,6 +431,7 @@
                     </div>
                 </div>
                 
+                <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
                 <a href="#">客服聯絡</a>
                 {% else %}
                 <!-- 顧客專用導航 -->
@@ -469,7 +476,7 @@
                 {% if user %}
                     {% if user.role and user.role.value == 'chef' %}
                         <a href="{{ url_for('chef_pending_orders') }}" class="btn-primary">查看訂單</a>
-                        <a href="{{ url_for('chef_profile', chef_id=user.id) }}" class="btn-secondary">我的資料</a>
+                        <a href="{{ url_for('chef_profile') }}" class="btn-secondary">我的資料</a>
                     {% else %}
                         <a href="{{ url_for('order_step0') }}" class="btn-primary">立即預訂</a>
                         <a href="/customer/cooking_method" class="btn-secondary">料理建議</a>
@@ -500,6 +507,36 @@
         </div>
     </div>
 
+    <!-- Process Section -->
+    <div class="process-section">
+        <h2 class="section-title">使用流程</h2>
+        <div class="process-timeline">
+            <div class="process-step">
+                <div class="step-number">1</div>
+                <h3>選擇角色</h3>
+                <p>選擇註冊成為廚師或顧客</p>
+            </div>
+            <div class="process-arrow">→</div>
+            <div class="process-step">
+                <div class="step-number">2</div>
+                <h3>顧客開菜單</h3>
+                <p>顧客新增訂單</p>
+            </div>
+            <div class="process-arrow">→</div>
+            <div class="process-step">
+                <div class="step-number">3</div>
+                <h3>下單或接單</h3>
+                <p>顧客提出需求，廚師接受訂單</p>
+            </div>
+            <div class="process-arrow">→</div>
+            <div class="process-step">
+                <div class="step-number">4</div>
+                <h3>完成訂單並留下評價</h3>
+                <p>用餐後留下真實評價</p>
+            </div>
+        </div>
+    </div>
+    <!-- Contact Section -->
     <!-- Features Section -->
     <!-- <div class="features-section">
         <h2 class="section-title">為什麼選擇我們？</h2>
@@ -538,7 +575,7 @@
     </div> -->
 
     <!-- Process Section -->
-    <div class="process-section">
+    <!-- <div class="process-section">
         <h2 class="section-title">使用流程</h2>
         <div class="process-timeline">
             <div class="process-step">
@@ -565,7 +602,7 @@
                 <p>用餐後為彼此留下真實評價</p>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <style>
         /* Hero Section */
@@ -654,7 +691,7 @@
 
         .btn-primary {
             background: linear-gradient(135deg, #f6c25f, #e0a93d);
-            color: white;
+            color: white;   
             box-shadow: 0 4px 15px rgba(246, 194, 95, 0.4);
         }
 
@@ -700,7 +737,7 @@
 
         /* About Section */
         .about-section {
-            padding: 80px 20px;
+            padding: 40px 20px 20px 20px;
             background: white;
         }
 
@@ -807,7 +844,7 @@
 
         /* Process Section */
         .process-section {
-            padding: 80px 20px;
+            padding: 20px 20px 80px 20px;
             background: white;
         }
 
@@ -918,7 +955,6 @@
 
     <div class="footer">
         © 2025 味你而煮. All rights reserved.<br>
-        聯絡我們：official@example.com | 電話：02-3322-2777
     </div>
 
     <!-- 現代化設定彈窗 -->
@@ -948,6 +984,7 @@
                     </div>
                 </div>
                 
+                {% if user.role and user.role.value != 'chef' %}
                 <hr>
                 
                 <div class="setting-item" onclick="window.location.href='/customer/special-needs-verification'">
@@ -967,6 +1004,7 @@
                     </div>
                     <div class="setting-arrow">→</div>
             </div>
+                {% endif %}
 
                 <hr>
                 

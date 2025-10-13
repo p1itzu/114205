@@ -22,7 +22,7 @@
       border-radius: 20px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.1);
       padding: 40px;
-      max-width: 500px;
+      max-width: 700px;
       width: 90%;
       text-align: center;
     }
@@ -45,15 +45,13 @@
     }
     
     .role-options {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 20px;
       margin: 30px 0;
-      flex-wrap: wrap;
     }
     
     .role-card {
-      flex: 1;
-      min-width: 200px;
       background: #fff;
       border: 3px solid #f0f0f0;
       border-radius: 15px;
@@ -62,6 +60,11 @@
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
     }
     
     .role-card:hover {
@@ -92,16 +95,18 @@
     }
     
     .role-icon {
-      font-size: 48px;
-      margin-bottom: 15px;
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 15px;
       display: block;
+      object-fit: contain;
     }
     
     .role-title {
       font-size: 20px;
       font-weight: bold;
       color: #5b4636;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     
     .role-description {
@@ -115,20 +120,20 @@
     }
     
     .submit-section {
-      margin-top: 40px;
+      margin-top: 30px;
     }
     
     .submit-btn {
       background: linear-gradient(135deg, #f6c25f, #e0a93d);
       color: white;
       border: none;
-      padding: 15px 40px;
+      padding: 12px 35px;
       border-radius: 25px;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       transition: all 0.3s ease;
-      width: 200px;
+      width: 180px;
       opacity: 0.6;
       pointer-events: none;
     }
@@ -143,17 +148,30 @@
       box-shadow: 0 10px 20px rgba(246, 194, 95, 0.3);
     }
     
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       .role-options {
-        flex-direction: column;
-      }
-      
-      .role-card {
-        min-width: auto;
+        grid-template-columns: 1fr;
+        gap: 20px;
       }
       
       .role-selection-container {
         padding: 30px 20px;
+        max-width: 500px;
+      }
+      
+      .role-icon {
+        width: 55px;
+        height: 55px;
+      }
+      
+      .role-card {
+        padding: 25px 15px;
+        min-height: 180px;
+      }
+      
+      .submit-btn {
+        width: 160px;
+        padding: 10px 30px;
       }
     }
   </style>
@@ -161,14 +179,14 @@
 <body>
   <div class="role-selection-container">
     <div class="welcome-header">
-      <h1>🍳 歡迎加入味你而煮！</h1>
+      <h1>歡迎加入味你而煮！</h1>
       <p>請選擇您的使用者角色以完成設定</p>
     </div>
     
     <form action="{{ url_for('select_role') }}" method="post" id="roleForm">
       <div class="role-options">
         <div class="role-card" onclick="selectRole('customer')">
-          <div class="role-icon">🍽️</div>
+          <img src="/static/imgs/customer_logo.png" alt="顧客" class="role-icon">
           <div class="role-title">我是顧客</div>
           <div class="role-description">
             我想要尋找專業廚師<br>
@@ -178,7 +196,7 @@
         </div>
         
         <div class="role-card" onclick="selectRole('chef')">
-          <div class="role-icon">👨‍🍳</div>
+          <img src="/static/imgs/chef_logo.png" alt="廚師" class="role-icon">
           <div class="role-title">我是廚師</div>
           <div class="role-description">
             我是專業廚師<br>

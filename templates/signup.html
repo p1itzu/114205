@@ -79,6 +79,9 @@
   </style>
 </head>
 <body>
+  <!-- 引入加載遮罩模板 -->
+  {% include "loading_overlay.html" %}
+  
   <div class="left-section"></div>
   <div class="right-section">
     <div class="top-right-link">
@@ -101,6 +104,8 @@
           </ul>
           <div id="password-strength" class="password-strength"></div>
         </div>
+        <input type="password" name="confirm_password" id="confirm-password" placeholder="確認密碼" required>
+        <div id="password-match" class="password-strength" style="margin-top: 5px;"></div>
         <div class="button-group">
           <span class="role-label">請選擇身分：</span>
           <button type="button" class="role-button" data-role="chef" onclick="selectRole('chef')">廚師</button>
@@ -121,6 +126,7 @@
   <script>
     let selectedRole = null;
     let passwordValid = false;
+    let passwordMatch = false;
 
     function selectRole(role) {
       // 移除所有按鈕的選中狀態
@@ -173,9 +179,30 @@
       updateSubmitButton();
     }
 
+    function checkPasswordMatch() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const matchDiv = document.getElementById('password-match');
+      
+      if (confirmPassword === '') {
+        matchDiv.textContent = '';
+        passwordMatch = false;
+      } else if (password === confirmPassword) {
+        matchDiv.textContent = '✓ 密碼匹配';
+        matchDiv.className = 'password-strength strength-strong';
+        passwordMatch = true;
+      } else {
+        matchDiv.textContent = '✗ 密碼不匹配';
+        matchDiv.className = 'password-strength strength-weak';
+        passwordMatch = false;
+      }
+      
+      updateSubmitButton();
+    }
+
     function updateSubmitButton() {
       const submitBtn = document.getElementById('submit-btn');
-      if (passwordValid && selectedRole) {
+      if (passwordValid && passwordMatch && selectedRole) {
         submitBtn.disabled = false;
         submitBtn.style.opacity = '1';
       } else {
@@ -200,6 +227,12 @@
     // 密碼輸入事件監聽
     document.getElementById('password').addEventListener('input', function(e) {
       checkPasswordStrength(e.target.value);
+      checkPasswordMatch(); // 當修改密碼時也檢查匹配
+    });
+
+    // 確認密碼輸入事件監聽
+    document.getElementById('confirm-password').addEventListener('input', function(e) {
+      checkPasswordMatch();
     });
 
     // 表單提交前驗證
@@ -215,6 +248,19 @@
         alert('請確保密碼符合所有要求');
         return false;
       }
+
+      if (!passwordMatch) {
+        e.preventDefault();
+        alert('兩次輸入的密碼不一致，請重新確認');
+        return false;
+      }
+
+      // 顯示加載遮罩
+      showLoading('註冊中', '正在創建您的帳號，請稍候...');
+      
+      // 禁用提交按鈕防止重複提交
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
     });
 
     // 初始化按鈕狀態

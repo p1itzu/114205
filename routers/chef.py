@@ -528,7 +528,8 @@ def chef_profile(
         "chef_profile.html",
         {
             **commons,
-            "current_user": current_user
+            "current_user": current_user,
+            "chef": current_user  # 添加 chef 变量以兼容模板
         }
     )
 
@@ -582,6 +583,9 @@ def chef_main(
 async def update_chef_profile(
     name: str = Form(...),
     phone: Optional[str] = Form(None),
+    current_password: Optional[str] = Form(None),
+    new_password: Optional[str] = Form(None),
+    avatar: Optional[UploadFile] = File(None),
     kitchen_address: Optional[str] = Form(None),
     certificate_name: Optional[str] = Form(None),
     specialties: Optional[str] = Form(None),
@@ -598,7 +602,35 @@ async def update_chef_profile(
         if phone:
             current_user.phone = phone
         
-        # 處理頭像上傳
+        # 處理密碼更新
+        if current_password and new_password:
+            # 驗證目前密碼
+            if not verify_password(current_password, current_user.password):
+                return JSONResponse(
+                    status_code=400,
+                    content={"detail": "目前密碼不正確"}
+                )
+            # 更新密碼
+            current_user.password = hash_password(new_password)
+        
+        # 處理頭像上傳（使用 avatar 參數）
+        if avatar:
+            # 確保uploads目錄存在
+            os.makedirs("static/uploads/avatars", exist_ok=True)
+            
+            # 生成唯一檔名
+            file_extension = avatar.filename.split('.')[-1] if '.' in avatar.filename else 'jpg'
+            filename = f"{uuid.uuid4()}.{file_extension}"
+            file_path = f"static/uploads/avatars/{filename}"
+            
+            # 儲存檔案
+            with open(file_path, "wb") as buffer:
+                content = await avatar.read()
+                buffer.write(content)
+            
+            current_user.avatar_url = f"/static/uploads/avatars/{filename}"
+        
+        # 處理廚師專業照片上傳
         if photo:
             # 確保uploads目錄存在
             os.makedirs("static/uploads/avatars", exist_ok=True)
@@ -613,6 +645,7 @@ async def update_chef_profile(
                 content = await photo.read()
                 buffer.write(content)
             
+            # 更新用戶頭像（如果photo也可以用作頭像）
             current_user.avatar_url = f"/static/uploads/avatars/{filename}"
         
         # 獲取或創建廚師資料
@@ -663,13 +696,18 @@ async def update_chef_profile(
         
         db.commit()
         
-        return JSONResponse(content={"success": True, "message": "個人資料更新成功！"})
+        return JSONResponse(content={
+            "success": True,
+            "message": "個人資料更新成功！",
+            "avatar_url": current_user.avatar_url,
+            "name": current_user.name
+        })
         
     except Exception as e:
         db.rollback()
         return JSONResponse(
             status_code=500,
-            content={"success": False, "message": f"更新失敗：{str(e)}"}
+            content={"success": False, "detail": f"更新失敗：{str(e)}"}
         )
 
 # 廚師提出議價

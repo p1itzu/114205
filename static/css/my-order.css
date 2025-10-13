@@ -4,6 +4,7 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    color: #B3811C;
 }
 
 .order-card {
@@ -52,9 +53,40 @@ body {
 
 .navbar .site-name {
     font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-weight: bold;
     padding-left: 20px;
     color: #B3811C;
+}
+
+.navbar .site-logo {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+.navbar .site-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.navbar .site-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #B3811C;
+    line-height: 1.2;
+}
+
+.navbar .site-subtitle {
+    font-size: 12px;
+    font-weight: normal;
+    color: #B3811C;
+    opacity: 0.8;
+    line-height: 1;
+    text-align: center;
 }
 
 .navbar .nav-links {
@@ -67,7 +99,7 @@ body {
     color: #B3811C;
     text-decoration: none;
     padding: 10px 20px;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
 }
 
@@ -670,9 +702,22 @@ div.footer {
 }
 
 /* 帳號名稱 */
+/* 用户信息文本 */
+.user-text {
+    display: flex;
+    flex-direction: column;
+}
+
 .name {
     font-size: 16px;
     font-weight: bold;
+    color: #B3811C;
+}
+
+/* 邮箱 */
+.email {
+    font-size: 16px;
+    color: #8B6014;
 }
 
 /* 副標題 */

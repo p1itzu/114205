@@ -11,18 +11,92 @@
     <link href="/static/css/SearchChef.css" rel="stylesheet" />
     <link href="/static/css/notification.css" rel="stylesheet" />
     <title>重新選擇廚師</title>
+    
+    <style>
+        /* Navbar 樣式修正 */
+        .navbar .site-name {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+        
+        .navbar .site-logo {
+            width: 35px !important;
+            height: 35px !important;
+            object-fit: contain !important;
+        }
+        
+        .navbar .site-text {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0px !important;
+        }
+        
+        .navbar .site-title {
+            font-size: 20px !important;
+            font-weight: bold !important;
+            color: #B3811C !important;
+            line-height: 1.2 !important;
+        }
+        
+        .navbar .site-subtitle {
+            font-size: 12px !important;
+            font-weight: normal !important;
+            color: #B3811C !important;
+            opacity: 0.8 !important;
+            line-height: 1 !important;
+            text-align: center !important;
+        }
+        
+        .user-info .name {
+            font-size: 16px !important;
+            font-weight: bold !important;
+            color: #B3811C !important;
+        }
+        
+        .user-info .email {
+            font-size: 16px !important;
+            color: #8B6014 !important;
+        }
+    </style>
 </head>
 
 <body>
     <div class="navbar">
-        <div class="site-name">味你而煮</div>
+        <div class="site-name">
+            <img src="/static/imgs/chef_logo.png" alt="Logo" class="site-logo">
+            <div class="site-text">
+                <div class="site-title">味你而煮</div>
+                <div class="site-subtitle">cook for you</div>
+            </div>
+        </div>
         <div class="nav-links">
             <a href="{{ url_for('index') }}">首頁</a>
             {% if user %}
-            <a href="/customer/cooking_method">料理方式建議</a>
-            <a href="{{ url_for('order_step0') }}">新增訂單</a>
-            <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
-            <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                {% if user.role and user.role.value == 'chef' %}
+                <!-- 廚師專用導航 -->
+                <a href="{{ url_for('chef_dashboard') }}">總覽</a>
+                <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
+                
+                <!-- 廚師的我的訂單下拉選單 -->
+                <div class="dropdown" style="position: relative; display: inline-block;">
+                    <button class="dropdown-btn" onclick="toggleDropdown()" style="background: none; border: none; color: #B3811C; font-size: 18px; font-weight: bold; cursor: pointer; padding: 10px 20px; font-family: Arial, sans-serif; border-radius: 5px;">我的訂單 ▾</button>
+                    <div class="dropdown-content" id="orderDropdown" style="display: none; position: absolute; background-color: white; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 5px; top: 100%;">
+                        <a href="{{ url_for('chef_accepted_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">待完成訂單</a>
+                        <a href="{{ url_for('chef_completed_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已完成訂單</a>
+                        <a href="{{ url_for('chef_negotiating_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">議價中訂單</a>
+                        <a href="{{ url_for('chef_cancelled_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已取消訂單</a>
+                    </div>
+                </div>
+                
+                <a href="#">客服聯絡</a>
+                {% else %}
+                <!-- 顧客專用導航 -->
+                <a href="/customer/cooking_method">料理方式建議</a>
+                <a href="{{ url_for('order_step0') }}">新增訂單</a>
+                <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
+                <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                {% endif %}
             {% else %}
             <a href="{{ url_for('index') }}">關於我們</a>
             <a href="{{ url_for('index') }}">料理方式建議</a>

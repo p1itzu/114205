@@ -44,21 +44,26 @@
         }
 
         function toggleDropdown() {
-            document.getElementById("orderDropdown").classList.toggle("show");
+            var dropdown = document.getElementById("orderDropdown");
+            if (dropdown.style.display === "block") {
+                dropdown.style.display = "none";
+            } else {
+                dropdown.style.display = "block";
+            }
         }
 
         // 點擊其他地方時關閉下拉選單
-        window.onclick = function (event) {
+        window.addEventListener('click', function(event) {
             if (!event.target.matches('.dropdown-btn')) {
                 var dropdowns = document.getElementsByClassName("dropdown-content");
                 for (var i = 0; i < dropdowns.length; i++) {
                     var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
+                    if (openDropdown.style.display === "block") {
+                        openDropdown.style.display = "none";
                     }
                 }
             }
-        }
+        });
 
         // 提交編輯表單
         async function submitEdit(event) {
@@ -91,33 +96,58 @@
 <body>
     <div class="container">
         <div class="navbar">
-            <div class="site-name">味你而煮</div>
+            <div class="site-name">
+            <img src="/static/imgs/chef_logo.png" alt="Logo" class="site-logo">
+            <div class="site-text">
+                <div class="site-title">味你而煮</div>
+                <div class="site-subtitle">cook for you</div>
+            </div>
+        </div>
             <div class="nav-links">
-                <a href="{{ url_for('chef_dashboard') }}">首頁</a>
-                <a href="{{ url_for('chef_main') }}">我的頁面</a>
-                <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
-
-                <!-- 下拉選單 -->
-                <div class="dropdown">
-                    <button class="dropdown-btn" onclick="toggleDropdown()">我的訂單 ▾</button>
-                    <div class="dropdown-content" id="orderDropdown">
-                        <a href="{{ url_for('chef_accepted_orders') }}">待完成訂單</a>
-                        <a href="{{ url_for('chef_completed_orders') }}">已完成訂單</a>
-                        <a href="{{ url_for('chef_negotiating_orders') }}">議價中訂單</a>
-                        <a href="{{ url_for('chef_cancelled_orders') }}">已取消訂單</a>
+                <a href="{{ url_for('index') }}">首頁</a>
+                {% if current_user %}
+                    {% if current_user.role and current_user.role.value == 'chef' %}
+                    <!-- 廚師專用導航 -->
+                    <a href="{{ url_for('chef_dashboard') }}">總覽</a>
+                    <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
+                    
+                    <!-- 廚師的我的訂單下拉選單 -->
+                    <div class="dropdown" style="position: relative; display: inline-block;">
+                        <button class="dropdown-btn" onclick="toggleDropdown()" style="background: none; border: none; color: #B3811C; font-size: 18px; font-weight: bold; cursor: pointer; padding: 10px 20px; font-family: Arial, sans-serif; border-radius: 5px;">我的訂單 ▾</button>
+                        <div class="dropdown-content" id="orderDropdown" style="display: none; position: absolute; background-color: white; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 5px; top: 100%;">
+                            <a href="{{ url_for('chef_accepted_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">待完成訂單</a>
+                            <a href="{{ url_for('chef_completed_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已完成訂單</a>
+                            <a href="{{ url_for('chef_negotiating_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">議價中訂單</a>
+                            <a href="{{ url_for('chef_cancelled_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已取消訂單</a>
+                        </div>
                     </div>
-                </div>
-
-                <a href="#contact">客服聯絡</a>
-                <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                    
+                    <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                    <a href="#">客服聯絡</a>
+                    {% else %}
+                    <!-- 顧客專用導航 -->
+                    <a href="/customer/cooking_method">料理方式建議</a>
+                    <a href="{{ url_for('order_step0') }}">新增訂單</a>
+                    <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
+                    <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                    {% endif %}
+                {% else %}
+                <a href="{{ url_for('index') }}">關於我們</a>
+                <a href="{{ url_for('index') }}">料理方式建議</a>
+                <a href="{{ url_for('index') }}">常見問題</a>
+                {% endif %}
             </div>
             <div class="user-info">
+                {% if current_user %}
                 <img src="{{ current_user.avatar_url or url_for('static', path='imgs/chef.png') }}" alt="頭像" class="avatar" />
                 <div class="user-text">
                     <div class="name">{{ current_user.name }}</div>
                     <div class="email">{{ current_user.email }}</div>
                 </div>
                 <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+                {% else %}
+                <a href="{{ url_for('login') }}">登入/註冊</a>
+                {% endif %}
             </div>
         </div>
 

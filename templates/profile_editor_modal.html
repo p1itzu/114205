@@ -1,0 +1,388 @@
+<style>
+    /* 個人資料編輯彈窗特殊樣式 */
+    .profile-edit-section {
+        max-width: 500px;
+        margin: 0 auto;
+        height: auto;
+        min-height: fit-content;
+        position: relative;
+        will-change: transform;
+        transform: translateZ(0);
+    }
+    
+    #profileModal .modal-content {
+        max-width: 600px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    #profileModal .modal-body {
+        flex: 1;
+        overflow-y: auto;
+        max-height: calc(90vh - 100px);
+        padding: 20px;
+        position: relative;
+        scroll-behavior: smooth;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+    
+    /* 美化滾動條 */
+    #profileModal .modal-body::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    #profileModal .modal-body::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    
+    #profileModal .modal-body::-webkit-scrollbar-thumb {
+        background: #c0c0c0;
+        border-radius: 4px;
+    }
+    
+    #profileModal .modal-body::-webkit-scrollbar-thumb:hover {
+        background: #a0a0a0;
+    }
+    
+    .avatar-edit-container {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-edit-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+        border: 4px solid #f6c25f;
+        object-fit: cover;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .avatar-edit-btn {
+        background: linear-gradient(135deg, #f6c25f, #e0a93d);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease, background 0.3s ease;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .avatar-edit-btn:hover {
+        box-shadow: 0 5px 15px rgba(246, 194, 95, 0.4);
+        background: linear-gradient(135deg, #e0a93d, #d89e3a);
+    }
+    
+    .form-group-modern {
+        margin-bottom: 20px;
+    }
+    
+    .form-group-modern label {
+        display: block;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    
+    .form-group-modern input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+        box-sizing: border-box;
+    }
+    
+    .form-group-modern input:focus {
+        outline: none;
+        border-color: #f6c25f;
+        box-shadow: 0 0 0 3px rgba(246, 194, 95, 0.1);
+    }
+    
+    .form-group-modern input[readonly] {
+        background-color: #f8f9fa;
+        color: #6c757d;
+    }
+    
+    .password-section {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .password-section h4 {
+        margin: 0 0 20px 0;
+        color: #333;
+        font-size: 18px;
+    }
+    
+    /* OAuth2 密碼通知樣式 */
+    .oauth-password-notice {
+        display: flex;
+        align-items: flex-start;
+        background: linear-gradient(135deg, #e3f2fd 0%, #f1f8ff 100%);
+        border: 1px solid #90caf9;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .oauth-notice-icon {
+        font-size: 24px;
+        margin-right: 15px;
+        margin-top: 5px;
+    }
+    
+    .oauth-notice-text {
+        flex: 1;
+    }
+    
+    .oauth-notice-text p {
+        margin: 0 0 8px 0;
+        color: #1976d2;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    .oauth-notice-text p:first-child {
+        font-weight: bold;
+        font-size: 16px;
+        color: #0d47a1;
+    }
+    
+    .oauth-notice-text p:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* 禁用狀態樣式 */
+    .disabled-label {
+        color: #999 !important;
+        opacity: 0.7;
+    }
+    
+    .disabled-input {
+        background-color: #f5f5f5 !important;
+        color: #999 !important;
+        border-color: #ddd !important;
+        cursor: not-allowed !important;
+    }
+    
+    .disabled-input::placeholder {
+        color: #bbb !important;
+    }
+    
+    .profile-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-save:hover {
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        transform: translateY(-2px);
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+</style>
+
+<!-- 個人資料編輯彈窗 -->
+<div id="profileModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>個人資料編輯</h3>
+            <span class="close" onclick="closeProfileModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+        <form id="profile-form" enctype="multipart/form-data">
+                <div class="profile-edit-section">
+                    <!-- 頭像編輯 -->
+                    <div class="avatar-edit-container">
+                        <img id="profile-avatar" src="{{ current_user.avatar_url or url_for('static', path='imgs/avatar.png') }}" alt="個人頭像" class="profile-edit-avatar">
+                    <input type="file" id="avatar-input" name="avatar" accept="image/*" style="display: none;">
+                        <button type="button" class="avatar-edit-btn" onclick="document.getElementById('avatar-input').click()">
+                            📷 更換頭像
+                        </button>
+                </div>
+
+                    <!-- 基本資料 -->
+                    <div class="form-group-modern">
+                        <label for="name">姓名</label>
+                        <input type="text" id="name" name="name" value="{{ current_user.name }}" required>
+                    </div>
+                    
+                    <div class="form-group-modern">
+                        <label for="email">電子郵件</label>
+                        <input type="email" id="email" value="{{ current_user.email }}" readonly>
+                    </div>
+                    
+                    <div class="form-group-modern">
+                        <label for="phone">電話號碼</label>
+                        <input type="tel" id="phone" name="phone" value="{{ current_user.phone or '' }}" placeholder="請輸入電話號碼">
+                    </div>
+                    
+                    <!-- 密碼變更 -->
+                    <div class="password-section">
+                        <h4>密碼變更</h4>
+                        {% if current_user.oauth_provider %}
+                        <!-- OAuth2 用戶不能修改密碼 -->
+                        <div class="oauth-password-notice">
+                            <div class="oauth-notice-icon">🔒</div>
+                            <div class="oauth-notice-text">
+                                <p><strong>Google 帳戶登入</strong></p>
+                                <p>您使用的是 Google OAuth2 登入，密碼由 Google 管理，無法在此修改。</p>
+                                <p>如需修改密碼，請前往您的 Google 帳戶設定。</p>
+                            </div>
+                        </div>
+                        <div class="form-group-modern">
+                            <label for="current_password" class="disabled-label">目前密碼</label>
+                            <input type="password" id="current_password" name="current_password" placeholder="OAuth2 登入用戶無法修改密碼" disabled class="disabled-input">
+                        </div>
+                        
+                        <div class="form-group-modern">
+                            <label for="new_password" class="disabled-label">新密碼</label>
+                            <input type="password" id="new_password" name="new_password" placeholder="OAuth2 登入用戶無法修改密碼" disabled class="disabled-input">
+                        </div>
+                        {% else %}
+                        <!-- 一般用戶可以修改密碼 -->
+                        <div class="form-group-modern">
+                            <label for="current_password">目前密碼</label>
+                            <input type="password" id="current_password" name="current_password" placeholder="修改密碼時請輸入目前密碼">
+                        </div>
+                        
+                        <div class="form-group-modern">
+                            <label for="new_password">新密碼</label>
+                            <input type="password" id="new_password" name="new_password" placeholder="請輸入新密碼（不修改請留空）">
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- 操作按鈕 -->
+                    <div class="profile-actions">
+                        <button type="submit" class="btn-save">儲存變更</button>
+                        <button type="button" class="btn-cancel" onclick="closeProfileModal()">取消</button>
+                    </div>
+                </div>
+            </form>
+            </div>
+    </div>
+</div>
+
+<script>
+    // 個人資料編輯功能
+    function showProfileEditor() {
+        closeSettingsModal();
+        document.getElementById('profileModal').style.display = 'block';
+    }
+    
+    function closeProfileModal() {
+        document.getElementById('profileModal').style.display = 'none';
+    }
+    
+    // 頭像預覽功能
+    document.getElementById('avatar-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profile-avatar').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // 表單提交功能
+    document.getElementById('profile-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        try {
+            const response = await fetch('/chef/profile/update', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                alert('個人資料更新成功！');
+                closeProfileModal();
+                
+                // 更新頁面上的頭像
+                if (data.avatar_url) {
+                    document.querySelectorAll('.account-avatar').forEach(img => {
+                        img.src = data.avatar_url;
+                    });
+                    document.querySelectorAll('.user-info .avatar').forEach(img => {
+                        img.src = data.avatar_url;
+                    });
+                }
+                
+                // 更新頁面上的姓名
+                if (data.name) {
+                    document.querySelectorAll('.account-name').forEach(elem => {
+                        elem.textContent = data.name;
+                    });
+                    document.querySelectorAll('.user-info .name').forEach(elem => {
+                        elem.textContent = data.name;
+                    });
+                }
+                
+                // 刷新頁面以確保所有資料更新
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                alert('更新失敗：' + data.detail);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('更新失敗，請稍後再試');
+        }
+    });
+</script>
+

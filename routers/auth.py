@@ -88,9 +88,17 @@ def signup(
     name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
+    confirm_password: str = Form(...),
     role: str = Form(...),
     db: Session = Depends(get_db)
     ):
+    # 驗證兩次密碼是否一致
+    if password != confirm_password:
+        return templates.TemplateResponse(
+            "signup.html",
+            {"request": request, "error": "兩次輸入的密碼不一致"}
+        )
+    
     # 驗證密碼強度
     is_valid, error_message = validate_password_strength(password)
     if not is_valid:
