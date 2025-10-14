@@ -7,6 +7,9 @@ from typing import List, Optional
 import uuid
 import os
 import shutil
+import openai
+import whisper
+import tempfile
 
 from database import get_db
 from models.user import User
@@ -33,7 +36,7 @@ def cooking_method(
     return templates.TemplateResponse("cooking_method.html", {
         **commons,
         "request": request,
-        "current_user": current_user
+        "user": current_user
     })
 
 class NegotiationResponse(BaseModel):
@@ -44,6 +47,20 @@ class NegotiationResponse(BaseModel):
 class ReviewRequest(BaseModel):
     rating: int
     content: Optional[str] = None
+
+class VoiceOrderRequest(BaseModel):
+    message: str
+    order_data: dict
+
+class VoiceOrderData(BaseModel):
+    chef_id: int
+    chef_name: str
+    order_date: Optional[str] = None
+    order_time: Optional[str] = None
+    delivery_method: Optional[str] = None
+    delivery_address: Optional[str] = None
+    dishes: List[dict] = []
+    customer_notes: str = ""
 
 # 廚師詳細資料頁面
 @router.get("/chef/{chef_id}/profile")
@@ -127,7 +144,7 @@ def order_list_page(
         joinedload(Order.negotiations)
     ).filter(Order.customer_id == current_user.id).order_by(Order.created_at.desc()).all()
     
-    return templates.TemplateResponse("order_list.html", {**commons, "request": request, "orders": orders})
+    return templates.TemplateResponse("order_list.html", {**commons, "request": request, "user": current_user, "orders": orders})
 
 # 訂單詳情
 @router.get("/order/{order_id}", name="order_detail")
@@ -174,6 +191,7 @@ def order_detail(
     return templates.TemplateResponse("order_detail.html", {
         **commons, 
         "request": request, 
+        "user": current_user,
         "order": order,
         "chef_final_pricing_pending": chef_final_pricing_pending,
         "chef_final_pricing": chef_final_pricing,
@@ -182,7 +200,7 @@ def order_detail(
 
 # 新增訂單 - 第零步：選擇廚師
 @router.get("/orders/new/step0", name="order_step0")
-def get_step0(request: Request, commons=Depends(common_template_params), db: Session = Depends(get_db)):
+def get_step0(request: Request, commons=Depends(common_template_params), current_user: User = Depends(require_customer), db: Session = Depends(get_db)):
     from sqlalchemy.orm import joinedload
     from models.chef import ChefProfile, ChefSpecialty
     
@@ -219,6 +237,7 @@ def get_step0(request: Request, commons=Depends(common_template_params), db: Ses
     return templates.TemplateResponse("add_order_step0.html", {
         **commons, 
         "request": request, 
+        "user": current_user,
         "chefs": chefs
     })
 
@@ -292,6 +311,7 @@ def reselect_chef(
     return templates.TemplateResponse("reselect_chef.html", {
         **commons,
         "request": request,
+        "user": current_user,
         "order": order,
         "chefs": chefs,
         "reason": reason
@@ -389,12 +409,12 @@ def post_step0(
 
 # 新增訂單 - 第一步：基本資訊
 @router.get("/orders/new/step1", name="order_step1")
-def get_step1(request: Request, commons=Depends(common_template_params)):
+def get_step1(request: Request, commons=Depends(common_template_params), current_user: User = Depends(require_customer)):
     # 檢查是否已選擇廚師
     if "step0" not in request.session:
         return RedirectResponse(url="/customer/orders/new/step0", status_code=status.HTTP_302_FOUND)
     
-    return templates.TemplateResponse("add_order_step1.html", {**commons, "request": request})
+    return templates.TemplateResponse("add_order_step1.html", {**commons, "request": request, "user": current_user})
 
 @router.post("/orders/new/step1")
 def post_step1(
@@ -441,10 +461,10 @@ def post_step1(
 
 # 新增訂單 - 第二步：菜品資訊
 @router.get("/orders/new/step2", name="order_step2")
-def get_step2(request: Request, commons=Depends(common_template_params)):
+def get_step2(request: Request, commons=Depends(common_template_params), current_user: User = Depends(require_customer)):
     if "step0" not in request.session or "step1" not in request.session:
         return RedirectResponse(url="/customer/orders/new/step0", status_code=status.HTTP_302_FOUND)
-    return templates.TemplateResponse("add_order_step2.html", {**commons, "request": request})
+    return templates.TemplateResponse("add_order_step2.html", {**commons, "request": request, "user": current_user})
 
 @router.post("/orders/new/step2")
 def post_step2(
@@ -494,7 +514,7 @@ def post_step2(
 
 # 新增訂單 - 第三步：確認資訊
 @router.get("/orders/new/step3", name="order_step3")
-def get_step3(request: Request, commons=Depends(common_template_params)):
+def get_step3(request: Request, commons=Depends(common_template_params), current_user: User = Depends(require_customer)):
     if "step0" not in request.session or "step1" not in request.session or "step2" not in request.session:
         return RedirectResponse(url="/customer/orders/new/step0", status_code=status.HTTP_302_FOUND)
 
@@ -507,6 +527,7 @@ def get_step3(request: Request, commons=Depends(common_template_params)):
         {
             **commons,
             "request": request,
+            "user": current_user,
             "step0": step0,
             "step1": step1,
             "dishes": dishes
@@ -522,7 +543,7 @@ def post_step3(request: Request):
 
 # 新增訂單 - 第四步：最终确认和提交
 @router.get("/orders/new/step4", name="order_step4")
-def get_step4(request: Request, commons=Depends(common_template_params)):
+def get_step4(request: Request, commons=Depends(common_template_params), current_user: User = Depends(require_customer)):
     if "step0" not in request.session or "step1" not in request.session or "step2" not in request.session:
         return RedirectResponse(url="/customer/orders/new/step0", status_code=status.HTTP_302_FOUND)
 
@@ -535,6 +556,7 @@ def get_step4(request: Request, commons=Depends(common_template_params)):
         {
             **commons,
             "request": request,
+            "user": current_user,
             "step0": step0,
             "step1": step1,
             "dishes": dishes
@@ -912,6 +934,7 @@ def customer_final_pricing(
         {
             **commons,
             "request": request,
+            "user": current_user,
             "order": order,
             "chef_final_pricing": chef_final_pricing,
             "is_first_pricing": is_first_pricing
@@ -1195,7 +1218,7 @@ def special_needs_verification_page(
     return templates.TemplateResponse("special_needs_verification.html", {
         **commons,
         "request": request,
-        "current_user": current_user
+        "user": current_user
     })
 
 
@@ -1215,7 +1238,7 @@ async def submit_special_needs_verification(
             return templates.TemplateResponse("special_needs_verification.html", {
                 **commons,
                 "request": request,
-                "current_user": current_user,
+                "user": current_user,
                 "error": "您已經提交過申請，請勿重複申請"
             })
         
@@ -1224,7 +1247,7 @@ async def submit_special_needs_verification(
             return templates.TemplateResponse("special_needs_verification.html", {
                 **commons,
                 "request": request,
-                "current_user": current_user,
+                "user": current_user,
                 "error": "無效的申請類型"
             })
         
@@ -1233,7 +1256,7 @@ async def submit_special_needs_verification(
             return templates.TemplateResponse("special_needs_verification.html", {
                 **commons,
                 "request": request,
-                "current_user": current_user,
+                "user": current_user,
                 "error": "請上傳圖片檔案（JPG、PNG 格式）"
             })
         
@@ -1243,7 +1266,7 @@ async def submit_special_needs_verification(
             return templates.TemplateResponse("special_needs_verification.html", {
                 **commons,
                 "request": request,
-                "current_user": current_user,
+                "user": current_user,
                 "error": "檔案大小不能超過 10MB"
             })
         
@@ -1271,7 +1294,7 @@ async def submit_special_needs_verification(
         return templates.TemplateResponse("special_needs_verification.html", {
             **commons,
             "request": request,
-            "current_user": current_user,
+            "user": current_user,
             "success": "申請已成功提交！"
         })
         
@@ -1285,7 +1308,7 @@ async def submit_special_needs_verification(
         return templates.TemplateResponse("special_needs_verification.html", {
             **commons,
             "request": request,
-            "current_user": current_user,
+            "user": current_user,
             "error": f"申請提交失敗：{str(e)}"
         })
 
@@ -1303,11 +1326,306 @@ def special_needs_status_page(
     if current_user.special_needs_applied_at:
         estimated_completion = current_user.special_needs_applied_at + timedelta(days=3)
     
-    return templates.TemplateResponse("special_needs_status.html", {
+        return templates.TemplateResponse("special_needs_status.html", {
+            **commons,
+            "request": request,
+            "user": current_user,
+            "estimated_completion": estimated_completion
+        })
+
+
+# 語音AI助手訂單頁面
+@router.get("/orders/new/voice_assistant", name="voice_order_assistant")
+def voice_order_assistant_page(
+    request: Request,
+    chef_id: int,
+    commons=Depends(common_template_params),
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    """語音AI助手訂單頁面"""
+    # 驗證廚師是否存在
+    chef = db.query(User).filter(
+        User.id == chef_id,
+        User.role == "chef"
+    ).first()
+    
+    if not chef:
+        raise HTTPException(status_code=404, detail="廚師不存在")
+    
+    return templates.TemplateResponse("voice_order_assistant.html", {
         **commons,
         "request": request,
-        "current_user": current_user,
-        "estimated_completion": estimated_completion
+        "user": current_user,
+        "chef": chef
     })
+
+
+# 處理語音AI助手的訊息
+@router.post("/orders/new/voice_assistant/process")
+async def process_voice_message(
+    request_data: VoiceOrderRequest,
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    """處理語音AI助手的訊息並返回AI回應"""
+    try:
+        # 設置OpenAI API
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        
+        # 構建系統提示
+        system_prompt = """你是一個專業的訂單助手，幫助顧客創建訂單。你需要收集以下資訊：
+1. 用餐日期和時間
+2. 取餐方式（外送/自取）
+3. 如果是外送，需要地址
+4. 菜色名稱、數量、口味偏好（鹹度、辣度）
+5. 特殊要求或備註
+
+請根據顧客的訊息，更新訂單資訊，並用友善、專業的語氣回應。如果資訊不完整，請引導顧客提供更多資訊。
+
+當前訂單資訊：
+- 廚師：{chef_name}
+- 日期：{order_date}
+- 時間：{order_time}
+- 取餐方式：{delivery_method}
+- 地址：{delivery_address}
+- 菜色：{dishes}
+- 備註：{customer_notes}
+
+請以JSON格式回應，包含：
+- response: 給顧客的回應文字
+- order_data: 更新後的訂單資訊
+- is_complete: 是否已收集完所有必要資訊
+""".format(
+            chef_name=request_data.order_data.get('chef_name', ''),
+            order_date=request_data.order_data.get('order_date', '未設定'),
+            order_time=request_data.order_data.get('order_time', '未設定'),
+            delivery_method=request_data.order_data.get('delivery_method', '未設定'),
+            delivery_address=request_data.order_data.get('delivery_address', '未設定'),
+            dishes=str(request_data.order_data.get('dishes', [])),
+            customer_notes=request_data.order_data.get('customer_notes', '')
+        )
+        
+        # 調用OpenAI API
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": request_data.message}
+            ],
+            temperature=0.7,
+            max_tokens=1000
+        )
+        
+        ai_response = response.choices[0].message.content
+        
+        # 嘗試解析JSON回應
+        try:
+            import json
+            parsed_response = json.loads(ai_response)
+            response_text = parsed_response.get('response', ai_response)
+            updated_order_data = parsed_response.get('order_data', {})
+            is_complete = parsed_response.get('is_complete', False)
+        except:
+            # 如果不是JSON格式，直接使用回應文字
+            response_text = ai_response
+            updated_order_data = {}
+            is_complete = False
+        
+        return JSONResponse(content={
+            "success": True,
+            "response": response_text,
+            "order_data": updated_order_data,
+            "is_complete": is_complete
+        })
+        
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "message": f"處理訊息時發生錯誤：{str(e)}"
+            }
+        )
+
+
+# 語音轉文字
+@router.post("/orders/new/voice_assistant/transcribe")
+async def transcribe_audio(
+    audio: UploadFile = File(...),
+    current_user: User = Depends(require_customer)
+):
+    """將語音轉換為文字"""
+    try:
+        # 創建臨時文件
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
+            content = await audio.read()
+            temp_file.write(content)
+            temp_file_path = temp_file.name
+        
+        try:
+            # 使用Whisper進行語音轉文字
+            model = whisper.load_model("base")
+            result = model.transcribe(temp_file_path, language="zh")
+            
+            return JSONResponse(content={
+                "success": True,
+                "text": result["text"].strip()
+            })
+            
+        finally:
+            # 清理臨時文件
+            if os.path.exists(temp_file_path):
+                os.unlink(temp_file_path)
+                
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "message": f"語音轉換失敗：{str(e)}"
+            }
+        )
+
+
+# 提交語音AI助手創建的訂單
+@router.post("/orders/new/voice_assistant/submit")
+async def submit_voice_order(
+    order_data: VoiceOrderData,
+    current_user: User = Depends(require_customer),
+    db: Session = Depends(get_db)
+):
+    """提交語音AI助手創建的訂單"""
+    try:
+        # 驗證廚師是否存在
+        chef = db.query(User).filter(
+            User.id == order_data.chef_id,
+            User.role == "chef"
+        ).first()
+        
+        if not chef:
+            return JSONResponse(
+                status_code=404,
+                content={"success": False, "message": "廚師不存在"}
+            )
+        
+        # 解析日期和時間
+        if order_data.order_date and order_data.order_time:
+            try:
+                order_datetime = datetime.fromisoformat(f"{order_data.order_date}T{order_data.order_time}")
+            except ValueError:
+                return JSONResponse(
+                    status_code=400,
+                    content={"success": False, "message": "無效的日期或時間格式"}
+                )
+        else:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "缺少日期或時間資訊"}
+            )
+        
+        # 驗證配送方式
+        if not order_data.delivery_method:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "缺少取餐方式資訊"}
+            )
+        
+        try:
+            delivery_method_enum = DeliveryMethod(order_data.delivery_method)
+        except ValueError:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "無效的配送方式"}
+            )
+        
+        # 如果是外送，地址必填
+        if delivery_method_enum == DeliveryMethod.DELIVERY and not order_data.delivery_address:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "外送地址不能為空"}
+            )
+        
+        # 驗證菜色
+        if not order_data.dishes or len(order_data.dishes) == 0:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "至少需要一個菜色"}
+            )
+        
+        # 創建訂單
+        order = Order(
+            customer_id=current_user.id,
+            chef_id=order_data.chef_id,
+            order_number=f"ORD{uuid.uuid4().hex[:8].upper()}",
+            status=OrderStatus.PENDING,
+            delivery_method=delivery_method_enum,
+            delivery_address=order_data.delivery_address,
+            delivery_notes="",
+            preferred_time=order_datetime,
+            total_amount=0,  # 設為0，由廚師後續定價
+            delivery_fee=50.0 if delivery_method_enum == DeliveryMethod.DELIVERY else 0.0,
+            customer_notes=order_data.customer_notes
+        )
+        
+        db.add(order)
+        db.commit()
+        db.refresh(order)
+        
+        # 創建訂單菜品
+        for dish_data in order_data.dishes:
+            try:
+                salt_level = SaltLevel(dish_data.get("salt_level", "normal"))
+                spice_level = SpiceLevel(dish_data.get("spice_level", "none"))
+            except ValueError:
+                return JSONResponse(
+                    status_code=400,
+                    content={"success": False, "message": f"無效的口味設定 - {dish_data.get('dish_name', '未知菜色')}"}
+                )
+            
+            order_dish = OrderDish(
+                order_id=order.id,
+                dish_name=dish_data["dish_name"],
+                quantity=dish_data.get("quantity", 1),
+                unit_price=0,  # 設為0，由廚師後續定價
+                salt_level=salt_level,
+                spice_level=spice_level,
+                include_onion=dish_data.get("include_onion", True),
+                include_ginger=dish_data.get("include_ginger", True),
+                include_garlic=dish_data.get("include_garlic", True),
+                include_cilantro=dish_data.get("include_cilantro", True),
+                ingredients=dish_data.get("ingredients", ""),
+                special_instructions=dish_data.get("special_instructions", ""),
+                custom_notes=dish_data.get("custom_notes", "")
+            )
+            db.add(order_dish)
+        
+        db.commit()
+        
+        # 創建通知給廚師：收到新訂單
+        create_notification(
+            db=db,
+            user_id=order_data.chef_id,
+            notification_type=NotificationType.NEW_ORDER,
+            title="收到新訂單",
+            content=f"顧客 {current_user.name} 向您下了新訂單！",
+            order_id=order.id
+        )
+        
+        db.commit()
+        
+        return JSONResponse(content={
+            "success": True,
+            "message": "訂單創建成功！",
+            "order_id": order.id,
+            "order_number": order.order_number
+        })
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"創建訂單失敗：{str(e)}"}
+        )
 
 

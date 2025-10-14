@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/static/imgs/favicon.ico">
+    <title>語音AI助手 - 新增訂單</title>
+    <link href="/static/css/SearchChef.css" rel="stylesheet" />
+    <link href="/static/css/notification.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.5/dist/sweetalert2.all.min.js"></script>
+    
+    <style>
+        /* Navbar 樣式修正 */
+        .navbar .site-name {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+        
+        .navbar .site-logo {
+            width: 35px !important;
+            height: 35px !important;
+            object-fit: contain !important;
+        }
+        
+        .navbar .site-text {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0px !important;
+        }
+        
+        .navbar .site-title {
+            font-size: 20px !important;
+            font-weight: bold !important;
+            color: #B3811C !important;
+            line-height: 1.2 !important;
+        }
+        
+        .navbar .site-subtitle {
+            font-size: 12px !important;
+            font-weight: normal !important;
+            color: #B3811C !important;
+            opacity: 0.8 !important;
+            line-height: 1 !important;
+            text-align: center !important;
+        }
+        
+        .user-info .name {
+            font-size: 16px !important;
+            font-weight: bold !important;
+            color: #B3811C !important;
+        }
+        
+        .user-info .email {
+            font-size: 16px !important;
+            color: #8B6014 !important;
+        }
+
+        /* Navbar z-index 設定 */
+        .navbar {
+            z-index: 1000 !important;
+        }
+
+        /* 現代化設定模態框樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            margin: 5% auto;
+            padding: 0;
+            border: none;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            animation: modalSlideIn 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #F9C765 0%, #e8b84f 100%);
+            padding: 20px 25px;
+            color: #B3811C;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .close {
+            color: #B3811C;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close:hover {
+            background-color: rgba(179, 129, 28, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* 帳號區塊 */
+        .account-section {
+            margin-bottom: 15px;
+        }
+
+        .account-info-modern {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .account-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 3px solid #F9C765;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .account-details {
+            flex: 1;
+        }
+
+        .account-name {
+            font-weight: bold;
+            color: #B3811C;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .account-email {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        /* 設定項目 */
+        .setting-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            background: #fff;
+            border: 1px solid #e9ecef;
+        }
+
+        .setting-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .setting-icon {
+            font-size: 20px;
+            margin-right: 15px;
+            width: 25px;
+            text-align: center;
+        }
+
+        .setting-text {
+            flex: 1;
+        }
+
+        .setting-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 2px;
+        }
+
+        .setting-desc {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .setting-arrow {
+            font-size: 16px;
+            color: #adb5bd;
+        }
+
+        /* 分隔線 */
+        hr {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e9ecef, transparent);
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+        }
+
+        /* 個人資料編輯模態框樣式 */
+        #profileModal .modal-content {
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #profileModal .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            max-height: calc(90vh - 120px);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #profileModal .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #profileModal .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        #profileModal .modal-body::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            border-radius: 4px;
+        }
+
+        #profileModal .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+
+        .avatar-edit-container {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-edit-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 4px solid #f6c25f;
+            object-fit: cover;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .avatar-upload-btn {
+            background: linear-gradient(135deg, #f6c25f, #e0a93d);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: box-shadow 0.3s ease, background 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .avatar-upload-btn:hover {
+            box-shadow: 0 5px 15px rgba(246, 194, 95, 0.4);
+            background: linear-gradient(135deg, #e0a93d, #d89e3a);
+        }
+
+        .form-group-modern {
+            margin-bottom: 20px;
+        }
+
+        .form-group-modern label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group-modern input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group-modern input:focus {
+            outline: none;
+            border-color: #f6c25f;
+            box-shadow: 0 0 0 3px rgba(246, 194, 95, 0.1);
+        }
+
+        .form-group-modern input[readonly] {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .password-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .password-section h4 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 18px;
+        }
+
+        /* OAuth2 密碼通知樣式 */
+        .oauth-password-notice {
+            display: flex;
+            align-items: flex-start;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f1f8ff 100%);
+            border: 1px solid #90caf9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .oauth-notice-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            margin-top: 5px;
+        }
+
+        .oauth-notice-text {
+            flex: 1;
+        }
+
+        .oauth-notice-text p {
+            margin: 0 0 8px 0;
+            color: #1976d2;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .oauth-notice-text p:first-child {
+            font-weight: bold;
+            font-size: 16px;
+            color: #0d47a1;
+        }
+
+        .oauth-notice-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 禁用狀態樣式 */
+        .disabled-label {
+            color: #999 !important;
+            opacity: 0.7;
+        }
+
+        .disabled-input {
+            background-color: #f5f5f5 !important;
+            color: #999 !important;
+            border-color: #ddd !important;
+            cursor: not-allowed !important;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #218838, #1e7e34);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        /* 語音助手頁面樣式 */
+        .voice-assistant-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 10px;
+            background: #f8f9fa;
+            min-height: calc(100vh - 100px);
+        }
+
+        .assistant-header {
+            background: linear-gradient(135deg, #F9C765 0%, #e8b84f 100%);
+            color: #B3811C;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .assistant-header h1 {
+            margin: 0 0 6px 0;
+            font-size: 18px;
+        }
+
+        .assistant-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .chat-container {
+            display: flex;
+            gap: 12px;
+            height: calc(100vh - 160px);
+            min-height: 400px;
+        }
+
+        .chat-window {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: #B3811C;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-header .ai-icon {
+            font-size: 16px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0; /* 確保flex子元素可以縮小 */
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 15px;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+
+        .message.user {
+            background: #007bff;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant {
+            background: #f1f3f4;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.system {
+            background: #fff3cd;
+            color: #856404;
+            align-self: center;
+            text-align: center;
+            font-style: italic;
+            border-radius: 8px;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0; /* 防止輸入框被壓縮 */
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input input:focus {
+            border-color: #F9C765;
+        }
+
+        .voice-btn {
+            background: linear-gradient(135deg, #F9C765 0%, #e8b84f 100%);
+            color: #B3811C;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voice-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(249, 199, 101, 0.4);
+        }
+
+        .voice-btn.recording {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .send-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .send-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .order-summary {
+            width: 250px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0; /* 防止摘要面板被壓縮 */
+            max-height: 100%; /* 確保不超出容器高度 */
+        }
+
+        .summary-header {
+            background: #B3811C;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .summary-section {
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .summary-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .summary-section h4 {
+            color: #B3811C;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .summary-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-label {
+            color: #666;
+        }
+
+        .summary-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #B3811C;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.ready {
+            background: #28a745;
+        }
+
+        .status-indicator.processing {
+            background: #ffc107;
+        }
+
+        .status-indicator.error {
+            background: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .voice-assistant-container {
+                max-width: 95%;
+                padding: 8px;
+            }
+            
+            .chat-container {
+                flex-direction: column;
+                height: auto;
+                min-height: 400px;
+                gap: 10px;
+            }
+            
+            .order-summary {
+                width: 100%;
+                order: -1;
+                margin-bottom: 15px;
+            }
+            
+            .chat-window {
+                height: 350px;
+                min-height: 350px;
+            }
+            
+            .assistant-header h1 {
+                font-size: 16px;
+            }
+            
+            .assistant-header p {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="site-name">
+            <img src="/static/imgs/chef_logo.png" alt="Logo" class="site-logo">
+            <div class="site-text">
+                <div class="site-title">味你而煮</div>
+                <div class="site-subtitle">cook for you</div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">首頁</a>
+            {% if user %}
+                {% if user.role and user.role.value == 'chef' %}
+                <!-- 廚師專用導航 -->
+                <a href="{{ url_for('chef_dashboard') }}">總覽</a>
+                <a href="{{ url_for('chef_pending_orders') }}">待接單訂單</a>
+                
+                <!-- 廚師的我的訂單下拉選單 -->
+                <div class="dropdown" style="position: relative; display: inline-block;">
+                    <button class="dropdown-btn" onclick="toggleDropdown()" style="background: none; border: none; color: #B3811C; font-size: 18px; font-weight: bold; cursor: pointer; padding: 10px 20px; font-family: Arial, sans-serif; border-radius: 5px;">我的訂單 ▾</button>
+                    <div class="dropdown-content" id="orderDropdown" style="display: none; position: absolute; background-color: white; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1000; border-radius: 5px; top: 100%;">
+                        <a href="{{ url_for('chef_accepted_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">待完成訂單</a>
+                        <a href="{{ url_for('chef_completed_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已完成訂單</a>
+                        <a href="{{ url_for('chef_negotiating_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">議價中訂單</a>
+                        <a href="{{ url_for('chef_cancelled_orders') }}" style="color: #5B4636; padding: 12px 16px; text-decoration: none; display: block;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='white'">已取消訂單</a>
+                    </div>
+                </div>
+                
+                <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                <a href="#">客服聯絡</a>
+                {% else %}
+                <!-- 顧客專用導航 -->
+                <a href="/customer/cooking_method">料理方式建議</a>
+                <a href="{{ url_for('order_step0') }}">新增訂單</a>
+                <a href="{{ url_for('customer_order_list') }}">我的訂單</a>
+                <a href="#" onclick="toggleNotification(); return false;">通知中心</a>
+                {% endif %}
+            {% else %}
+            <a href="{{ url_for('index') }}">關於我們</a>
+            <a href="{{ url_for('index') }}">料理方式建議</a>
+            <a href="{{ url_for('index') }}">常見問題</a>
+            {% endif %}
+        </div>
+        <div class="user-info">
+            {% if user %}
+            <img
+                src="{{ avatar_url }}"
+                alt="頭像"
+                class="avatar"
+            />
+            <div class="user-text">
+                <div class="name">{{ user.name }}</div>
+                <div class="email">{{ user.email }}</div>
+            </div>
+            
+            <div class="settings-icon" onclick="toggleSettingsModal()"></div>
+            {% else %}
+            <a href="{{ url_for('login') }}">登入/註冊</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 通知中心 -->
+    {% include 'notification_component.html' %}
+
+    <!-- 現代化設定彈窗 -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>帳戶設定</h3>
+                <span class="close" onclick="closeSettingsModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- 帳號資訊區塊 -->
+                <div class="account-section">
+                    <div class="account-info-modern">
+                        <img src="{{ avatar_url }}" alt="Avatar" class="account-avatar">
+                        <div class="account-details">
+                            <div class="account-name">{{ user.name }}</div>
+                            <div class="account-email">{{ user.email }}</div>
+                        </div>
+                    </div>
+                    <div class="setting-item" onclick="showProfileEditor()">
+                        <div class="setting-icon">👤</div>
+                        <div class="setting-text">
+                            <div class="setting-title">編輯個人資料</div>
+                            <div class="setting-desc">修改姓名、頭像或密碼</div>
+                        </div>
+                        <div class="setting-arrow">→</div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="setting-item" onclick="window.location.href='/customer/special-needs-verification'">
+                    <div class="setting-icon">🏥</div>
+                    <div class="setting-text">
+                        <div class="setting-title">身心障礙者/高齡者驗證</div>
+                        <div class="setting-desc">申請特殊需求用戶驗證</div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
+                
+                <div class="setting-item" onclick="window.location.href='/customer/special-needs-status'">
+                    <div class="setting-icon">📋</div>
+                    <div class="setting-text">
+                        <div class="setting-title">查看驗證狀態</div>
+                        <div class="setting-desc">查看申請審核進度</div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
+                
+                <hr>
+                
+                <div class="setting-item" onclick="window.location.href='/auth/logout'">
+                    <div class="setting-icon">🚪</div>
+                    <div class="setting-text">
+                        <div class="setting-title">登出</div>
+                        <div class="setting-desc">登出目前帳戶</div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 個人資料編輯模態框 -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>編輯個人資料</h3>
+                <span class="close" onclick="closeProfileModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="profile-form" enctype="multipart/form-data">
+                    <!-- 頭像編輯區塊 -->
+                    <div class="avatar-edit-container">
+                        <img src="{{ user.avatar_url or '/static/imgs/avatar.png' }}" alt="Profile Avatar" class="profile-edit-avatar" id="profileEditAvatar">
+                        <label for="avatarInput" class="avatar-upload-btn">
+                            📷 更換頭像
+                            <input type="file" id="avatarInput" name="avatar" accept="image/*" style="display: none;">
+                        </label>
+                    </div>
+                    
+                    <!-- 基本資訊編輯 -->
+                    <div class="form-group-modern">
+                        <label for="name">姓名</label>
+                        <input type="text" id="name" name="name" value="{{ user.name }}" required>
+                    </div>
+                    
+                    <div class="form-group-modern">
+                        <label for="email">電子郵件</label>
+                        <input type="email" id="email" value="{{ user.email }}" readonly style="background: #f8f9fa; cursor: not-allowed;">
+                    </div>
+                    
+                    <div class="form-group-modern">
+                        <label for="phone">電話號碼</label>
+                        <input type="tel" id="phone" name="phone" value="{{ user.phone or '' }}" placeholder="請輸入電話號碼">
+                    </div>
+                    
+                    <!-- 密碼修改區塊 -->
+                    <div class="password-section">
+                        <h4>密碼設定</h4>
+                        {% if user.oauth_provider %}
+                        <!-- OAuth2 用戶無法修改密碼 -->
+                        <div class="oauth-password-notice">
+                            <div class="oauth-notice-icon">🔒</div>
+                            <div class="oauth-notice-text">
+                                <p><strong>Google 帳戶登入</strong></p>
+                                <p>您使用的是 Google OAuth2 登入，密碼由 Google 管理，無法在此修改。</p>
+                                <p>如需修改密碼，請前往您的 Google 帳戶設定。</p>
+                            </div>
+                        </div>
+                        <div class="form-group-modern">
+                            <label for="current_password" class="disabled-label">目前密碼</label>
+                            <input type="password" id="current_password" name="current_password" placeholder="OAuth2 登入用戶無法修改密碼" disabled class="disabled-input">
+                        </div>
+                        
+                        <div class="form-group-modern">
+                            <label for="new_password" class="disabled-label">新密碼</label>
+                            <input type="password" id="new_password" name="new_password" placeholder="OAuth2 登入用戶無法修改密碼" disabled class="disabled-input">
+                        </div>
+                        {% else %}
+                        <!-- 一般用戶可以修改密碼 -->
+                        <div class="form-group-modern">
+                            <label for="current_password">目前密碼</label>
+                            <input type="password" id="current_password" name="current_password" placeholder="修改密碼時請輸入目前密碼">
+                        </div>
+                        
+                        <div class="form-group-modern">
+                            <label for="new_password">新密碼</label>
+                            <input type="password" id="new_password" name="new_password" placeholder="請輸入新密碼（不修改請留空）">
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- 操作按鈕 -->
+                    <div class="profile-actions">
+                        <button type="submit" class="btn-save">儲存變更</button>
+                        <button type="button" class="btn-cancel" onclick="closeProfileModal()">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="voice-assistant-container">
+        <div class="assistant-header">
+            <h1>語音AI助手</h1>
+            <p>使用語音輸入，AI將引導您完成訂單創建</p>
+        </div>
+
+        <div class="chat-container">
+            <!-- 聊天窗口 -->
+            <div class="chat-window">
+                <div class="chat-header">
+                    <!-- <span class="ai-icon">AI</span> -->
+                    <span>AI訂單助手</span>
+                    <!-- <span class="status-indicator ready" id="statusIndicator"></span>
+                    <span id="statusText">準備就緒</span> -->
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message assistant">
+                        您好！我是您的訂單助手。請告訴我您想要訂製什麼樣的料理，我會引導您完成整個訂單流程。
+                        <br><br>
+                        您可以：
+                        <br>• 直接說出您想要的菜色
+                        <br>• 告訴我用餐時間和地點
+                        <br>• 說明您的口味偏好
+                        <br><br>
+                        請開始說話，或點擊麥克風按鈕開始語音輸入！
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="輸入訊息或使用語音..." onkeypress="handleKeyPress(event)">
+                    <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceRecording()" title="語音輸入">
+                        🎤
+                    </button>
+                    <button class="send-btn" onclick="sendMessage()">發送</button>
+                </div>
+            </div>
+
+            <!-- 訂單摘要 -->
+            <div class="order-summary">
+                <div class="summary-header">
+                    <h3>訂單摘要</h3>
+                </div>
+                
+                <div class="summary-section">
+                    <h4>廚師資訊</h4>
+                    <div class="summary-item">
+                        <span class="summary-label">廚師：</span>
+                        <span class="summary-value" id="chefName">{{ chef.name }}</span>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <h4>基本資訊</h4>
+                    <div class="summary-item">
+                        <span class="summary-label">日期：</span>
+                        <span class="summary-value" id="orderDate">未設定</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">時間：</span>
+                        <span class="summary-value" id="orderTime">未設定</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">取餐方式：</span>
+                        <span class="summary-value" id="deliveryMethod">未設定</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">地址：</span>
+                        <span class="summary-value" id="deliveryAddress">未設定</span>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <h4>菜單</h4>
+                    <div id="dishesList">
+                        <div class="summary-item">
+                            <span class="summary-label">尚無菜色</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <h4>備註</h4>
+                    <div class="summary-item">
+                        <span class="summary-value" id="customerNotes">無</span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-primary" id="submitOrderBtn" onclick="submitOrder()" disabled>
+                        確認並送出訂單
+                    </button>
+                    <button class="btn-secondary" onclick="goBack()">
+                        返回選擇廚師
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局變量
+        let isRecording = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let orderData = {
+            chef_id: {{ chef.id }},
+            chef_name: "{{ chef.name }}",
+            order_date: null,
+            order_time: null,
+            delivery_method: null,
+            delivery_address: null,
+            dishes: [],
+            customer_notes: ""
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateOrderSummary();
+        });
+
+        // 發送訊息
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // 添加用戶訊息到聊天
+            addMessage('user', message);
+            input.value = '';
+            
+            // 顯示AI處理中
+            const processingId = addMessage('assistant', '<div class="loading"></div> 正在處理您的訊息...');
+            updateStatus('processing', '處理中');
+            
+            try {
+                // 發送到後端處理
+                const response = await fetch('/customer/orders/new/voice_assistant/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        order_data: orderData
+                    })
+                });
+                
+                const result = await response.json();
+                
+                // 移除處理中訊息
+                removeMessage(processingId);
+                
+                if (result.success) {
+                    // 更新訂單數據
+                    if (result.order_data) {
+                        orderData = { ...orderData, ...result.order_data };
+                        updateOrderSummary();
+                    }
+                    
+                    // 添加AI回應
+                    addMessage('assistant', result.response);
+                    
+                    // 檢查是否完成
+                    if (result.is_complete) {
+                        document.getElementById('submitOrderBtn').disabled = false;
+                        addMessage('system', '✅ 訂單資訊已收集完成！您可以確認並送出訂單。');
+                    }
+                    
+                    updateStatus('ready', '準備就緒');
+                } else {
+                    addMessage('assistant', '抱歉，處理您的訊息時發生錯誤：' + result.message);
+                    updateStatus('error', '錯誤');
+                }
+            } catch (error) {
+                removeMessage(processingId);
+                addMessage('assistant', '網路錯誤，請稍後再試。');
+                updateStatus('error', '錯誤');
+                console.error('Error:', error);
+            }
+        }
+
+        // 語音錄製功能
+        async function toggleVoiceRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                await startRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    await processAudio(audioBlob);
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                
+                const voiceBtn = document.getElementById('voiceBtn');
+                voiceBtn.classList.add('recording');
+                voiceBtn.innerHTML = '⏹️';
+                voiceBtn.title = '停止錄音';
+                
+                updateStatus('processing', '錄音中');
+                addMessage('system', '🎤 正在錄音...請說話');
+                
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                addMessage('assistant', '無法訪問麥克風，請檢查瀏覽器權限設定。');
+                updateStatus('error', '麥克風錯誤');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                const voiceBtn = document.getElementById('voiceBtn');
+                voiceBtn.classList.remove('recording');
+                voiceBtn.innerHTML = '🎤';
+                voiceBtn.title = '語音輸入';
+                
+                updateStatus('processing', '轉換語音中');
+                addMessage('system', '🔄 正在轉換語音...');
+            }
+        }
+
+        async function processAudio(audioBlob) {
+            try {
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.wav');
+                
+                const response = await fetch('/customer/orders/new/voice_assistant/transcribe', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const transcribedText = result.text;
+                    addMessage('user', `🎤 ${transcribedText}`);
+                    
+                    // 自動發送轉錄的文字
+                    document.getElementById('messageInput').value = transcribedText;
+                    await sendMessage();
+                } else {
+                    addMessage('assistant', '語音轉換失敗：' + result.message);
+                    updateStatus('error', '轉換失敗');
+                }
+            } catch (error) {
+                addMessage('assistant', '語音處理錯誤，請稍後再試。');
+                updateStatus('error', '處理錯誤');
+                console.error('Error processing audio:', error);
+            }
+        }
+
+        // 聊天界面功能
+        function addMessage(type, content) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = content;
+            messageDiv.id = 'msg_' + Date.now();
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            return messageDiv.id;
+        }
+
+        function removeMessage(messageId) {
+            const message = document.getElementById(messageId);
+            if (message) {
+                message.remove();
+            }
+        }
+
+        function updateStatus(status, text) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            indicator.className = `status-indicator ${status}`;
+            statusText.textContent = text;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // 訂單摘要更新
+        function updateOrderSummary() {
+            document.getElementById('orderDate').textContent = orderData.order_date || '未設定';
+            document.getElementById('orderTime').textContent = orderData.order_time || '未設定';
+            document.getElementById('deliveryMethod').textContent = orderData.delivery_method || '未設定';
+            document.getElementById('deliveryAddress').textContent = orderData.delivery_address || '未設定';
+            document.getElementById('customerNotes').textContent = orderData.customer_notes || '無';
+            
+            // 更新菜單列表
+            const dishesList = document.getElementById('dishesList');
+            if (orderData.dishes && orderData.dishes.length > 0) {
+                dishesList.innerHTML = '';
+                orderData.dishes.forEach((dish, index) => {
+                    const dishDiv = document.createElement('div');
+                    dishDiv.className = 'summary-item';
+                    dishDiv.innerHTML = `
+                        <span class="summary-label">${dish.dish_name} × ${dish.quantity}</span>
+                        <span class="summary-value">${dish.salt_level} / ${dish.spice_level}</span>
+                    `;
+                    dishesList.appendChild(dishDiv);
+                });
+            } else {
+                dishesList.innerHTML = '<div class="summary-item"><span class="summary-label">尚無菜色</span></div>';
+            }
+        }
+
+        // 提交訂單
+        async function submitOrder() {
+            if (!orderData.order_date || !orderData.order_time || !orderData.delivery_method || orderData.dishes.length === 0) {
+                addMessage('assistant', '訂單資訊不完整，請提供所有必要資訊。');
+                return;
+            }
+            
+            const confirmed = await Swal.fire({
+                title: '確認送出訂單？',
+                text: '請確認所有資訊正確後送出訂單',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '確認送出',
+                cancelButtonText: '取消'
+            });
+            
+            if (confirmed.isConfirmed) {
+                try {
+                    updateStatus('processing', '送出中');
+                    addMessage('system', '📤 正在送出訂單...');
+                    
+                    const response = await fetch('/customer/orders/new/voice_assistant/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        addMessage('system', '✅ 訂單已成功送出！');
+                        updateStatus('ready', '訂單已送出');
+                        
+                        await Swal.fire({
+                            title: '訂單送出成功！',
+                            text: `訂單編號：${result.order_number}`,
+                            icon: 'success',
+                            confirmButtonText: '查看訂單'
+                        });
+                        
+                        window.location.href = `/customer/order/${result.order_id}`;
+                    } else {
+                        addMessage('assistant', '訂單送出失敗：' + result.message);
+                        updateStatus('error', '送出失敗');
+                    }
+                } catch (error) {
+                    addMessage('assistant', '網路錯誤，請稍後再試。');
+                    updateStatus('error', '網路錯誤');
+                    console.error('Error submitting order:', error);
+                }
+            }
+        }
+
+        // 返回
+        function goBack() {
+            window.location.href = "{{ url_for('order_step0') }}";
+        }
+
+        // 下拉選單功能
+        function toggleDropdown() {
+            const dropdown = document.getElementById('orderDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // 設定模態框功能
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        function showProfileEditor() {
+            closeSettingsModal();
+            // 打開個人資料編輯模態框
+            document.getElementById('profileModal').style.display = 'block';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').style.display = 'none';
+        }
+
+        // 點擊模態框外部關閉
+        window.onclick = function(event) {
+            const settingsModal = document.getElementById('settingsModal');
+            const profileModal = document.getElementById('profileModal');
+            if (event.target === settingsModal) {
+                closeSettingsModal();
+            } else if (event.target === profileModal) {
+                closeProfileModal();
+            }
+        }
+
+        // 個人資料編輯功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 頭像預覽功能
+            const avatarInput = document.getElementById('avatarInput');
+            const profileEditAvatar = document.getElementById('profileEditAvatar');
+            
+            if (avatarInput && profileEditAvatar) {
+                avatarInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            profileEditAvatar.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // 個人資料表單提交
+            const profileForm = document.getElementById('profile-form');
+            if (profileForm) {
+                profileForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(profileForm);
+                    const submitBtn = profileForm.querySelector('.btn-save');
+                    const originalText = submitBtn.textContent;
+                    
+                    // 顯示載入狀態
+                    submitBtn.textContent = '儲存中...';
+                    submitBtn.disabled = true;
+                    
+                    try {
+                        const response = await fetch('/customer/profile/update', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (response.ok) {
+                            // 更新成功
+                            if (result.avatar_url) {
+                                // 更新navbar中的頭像
+                                const navbarAvatar = document.querySelector('.user-info .avatar');
+                                if (navbarAvatar) {
+                                    navbarAvatar.src = result.avatar_url;
+                                }
+                                // 更新設定模態框中的頭像
+                                const settingsAvatar = document.querySelector('.account-avatar');
+                                if (settingsAvatar) {
+                                    settingsAvatar.src = result.avatar_url;
+                                }
+                            }
+                            
+                            if (result.name) {
+                                // 更新navbar中的姓名
+                                const navbarName = document.querySelector('.user-info .name');
+                                if (navbarName) {
+                                    navbarName.textContent = result.name;
+                                }
+                                // 更新設定模態框中的姓名
+                                const settingsName = document.querySelector('.account-name');
+                                if (settingsName) {
+                                    settingsName.textContent = result.name;
+                                }
+                            }
+                            
+                            // 顯示成功訊息
+                            Swal.fire({
+                                icon: 'success',
+                                title: '更新成功！',
+                                text: '個人資料已成功更新',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            
+                            // 關閉模態框
+                            closeProfileModal();
+                            
+                        } else {
+                            // 顯示錯誤訊息
+                            Swal.fire({
+                                icon: 'error',
+                                title: '更新失敗',
+                                text: result.detail || '請檢查輸入的資料是否正確'
+                            });
+                        }
+                        
+                    } catch (error) {
+                        console.error('更新個人資料時發生錯誤:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: '更新失敗',
+                            text: '網路連線錯誤，請稍後再試'
+                        });
+                    } finally {
+                        // 恢復按鈕狀態
+                        submitBtn.textContent = originalText;
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+        });
+
+        // 通知中心功能
+        let notifications = [];
+        let unreadCount = 0;
+
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/api/notifications');
+                const result = await response.json();
+                
+                if (result.success) {
+                    notifications = result.data.notifications;
+                    unreadCount = result.data.unread_count;
+                } else {
+                    notifications = [];
+                    unreadCount = 0;
+                }
+            } catch (error) {
+                console.error('載入通知時發生錯誤:', error);
+                notifications = [];
+                unreadCount = 0;
+            }
+        }
+
+        async function markNotificationAsRead(notificationId) {
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}/mark_read`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const notification = notifications.find(n => n.id === notificationId);
+                    if (notification && !notification.is_read) {
+                        notification.is_read = true;
+                        unreadCount = Math.max(0, unreadCount - 1);
+                        updateNotificationStatus();
+                    }
+                }
+            } catch (error) {
+                console.error('標記已讀失敗:', error);
+            }
+        }
+
+        async function toggleNotification() {
+            const notificationCenter = document.getElementById('notificationCenter');
+            if (!notificationCenter) return;
+            
+            if (notificationCenter.style.display === 'block') {
+                notificationCenter.style.display = 'none';
+            } else {
+                notificationCenter.style.display = 'block';
+                await loadNotifications();
+                updateNotifications();
+            }
+        }
+
+        function updateNotificationStatus() {
+            const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+            if (!notificationLink) return;
+            
+            if (unreadCount > 0) {
+                notificationLink.classList.add('has-unread');
+            } else {
+                notificationLink.classList.remove('has-unread');
+            }
+        }
+
+        function updateNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            if (!notificationList) return;
+            
+            updateNotificationStatus();
+            notificationList.innerHTML = '';
+            
+            if (notifications.length === 0) {
+                notificationList.innerHTML = '<li class="notification-item" style="text-align: center; color: #999;"><div class="notification-content">暫無通知</div></li>';
+                return;
+            }
+            
+            notifications.forEach((notification) => {
+                const li = document.createElement('li');
+                li.className = `notification-item ${!notification.is_read ? 'unread' : ''}`;
+                
+                const typeIcon = {
+                    'order_accepted': '✅', 'order_rejected': '❌', 'order_status_update': '🔄',
+                    'order_ready': '🍽️', 'order_completed': '✅', 'new_order': '📋',
+                    'new_review': '⭐', 'review_reply': '💬', 'order_negotiation': '💰',
+                    'negotiation_response': '💬'
+                };
+                
+                const icon = typeIcon[notification.type] || '📢';
+                
+                // 判斷是否為訂單類通知，如果是則顯示訂單編號
+                const orderTypes = ['order_accepted', 'order_rejected', 'order_status_update', 'order_ready', 'order_completed', 'new_order', 'order_negotiation', 'negotiation_response'];
+                const isOrderNotification = orderTypes.includes(notification.type);
+                const orderInfo = isOrderNotification && notification.order_id ? `<span style="color: #007bff; font-size: 12px;">#${notification.order_id}</span> ` : '';
+                
+                li.innerHTML = `
+                    <div class="notification-type type-${notification.type.replace('_', '-')}">${icon}</div>
+                    <div class="notification-content">
+                        <div style="font-weight: ${!notification.is_read ? 'bold' : 'normal'};">${orderInfo}${notification.title}</div>
+                        <div style="margin-top: 4px; font-size: 14px; color: #666;">${notification.content}</div>
+                        <div class="notification-time">${notification.time_ago}</div>
+                    </div>
+                `;
+                
+                li.addEventListener('click', async () => {
+                    if (!notification.is_read) {
+                        await markNotificationAsRead(notification.id);
+                    }
+                    if (notification.order_id) {
+                        window.location.href = `/customer/order/${notification.order_id}`;
+                    }
+                });
+                
+                notificationList.appendChild(li);
+            });
+        }
+
+        async function getUnreadCount() {
+            try {
+                const response = await fetch('/api/notifications/unread_count');
+                const result = await response.json();
+                if (result.success) {
+                    unreadCount = result.unread_count;
+                    updateNotificationStatus();
+                }
+            } catch (error) {
+                console.error('獲取未讀數量失敗:', error);
+            }
+        }
+
+        // 初始化通知中心
+        document.addEventListener('DOMContentLoaded', async function() {
+            const notificationCenter = document.getElementById('notificationCenter');
+            if (notificationCenter) {
+                notificationCenter.style.display = 'none';
+            }
+            
+            await getUnreadCount();
+            
+            document.addEventListener('click', function(e) {
+                const notificationLink = document.querySelector('a[onclick*="toggleNotification"]');
+                if (notificationCenter && notificationLink && 
+                    !notificationCenter.contains(e.target) && !notificationLink.contains(e.target)) {
+                    notificationCenter.style.display = 'none';
+                }
+            });
+            
+            setInterval(async () => { await getUnreadCount(); }, 30000);
+        });
+    </script>
+</body>
+</html>
+

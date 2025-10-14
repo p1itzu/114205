@@ -737,9 +737,9 @@
             <p>查看您的身心障礙者/高齡者驗證申請狀態</p>
         </div>
         
-        {% if current_user.special_needs_type %}
+        {% if user.special_needs_type %}
             <!-- 已申請的狀態 -->
-            {% if current_user.special_needs_verified %}
+            {% if user.special_needs_verified %}
                 <!-- 已通過驗證 -->
                 <div class="status-card approved">
                     <div class="status-header">
@@ -754,7 +754,7 @@
                         <div class="detail-row">
                             <div class="detail-label">申請類型：</div>
                             <div class="detail-value">
-                                {% if current_user.special_needs_type == 'disability' %}
+                                {% if user.special_needs_type == 'disability' %}
                                     身心障礙者驗證
                                 {% else %}
                                     高齡者驗證
@@ -763,7 +763,7 @@
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">申請時間：</div>
-                            <div class="detail-value">{{ current_user.special_needs_applied_at.strftime('%Y年%m月%d日') }}</div>
+                            <div class="detail-value">{{ user.special_needs_applied_at.strftime('%Y年%m月%d日') }}</div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">驗證狀態：</div>
@@ -771,10 +771,10 @@
                         </div>
                     </div>
                     
-                    {% if current_user.special_needs_document_url %}
+                    {% if user.special_needs_document_url %}
                     <div class="document-preview">
                         <p><strong>提交的證明文件：</strong></p>
-                        <img src="{{ current_user.special_needs_document_url }}" 
+                        <img src="{{ user.special_needs_document_url }}" 
                              alt="證明文件" 
                              class="document-image"
                              onclick="window.open(this.src, '_blank')">
@@ -808,7 +808,7 @@
                         <div class="detail-row">
                             <div class="detail-label">申請類型：</div>
                             <div class="detail-value">
-                                {% if current_user.special_needs_type == 'disability' %}
+                                {% if user.special_needs_type == 'disability' %}
                                     身心障礙者驗證
                                 {% else %}
                                     高齡者驗證
@@ -817,7 +817,7 @@
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">申請時間：</div>
-                            <div class="detail-value">{{ current_user.special_needs_applied_at.strftime('%Y年%m月%d日') }}</div>
+                            <div class="detail-value">{{ user.special_needs_applied_at.strftime('%Y年%m月%d日') }}</div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">審核狀態：</div>
@@ -835,10 +835,10 @@
                         </div>
                     </div>
                     
-                    {% if current_user.special_needs_document_url %}
+                    {% if user.special_needs_document_url %}
                     <div class="document-preview">
                         <p><strong>提交的證明文件：</strong></p>
-                        <img src="{{ current_user.special_needs_document_url }}" 
+                        <img src="{{ user.special_needs_document_url }}" 
                              alt="證明文件" 
                              class="document-image"
                              onclick="window.open(this.src, '_blank')">
