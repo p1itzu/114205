@@ -199,6 +199,25 @@
             <div style="background: white; padding: 20px; margin: 20px 0; border-radius: 5px; border: 1px solid #ddd;">
                 <h4 style="text-align: center; margin-bottom: 20px; color: #333;">請選擇您的決定</h4>
                 
+                {% if is_first_pricing %}
+                <!-- 第一次報價：顯示"同意"和"再議價" -->
+                <div style="display: flex; gap: 20px; justify-content: center;">
+                    <button onclick="respondToPricing(true)" 
+                            style="background: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; min-width: 150px;">
+                        ✓ 同意
+                    </button>
+                    
+                    <button onclick="showCounterOfferForm()" 
+                            style="background: #ffc107; color: #333; padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; min-width: 150px;">
+                        💬 再議價
+                    </button>
+                </div>
+                
+                <div style="text-align: center; margin-top: 15px; color: #666; font-size: 0.9em;">
+                    <p>* 您可以同意此報價或提出您的議價</p>
+                </div>
+                {% else %}
+                <!-- 多次議價後：顯示"同意最終報價"和"不同意取消訂單" -->
                 <div style="display: flex; gap: 20px; justify-content: center;">
                     <button onclick="respondToPricing(true)" 
                             style="background: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; min-width: 150px;">
@@ -215,6 +234,7 @@
                     <p>* 這是最後的決定機會</p>
                     <p>* 選擇「不同意」將會取消整個訂單</p>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -224,7 +244,9 @@
             window.location.href = "{{ url_for('customer_order_list') }}";
         }
 
+        
         async function respondToPricing(isAccepted) {
+            
             const actionText = isAccepted ? "接受" : "拒絕";
             const warningText = isAccepted ? 
                 "確定接受廚師的最終定價嗎？訂單將進入製作階段。" : 
@@ -270,12 +292,22 @@
                             }
                         });
                     } else {
-                        Swal.fire({
-                            title: "操作失敗",
-                            text: data.message || "請稍後再試",
-                            icon: "error",
-                            confirmButtonText: "確認"
-                        });
+                        // 如果是重复提交的错误，不显示alert
+                        if (data.message && data.message.includes("此議價已回應過")) {
+                            // 静默处理，直接跳转
+                            if (isAccepted) {
+                                window.location.href = "{{ url_for('customer_order_list') }}";
+                            } else {
+                                window.location.href = `/customer/order/{{ order.id }}/reselect_chef`;
+                            }
+                        } else {
+                            Swal.fire({
+                                title: "操作失敗",
+                                text: data.message || "請稍後再試",
+                                icon: "error",
+                                confirmButtonText: "確認"
+                            });
+                        }
                     }
                 } catch (error) {
                     console.error('Error:', error);
@@ -284,6 +316,93 @@
                         text: "請檢查網路連線並重試",
                         icon: "error",
                         confirmButtonText: "確認"
+                    });
+                }
+            }
+        }
+
+        // 顯示議價表單
+        async function showCounterOfferForm() {
+            const { value: formValues } = await Swal.fire({
+                title: '提出您的議價',
+                html: `
+                    <div style="text-align: left;">
+                        <p style="margin-bottom: 10px; color: #666;">
+                            廚師報價：<strong style="color: #333;">NT$ {{ chef_final_pricing.proposed_amount | round | int }}</strong>
+                        </p>
+                        <label for="counter-amount" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                            您的出價 (NT$)：
+                        </label>
+                        <input id="counter-amount" type="number" class="swal2-input" placeholder="請輸入金額" 
+                               min="1" step="1" style="width: 90%; margin: 0 auto 15px;">
+                        
+                        <label for="counter-message" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                            留言給廚師（選填）：
+                        </label>
+                        <textarea id="counter-message" class="swal2-textarea" placeholder="說明您的議價理由..."
+                                  style="width: 90%; margin: 0 auto; height: 100px;"></textarea>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: '提交議價',
+                cancelButtonText: '取消',
+                confirmButtonColor: '#ffc107',
+                preConfirm: () => {
+                    const amount = document.getElementById('counter-amount').value;
+                    const message = document.getElementById('counter-message').value;
+                    
+                    if (!amount || amount <= 0) {
+                        Swal.showValidationMessage('請輸入有效的金額');
+                        return false;
+                    }
+                    
+                    return {
+                        amount: parseFloat(amount),
+                        message: message
+                    };
+                }
+            });
+
+            if (formValues) {
+                try {
+                    const response = await fetch(`/customer/order/{{ order.id }}/counter_offer`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            proposed_amount: formValues.amount,
+                            message: formValues.message
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        Swal.fire({
+                            title: '議價已提交',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: '確認'
+                        }).then(() => {
+                            window.location.href = "{{ url_for('customer_order_list') }}";
+                        });
+                    } else {
+                        Swal.fire({
+                            title: '提交失敗',
+                            text: data.message || '請稍後再試',
+                            icon: 'error',
+                            confirmButtonText: '確認'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: '網路錯誤',
+                        text: '請檢查網路連線並重試',
+                        icon: 'error',
+                        confirmButtonText: '確認'
                     });
                 }
             }

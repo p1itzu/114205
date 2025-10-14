@@ -257,11 +257,19 @@ def chef_order_detail(
     if order.chef_id is not None and order.chef_id != current_user.id:
         raise HTTPException(status_code=403, detail="無權查看此訂單")
     
-    # 檢查是否有待顧客回應的最終定價
-    chef_final_pricing_pending = False
+    # 檢查是否有待顧客回應的廚師定價
+    chef_pricing_pending = False
+    is_final_pricing = False  # 是否為最終定價階段
+    
+    # 檢查是否有顧客的反議價記錄
+    customer_negotiations = [n for n in order.negotiations if n.proposed_by == "customer"]
+    if customer_negotiations:
+        is_final_pricing = True  # 有顧客反議價，則廚師的報價是最終定價
+    
+    # 檢查是否有未回應的廚師定價
     for nego in order.negotiations:
         if nego.proposed_by == "chef" and nego.is_accepted is None:
-            chef_final_pricing_pending = True
+            chef_pricing_pending = True
             break
     
     return templates.TemplateResponse(
@@ -270,7 +278,8 @@ def chef_order_detail(
             **commons,
             "current_user": current_user,
             "order": order,
-            "chef_final_pricing_pending": chef_final_pricing_pending
+            "chef_pricing_pending": chef_pricing_pending,
+            "is_final_pricing": is_final_pricing
         }
     )
 

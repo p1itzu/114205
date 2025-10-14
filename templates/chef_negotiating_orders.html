@@ -87,24 +87,56 @@
             {% for order in negotiating_orders %}
             <!-- 檢查是否有待回應的顧客議價 -->
             {% set customer_counter_offer = None %}
-            {% for nego in order.negotiations %}
-                {% if nego.proposed_by == 'customer' and nego.is_accepted is none %}
-                    {% set customer_counter_offer = nego %}
+            {% set chef_has_priced = False %}
+            
+            <!-- 使用篩選器來檢查 -->
+            {% set chef_negotiations = order.negotiations | selectattr('proposed_by', 'equalto', 'chef') | list %}
+            {% set customer_negotiations = order.negotiations | selectattr('proposed_by', 'equalto', 'customer') | selectattr('is_accepted', 'none') | list %}
+            {% set all_customer_negotiations = order.negotiations | selectattr('proposed_by', 'equalto', 'customer') | list %}
+            
+            {% if chef_negotiations %}
+                {% set chef_has_priced = True %}
+            {% endif %}
+            
+            {% if customer_negotiations %}
+                {% set customer_counter_offer = customer_negotiations[0] %}
+            {% endif %}
+            
+            <!-- 檢查是否有任何顧客議價（用於狀態顯示） -->
+            {% set has_any_customer_negotiation = false %}
+            {% if all_customer_negotiations %}
+                {% set has_any_customer_negotiation = true %}
+            {% endif %}
+            
+            <!-- 檢查廚師是否已經回應了顧客的反議價 -->
+            {% set chef_has_responded_to_counter = False %}
+            {% if customer_negotiations %}
+                <!-- 檢查是否有廚師議價記錄的 is_accepted 為 None（表示廚師已出價但顧客未回應） -->
+                {% set chef_pending_negotiations = chef_negotiations | selectattr('is_accepted', 'none') | list %}
+                {% if chef_pending_negotiations %}
+                    {% set chef_has_responded_to_counter = True %}
                 {% endif %}
-            {% endfor %}
+            {% endif %}
+            
             
             <div class="order-card" 
                  data-date="{{ order.preferred_time.strftime('%Y/%m/%d') if order.preferred_time else '' }}"
                  data-order-id="{{ order.id }}"
-                 data-has-counter-offer="{{ 'true' if customer_counter_offer else 'false' }}">
+                 data-has-counter-offer="{{ 'true' if customer_counter_offer else 'false' }}"
+                 data-chef-has-priced="{{ 'true' if chef_has_priced else 'false' }}"
+                 data-chef-responded-to-counter="{{ 'true' if chef_has_responded_to_counter else 'false' }}">
                 <p><strong>訂單編號</strong><br>#{{ order.order_number }}</p>
                 <p>
                     預定日期：{{ order.preferred_time.strftime('%Y/%m/%d') if order.preferred_time else '未指定' }}<br>
                     地區：{{ order.delivery_address.split(' ')[0] if order.delivery_address else '未指定' }}<br>
                     地址：{{ order.delivery_address if order.delivery_address else '未指定' }}<br>
-                    狀態：議價中{% if customer_counter_offer %} - 顧客已議價{% endif %}<br>
-                    目前報價：NT${{ order.total_amount | int if order.total_amount > 0 else '待議價' }}
-                    {% if customer_counter_offer %}<br><span style="color: #dc3545; font-weight: bold;">顧客議價：NT${{ customer_counter_offer.proposed_amount | int }}</span>{% endif %}
+                    狀態：議價中{% if has_any_customer_negotiation %} - 顧客已議價{% endif %}<br>
+                    {% if customer_counter_offer %}
+                        目前報價：NT${{ order.total_amount | int if order.total_amount > 0 else '待議價' }} | 
+                        <span style="color: #dc3545; font-weight: bold;">顧客議價：NT${{ customer_counter_offer.proposed_amount | int }}</span>
+                    {% else %}
+                        目前報價：NT${{ order.total_amount | int if order.total_amount > 0 else '待議價' }}
+                    {% endif %}
                 </p>
                 <button class="order-btn" onclick="viewOrderDetail(this)">
                     查看訂單詳情
@@ -162,11 +194,19 @@
             const orderCard = buttonElement.closest('.order-card');
             const orderId = orderCard.getAttribute('data-order-id');
             const hasCounterOffer = orderCard.getAttribute('data-has-counter-offer') === 'true';
+            const chefHasPriced = orderCard.getAttribute('data-chef-has-priced') === 'true';
+            const chefRespondedToCounter = orderCard.getAttribute('data-chef-responded-to-counter') === 'true';
             
-            if (hasCounterOffer) {
+            // 判斷跳轉邏輯
+            if (hasCounterOffer && !chefRespondedToCounter) {
+                // 情況3：顧客已反議價，廚師尚未回應 → 跳轉到反議價回應頁面
                 window.location.href = `/chef/order/${orderId}/counter_offer_response`;
-            } else {
+            } else if (chefHasPriced) {
+                // 情況2：廚師已出價（無論顧客是否回覆，或廚師已回應顧客反議價）→ 跳轉到訂單詳情頁面
                 window.location.href = `/chef/order/${orderId}`;
+            } else {
+                // 情況1：廚師尚未出價 → 跳轉到定價頁面
+                window.location.href = `/chef/order/${orderId}/pricing`;
             }
         }
 

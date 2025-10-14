@@ -152,16 +152,22 @@ def order_detail(
     if not order:
         raise HTTPException(status_code=404, detail="訂單不存在")
     
-    # 檢查是否有待顧客回應的最終定價
+    # 檢查是否有待顧客回應的廚師定價
     chef_final_pricing_pending = False
     chef_final_pricing = None
+    is_final_round = False  # 是否為最終議價階段
+    
+    # 檢查是否有顧客的反議價記錄
+    customer_negotiations = [n for n in order.negotiations if n.proposed_by == "customer"]
+    if customer_negotiations:
+        is_final_round = True  # 有顧客反議價，則這是最終議價階段
     
     # 獲取所有未回應的廚師議價，按時間排序（最新的在前）
     chef_negotiations = [n for n in order.negotiations if n.proposed_by == "chef" and n.is_accepted is None]
     chef_negotiations.sort(key=lambda x: x.created_at, reverse=True)
     
     if chef_negotiations:
-        # 取最新的廚師議價作為最終定價
+        # 取最新的廚師議價
         chef_final_pricing = chef_negotiations[0]
         chef_final_pricing_pending = True
     
@@ -170,7 +176,8 @@ def order_detail(
         "request": request, 
         "order": order,
         "chef_final_pricing_pending": chef_final_pricing_pending,
-        "chef_final_pricing": chef_final_pricing
+        "chef_final_pricing": chef_final_pricing,
+        "is_final_round": is_final_round
     })
 
 # 新增訂單 - 第零步：選擇廚師
@@ -891,13 +898,23 @@ def customer_final_pricing(
     if not chef_final_pricing:
         raise HTTPException(status_code=400, detail="沒有找到廚師的最終定價")
     
+    # 計算顧客已經議價的次數（用於判斷是否為第一次報價）
+    customer_counter_count = sum(
+        1 for nego in order.negotiations 
+        if nego.proposed_by == "customer"
+    )
+    
+    # is_first_pricing: True表示這是廚師第一次報價，顧客還沒反議價過
+    is_first_pricing = (customer_counter_count == 0)
+    
     return templates.TemplateResponse(
         "customer_final_pricing.html",
         {
             **commons,
             "request": request,
             "order": order,
-            "chef_final_pricing": chef_final_pricing
+            "chef_final_pricing": chef_final_pricing,
+            "is_first_pricing": is_first_pricing
         }
     )
 

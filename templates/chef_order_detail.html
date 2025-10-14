@@ -176,14 +176,21 @@
         </div>
         
         {% elif order.status.value == 'negotiating' %}
-        <!-- 檢查是否有最終定價等待顧客回應 -->
-        {% if chef_final_pricing_pending %}
+        <!-- 檢查是否有定價等待顧客回應 -->
+        {% if chef_pricing_pending %}
         <div style="background: #fff3cd; padding: 15px; margin: 15px 0; border-radius: 5px; border: 1px solid #ffeaa7;">
+            {% if is_final_pricing %}
+            <!-- 最終定價階段 -->
             <h4 style="color: #856404;">⏳ 等待顧客回應最終定價</h4>
             <p style="color: #856404;">您已提交最終定價，請耐心等待顧客回應。在此期間無法修改訂單。</p>
+            {% else %}
+            <!-- 第一次定價階段 -->
+            <h4 style="color: #856404;">⏳ 等待顧客回應</h4>
+            <p style="color: #856404;">您已出價，請耐心等待顧客回應。</p>
+            {% endif %}
             {% for nego in order.negotiations %}
                 {% if nego.proposed_by == 'chef' and nego.is_accepted is none %}
-                <p style="color: #856404;"><strong>最終定價：NT${{ nego.proposed_amount | int }}</strong></p>
+                <p style="color: #856404;"><strong>{% if is_final_pricing %}最終定價{% else %}定價{% endif %}：NT${{ nego.proposed_amount | int }}</strong></p>
                 {% if nego.message %}
                 <p style="color: #856404;">說明：{{ nego.message }}</p>
                 {% endif %}
@@ -306,11 +313,23 @@
     
     <!-- 添加資料屬性 -->
     {% set has_customer_counter = false %}
-    {% for nego in order.negotiations %}
-        {% if nego.proposed_by == 'customer' and (nego.is_accepted is none or nego.is_accepted is null or nego.is_accepted == None) %}
-            {% set has_customer_counter = true %}
+    {% set chef_has_responded_to_counter = false %}
+    
+    <!-- 檢查是否有顧客反議價 -->
+    {% set customer_negotiations = order.negotiations | selectattr('proposed_by', 'equalto', 'customer') | list %}
+    {% set customer_pending_negotiations = customer_negotiations | selectattr('is_accepted', 'none') | list %}
+    {% if customer_pending_negotiations %}
+        {% set has_customer_counter = true %}
+    {% endif %}
+    
+    <!-- 檢查廚師是否已經回應了顧客的反議價 -->
+    {% if has_customer_counter %}
+        {% set chef_negotiations = order.negotiations | selectattr('proposed_by', 'equalto', 'chef') | list %}
+        {% set chef_pending_negotiations = chef_negotiations | selectattr('is_accepted', 'none') | list %}
+        {% if chef_pending_negotiations %}
+            {% set chef_has_responded_to_counter = true %}
         {% endif %}
-    {% endfor %}
+    {% endif %}
     
     <!-- 調試：顯示每個議價記錄的詳細信息 -->
     <div id="debug-info" style="display: none;">
@@ -324,6 +343,7 @@
     
     <div id="page-data" 
          data-has-counter-offer="{{ 'true' if has_customer_counter else 'false' }}"
+         data-chef-responded-to-counter="{{ 'true' if chef_has_responded_to_counter else 'false' }}"
          data-counter-offer-url="{{ url_for('chef_counter_offer_response', order_id=order.id) }}"
          data-order-id="{{ order.id }}"
          style="display: none;"></div>
@@ -345,9 +365,10 @@
         // 檢查是否有待回應的顧客議價
         const pageData = document.getElementById('page-data');
         const hasCounterOffer = pageData.getAttribute('data-has-counter-offer') === 'true';
+        const chefHasRespondedToCounter = pageData.getAttribute('data-chef-responded-to-counter') === 'true';
         const orderStatus = '{{ order.status.value }}';
         
-        console.log('自動跳轉檢查 - 有顧客議價:', hasCounterOffer, '訂單狀態:', orderStatus);
+        console.log('自動跳轉檢查 - 有顧客議價:', hasCounterOffer, '廚師已回應:', chefHasRespondedToCounter, '訂單狀態:', orderStatus);
         
         // 手動檢查是否有未回應的顧客議價
         let manualCheck = false;
@@ -362,11 +383,9 @@
         
         console.log('手動檢查結果:', manualCheck);
         
-        if ((hasCounterOffer || manualCheck) && orderStatus === 'negotiating') {
+        // 只有在有顧客議價且廚師尚未回應時才跳轉
+        if ((hasCounterOffer || manualCheck) && !chefHasRespondedToCounter && orderStatus === 'negotiating') {
             const counterOfferUrl = pageData.getAttribute('data-counter-offer-url');
-            console.log('準備跳轉到:', counterOfferUrl);
-            
-            // 直接跳轉到議價回應頁面（移除提示）
             window.location.href = counterOfferUrl;
         }
         
