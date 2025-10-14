@@ -606,54 +606,77 @@
         </div>
     </div>
 
-    <!-- 選擇訂單方式彈跳視窗 -->
+    <!-- 選擇訂單方式彈跳視窗 - 美化版 -->
     <div id="orderMethodModal" class="modal">
-        <div class="modal-content" style="max-width: 600px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
-            <div class="modal-header" style="background: linear-gradient(135deg, #F9C765 0%, #e8b84f 100%); color: #B3811C; padding: 25px; text-align: center; position: relative;">
-                <h3 style="margin: 0; font-size: 24px; font-weight: bold;">選擇訂單方式</h3>
-                <span class="close" onclick="closeOrderMethodModal()" style="position: absolute; top: 20px; right: 25px; font-size: 28px; cursor: pointer; color: #B3811C; transition: all 0.3s ease; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%;" onmouseover="this.style.backgroundColor='rgba(179, 129, 28, 0.1)'; this.style.transform='rotate(90deg)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='rotate(0deg)'">&times;</span>
+        <div class="modal-content order-method-modal">
+            <div class="order-method-header">
+                <!-- <div class="header-icon">🍳</div> -->
+                <h3>選擇訂單方式</h3>
+                <p class="header-subtitle">讓我們開始您的美味旅程</p>
+                <span class="close order-method-close" onclick="closeOrderMethodModal()">&times;</span>
             </div>
-            <div class="modal-body" style="padding: 40px 30px; background: #fafafa;">
-                <div style="text-align: center;">
-                    <div style="margin-bottom: 25px;">
-                        <h4 style="color: #333; margin: 0 0 15px 0; font-size: 20px; font-weight: 600;">您想如何新增訂單？</h4>
-                        <p style="color: #666; margin: 0; font-size: 16px;">已選擇廚師：<strong style="color: #B3811C;" id="selectedChefName"></strong></p>
+            
+            <div class="modal-body order-method-body">
+                <div class="chef-selection-info">
+                    <div class="chef-badge">
+                        <!-- <span class="badge-icon">👨‍🍳</span> -->
+                        <div class="badge-text">
+                            <span class="badge-label">已選擇廚師</span>
+                            <span class="badge-name" id="selectedChefName"></span>
+                        </div>
                     </div>
-                    
-                    <div style="display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;">
-                        <button onclick="continueTraditionalFlow()" 
-                                style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 25px 30px; border: none; border-radius: 16px; font-size: 16px; cursor: pointer; min-width: 220px; box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden;"
-                                onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 12px 25px rgba(40, 167, 69, 0.4)'"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 20px rgba(40, 167, 69, 0.3)'">
-                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%); pointer-events: none;"></div>
-                            <div style="font-size: 28px; margin-bottom: 10px;">📝</div>
-                            <div style="font-weight: bold; font-size: 18px; margin-bottom: 5px;">傳統方式</div>
-                            <div style="font-size: 14px; opacity: 0.9;">逐步填寫表單</div>
-                        </button>
-                        
-                        <button onclick="startVoiceAssistant()" 
-                                style="background: linear-gradient(135deg, #F9C765 0%, #e8b84f 100%); color: #B3811C; padding: 25px 30px; border: none; border-radius: 16px; font-size: 16px; cursor: pointer; min-width: 220px; box-shadow: 0 8px 20px rgba(249, 199, 101, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden;"
-                                onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 12px 25px rgba(249, 199, 101, 0.4)'"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 20px rgba(249, 199, 101, 0.3)'">
-                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%); pointer-events: none;"></div>
-                            <div style="font-size: 28px; margin-bottom: 10px;">🎤</div>
-                            <div style="font-weight: bold; font-size: 18px; margin-bottom: 5px;">語音AI助手</div>
-                            <div style="font-size: 14px; opacity: 0.9;">語音輸入智能輔助</div>
-                        </button>
-                    </div>
-                    
-                    <div style="padding: 20px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; text-align: left; border-left: 4px solid #F9C765;">
-                        <h5 style="color: #495057; margin: 0 0 15px 0; font-size: 16px; display: flex; align-items: center;">
-                            <span style="margin-right: 8px;">💡</span> 使用建議
-                        </h5>
-                        <div style="color: #666; font-size: 14px; line-height: 1.6;">
-                            <div style="margin-bottom: 8px;">
-                                <strong style="color: #28a745;">傳統方式：</strong>適合熟悉流程的用戶，可精確控制每個細節
+                </div>
+                
+                <div class="order-methods-container">
+                    <div class="method-card traditional-card" onclick="continueTraditionalFlow()">
+                        <div class="card-glow"></div>
+                        <div class="card-icon">📝</div>
+                        <h4 class="card-title">傳統方式</h4>
+                        <p class="card-description">逐步填寫表單，精確控制每個細節</p>
+                        <div class="card-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>詳細設定選項</span>
                             </div>
-                            <div>
-                                <strong style="color: #B3811C;">語音AI助手：</strong>適合快速下單，AI會引導您完成所有必要資訊
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>完整資訊掌控</span>
                             </div>
                         </div>
+                        <div class="card-action">
+                            <span>開始填寫</span>
+                            <span class="action-arrow">→</span>
+                        </div>
+                    </div>
+                    
+                    <div class="method-card voice-card" onclick="startVoiceAssistant()">
+                        <div class="card-glow"></div>
+                        <div class="card-badge">推薦</div>
+                        <div class="card-icon">🎤</div>
+                        <h4 class="card-title">語音AI助手</h4>
+                        <p class="card-description">語音輸入智能輔助，快速完成訂單</p>
+                        <div class="card-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>AI智能引導</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <span>快速便捷下單</span>
+                            </div>
+                        </div>
+                        <div class="card-action">
+                            <span>開始語音</span>
+                            <span class="action-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tips-section">
+                    <div class="tips-icon">💡</div>
+                    <div class="tips-content">
+                        <h5>小提示</h5>
+                        <p>首次使用建議選擇<strong>傳統方式</strong>熟悉流程，之後可嘗試<strong>語音AI助手</strong>享受更快速的體驗！</p>
                     </div>
                 </div>
             </div>

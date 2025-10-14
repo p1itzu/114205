@@ -1370,76 +1370,188 @@ async def process_voice_message(
 ):
     """處理語音AI助手的訊息並返回AI回應"""
     try:
+        import json
+        from config import get_settings
+        settings = get_settings()
+        
         # 設置OpenAI API
-        openai.api_key = os.getenv("OPENAI_API_KEY")
+        openai.api_key = settings.OPENAI_API_KEY
         
-        # 構建系統提示
-        system_prompt = """你是一個專業的訂單助手，幫助顧客創建訂單。你需要收集以下資訊：
-1. 用餐日期和時間
-2. 取餐方式（外送/自取）
-3. 如果是外送，需要地址
-4. 菜色名稱、數量、口味偏好（鹹度、辣度）
-5. 特殊要求或備註
-
-請根據顧客的訊息，更新訂單資訊，並用友善、專業的語氣回應。如果資訊不完整，請引導顧客提供更多資訊。
-
-當前訂單資訊：
-- 廚師：{chef_name}
-- 日期：{order_date}
-- 時間：{order_time}
-- 取餐方式：{delivery_method}
-- 地址：{delivery_address}
-- 菜色：{dishes}
-- 備註：{customer_notes}
-
-請以JSON格式回應，包含：
-- response: 給顧客的回應文字
-- order_data: 更新後的訂單資訊
-- is_complete: 是否已收集完所有必要資訊
-""".format(
-            chef_name=request_data.order_data.get('chef_name', ''),
-            order_date=request_data.order_data.get('order_date', '未設定'),
-            order_time=request_data.order_data.get('order_time', '未設定'),
-            delivery_method=request_data.order_data.get('delivery_method', '未設定'),
-            delivery_address=request_data.order_data.get('delivery_address', '未設定'),
-            dishes=str(request_data.order_data.get('dishes', [])),
-            customer_notes=request_data.order_data.get('customer_notes', '')
-        )
+        # 獲取當前訂單資料
+        order_data = request_data.order_data
+        chef_name = order_data.get('chef_name', '')
+        order_date = order_data.get('order_date', '')
+        order_time = order_data.get('order_time', '')
+        delivery_method = order_data.get('delivery_method', '')
+        delivery_address = order_data.get('delivery_address', '')
+        dishes = order_data.get('dishes', [])
+        customer_notes = order_data.get('customer_notes', '')
         
-        # 調用OpenAI API
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        # 獲取當前日期時間
+        from datetime import datetime
+        today = datetime.now()
+        current_year = today.year
+        current_date = today.strftime('%Y-%m-%d')
+        current_time = today.strftime('%H:%M')
+        
+        # 構建系統提示 - 結構化引導
+        system_prompt = f"""你是一個專業且友善的訂餐助手，負責引導顧客完成訂單。
+
+【當前系統時間】
+今天日期：{current_date}
+當前時間：{current_time}
+年份：{current_year}
+
+【當前訂單狀態】
+廚師：{chef_name if chef_name else '未設定'}
+日期：{order_date if order_date else '未設定'}
+時間：{order_time if order_time else '未設定'}
+取餐方式：{delivery_method if delivery_method else '未設定'}
+地址：{delivery_address if delivery_address else '未設定'}
+菜色：{json.dumps(dishes, ensure_ascii=False) if dishes else '尚無菜色'}
+備註：{customer_notes if customer_notes else '無'}
+
+【收集流程】
+請按照以下順序引導顧客：
+1. 如果沒有日期和時間 → 詢問「請問您想在什麼時候用餐？」
+2. 如果沒有取餐方式 → 詢問「請問您要外送還是自取？」
+3. 如果選外送但沒地址 → 詢問「請提供外送地址」
+4. 如果沒有菜色 → 詢問「請告訴我您想吃什麼菜？」
+5. 對於每道菜，詢問：
+   - 菜名和數量
+   - 鹹度偏好（清淡/正常/重鹹）
+   - 辣度偏好（不辣/微辣/中辣/辣/超辣）
+   - 是否需要蔥、薑、蒜、香菜
+   - 特殊要求
+
+【日期時間處理規則】
+1. 如果顧客只說「10月15日」或「10/15」，自動補上當前年份 {current_year}
+2. 如果顧客說「今天」，使用 {current_date}
+3. 如果顧客說「明天」，使用明天的日期
+4. 如果顧客說「後天」，使用後天的日期
+5. 如果顧客說「週X」或「星期X」，計算對應的日期
+6. 時間格式統一為 24 小時制 HH:MM
+7. 如果顧客說「中午」，使用 12:00
+8. 如果顧客說「晚上7點」，使用 19:00
+9. 所有日期必須是 YYYY-MM-DD 格式
+
+【語音辨識錯別字修正】
+顧客可能使用語音輸入，請智能修正常見錯別字：
+- 「水煮魚」可能被辨識為「水著魚」「水主魚」
+- 「宮保雞丁」可能被辨識為「公保雞丁」「工保雞丁」「公寶基頂」「宮寶雞丁」
+- 「麻婆豆腐」可能被辨識為「馬婆豆腐」「麻波豆腐」
+- 「糖醋排骨」可能被辨識為「糖促排骨」「湯醋排骨」
+- 「清蒸魚」可能被辨識為「清爭魚」「清蒸魯魚」「清正魚」
+- 「外送」可能被辨識為「外宋」「外送」
+- 「自取」可能被辨識為「自曲」「資取」「自取」
+- 數字可能被辨識為中文（一、二、三、兩）或阿拉伯數字（1、2、3）
+- 「兩份」「2份」「二份」都表示數量2
+- 根據上下文智能判斷並修正為正確的菜名和數量
+
+【回應格式】
+你必須以JSON格式回應，包含：
+{{
+  "response": "給顧客的友善回應（繁體中文）",
+  "order_data": {{
+    "order_date": "{order_date if order_date else 'null'}",
+    "order_time": "{order_time if order_time else 'null'}",
+    "delivery_method": "{delivery_method if delivery_method else 'null'}",
+    "delivery_address": "{delivery_address if delivery_address else 'null'}",
+    "dishes": {json.dumps(dishes, ensure_ascii=False) if dishes else '[]'},
+    "customer_notes": "{customer_notes if customer_notes else 'null'}"
+  }},
+  "is_complete": false或true
+}}
+
+**重要**：以上 order_data 是當前已有的資料，你必須：
+1. 保留所有已有的值（如上所示）
+2. 只更新顧客這次提到的欄位
+3. 如果顧客沒提到某個欄位，保持原值
+4. 例如：如果已有日期和取餐方式，顧客只回答菜色口味，則保留日期和取餐方式，只更新菜色資訊
+5. **菜色的 quantity 必須是數字（1, 2, 3），不能是字串或undefined**
+6. 菜色範例：{{"dish_name": "宮保雞丁", "quantity": 2, "salt_level": "normal", "spice_level": "mild", "include_onion": true, "include_ginger": true, "include_garlic": true, "include_cilantro": true}}
+
+【重要規則】
+1. 一次只問一個問題，不要一次問太多
+2. 用友善、口語化的方式回應
+3. 自動修正語音辨識的錯別字
+4. 日期必須包含完整年份（YYYY-MM-DD）
+5. 如果顧客沒提到年份，自動使用 {current_year} 年
+6. 只有當所有必要資訊都收集完成時，才設定 is_complete 為 true
+7. 必要資訊：日期、時間、取餐方式、至少一道菜（含菜名、數量、鹹度、辣度）
+8. 如果是外送，地址也是必要的
+9. 回應必須是有效的JSON格式
+10. 確認日期不早於今天 {current_date}
+
+【資料保留規則 - 非常重要！】
+1. **必須保留所有已收集的資訊**：如果當前訂單狀態中已有資料，除非顧客明確要修改，否則必須保留
+2. 在 order_data 中，只更新顧客這次提到的欄位，其他欄位保持原值
+3. 如果顧客說「都可以」「隨便」「沒關係」等，表示接受預設值，但**不要清空已有資料**
+4. 對於「都可以」的回應：
+   - 鹹度設為 "normal"
+   - 辣度設為 "none"
+   - 蔥薑蒜香菜都設為 true
+   - **保留已有的菜色、日期、時間、取餐方式等資訊**
+5. 範例：如果已有日期和菜色，顧客回答口味偏好時，只更新菜色的口味設定，不要清空日期"""
+        
+        # 構建用戶訊息，包含上下文提示
+        user_message = f"""顧客說：「{request_data.message}」
+
+請記住：
+1. 保留所有已收集的訂單資訊（日期、時間、取餐方式、菜色等）
+2. 只更新顧客這次提到的內容
+3. 如果顧客說「都可以」「隨便」，使用預設值但保留其他已有資訊
+4. 在 order_data 中，沒有提到的欄位請保持原值（從當前訂單狀態複製）"""
+        
+        # 調用OpenAI API (使用新版API)
+        client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini-2024-07-18",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": request_data.message}
+                {"role": "user", "content": user_message}
             ],
-            temperature=0.7,
-            max_tokens=1000
+            temperature=0.3,
+            max_tokens=1500
         )
         
-        ai_response = response.choices[0].message.content
+        ai_response = response.choices[0].message.content.strip()
         
-        # 嘗試解析JSON回應
+        # 解析JSON回應
         try:
-            import json
+            # 移除可能的markdown代碼塊標記
+            if ai_response.startswith('```json'):
+                ai_response = ai_response[7:]
+            if ai_response.startswith('```'):
+                ai_response = ai_response[3:]
+            if ai_response.endswith('```'):
+                ai_response = ai_response[:-3]
+            ai_response = ai_response.strip()
+            
             parsed_response = json.loads(ai_response)
-            response_text = parsed_response.get('response', ai_response)
+            response_text = parsed_response.get('response', '抱歉，我無法理解您的訊息。')
             updated_order_data = parsed_response.get('order_data', {})
             is_complete = parsed_response.get('is_complete', False)
-        except:
-            # 如果不是JSON格式，直接使用回應文字
-            response_text = ai_response
-            updated_order_data = {}
-            is_complete = False
-        
-        return JSONResponse(content={
-            "success": True,
-            "response": response_text,
-            "order_data": updated_order_data,
-            "is_complete": is_complete
-        })
+            
+            return JSONResponse(content={
+                "success": True,
+                "response": response_text,
+                "order_data": updated_order_data,
+                "is_complete": is_complete
+            })
+            
+        except json.JSONDecodeError as e:
+            # JSON解析失敗，返回原始回應
+            return JSONResponse(content={
+                "success": True,
+                "response": ai_response,
+                "order_data": {},
+                "is_complete": False
+            })
         
     except Exception as e:
+        import traceback
+        print(f"Error in process_voice_message: {traceback.format_exc()}")
         return JSONResponse(
             status_code=500,
             content={
@@ -1456,36 +1568,74 @@ async def transcribe_audio(
     current_user: User = Depends(require_customer)
 ):
     """將語音轉換為文字"""
+    temp_file_path = None
     try:
-        # 創建臨時文件
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
-            content = await audio.read()
+        # 檢查文件大小
+        content = await audio.read()
+        if len(content) == 0:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "message": "音訊檔案為空，請重新錄製"
+                }
+            )
+        
+        # 創建臨時文件（使用原始格式）
+        file_extension = audio.filename.split('.')[-1] if '.' in audio.filename else 'webm'
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file_extension}") as temp_file:
             temp_file.write(content)
             temp_file_path = temp_file.name
         
         try:
             # 使用Whisper進行語音轉文字
+            print(f"Transcribing audio file: {temp_file_path}, size: {len(content)} bytes")
             model = whisper.load_model("base")
-            result = model.transcribe(temp_file_path, language="zh")
+            result = model.transcribe(temp_file_path, language="zh", fp16=False)
+            
+            transcribed_text = result["text"].strip()
+            
+            if not transcribed_text:
+                return JSONResponse(content={
+                    "success": False,
+                    "message": "無法識別語音內容，請說清楚一點後重試"
+                })
+            
+            print(f"Transcription successful: {transcribed_text}")
             
             return JSONResponse(content={
                 "success": True,
-                "text": result["text"].strip()
+                "text": transcribed_text
             })
             
-        finally:
-            # 清理臨時文件
-            if os.path.exists(temp_file_path):
-                os.unlink(temp_file_path)
-                
+        except Exception as e:
+            import traceback
+            print(f"Whisper transcription error: {traceback.format_exc()}")
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "success": False,
+                    "message": f"語音識別失敗：{str(e)}"
+                }
+            )
+            
     except Exception as e:
+        import traceback
+        print(f"Audio transcription error: {traceback.format_exc()}")
         return JSONResponse(
             status_code=500,
             content={
                 "success": False,
-                "message": f"語音轉換失敗：{str(e)}"
+                "message": f"處理音訊時發生錯誤：{str(e)}"
             }
         )
+    finally:
+        # 清理臨時文件
+        if temp_file_path and os.path.exists(temp_file_path):
+            try:
+                os.unlink(temp_file_path)
+            except Exception as e:
+                print(f"Failed to delete temp file: {e}")
 
 
 # 提交語音AI助手創建的訂單
@@ -1531,12 +1681,16 @@ async def submit_voice_order(
                 content={"success": False, "message": "缺少取餐方式資訊"}
             )
         
-        try:
-            delivery_method_enum = DeliveryMethod(order_data.delivery_method)
-        except ValueError:
+        # 接受中文或英文的配送方式
+        delivery_method_str = order_data.delivery_method
+        if delivery_method_str in ['外送', 'delivery']:
+            delivery_method_enum = DeliveryMethod.DELIVERY
+        elif delivery_method_str in ['自取', 'pickup']:
+            delivery_method_enum = DeliveryMethod.PICKUP
+        else:
             return JSONResponse(
                 status_code=400,
-                content={"success": False, "message": "無效的配送方式"}
+                content={"success": False, "message": f"無效的配送方式：{delivery_method_str}"}
             )
         
         # 如果是外送，地址必填
